@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Janky JS Data Loader Template</title>
+    <link rel="stylesheet" type="text/css" href="../../css/arch229s17.css"><!-- the standard CSS file for our class -->
+    <link rel="stylesheet" type="text/css" href="style.css"> <!-- the CSS for your drawing  -->
+    
+    <!-- Here we load in the scripts we need.--> 
+    <!--Note that this setup is intended to work while testing locally, in the ARCH-229-s17 sandbox directory. Links will break elsewhere -->
+    <script src="../../js/d3.v3.min.js"></script> <!-- a relative link to D3. We keep a copy in our local library -->
+    <script src="../../../dy_working/dy.v0.min.js"></script> <!-- a relative link to DY. This should point to the dy_working repo -->
+           
+</head>
+
+<body>
+<!-- The dy-head div contains UI for loading external local files --> 
+<div id="dy-head">
+    <p id="dy-head-title">Janky JS Data Loader Template</p>
+    <p id="dy-head-attribution">by YOUR NAME for ARCH 229 s17</p>
+</div>
+
+<!-- The dy-canvas div is where you should create any SVGs using D3 -->
+<div id = "dy-canvas"></div>
+
+<!-- Here we load your D3 script --> 
+<script src="script.js"></script>
+
+</body>
+</html>

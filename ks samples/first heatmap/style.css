@@ -1,0 +1,14 @@
+
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.tick, .label {
+    fill: #ccc;
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
