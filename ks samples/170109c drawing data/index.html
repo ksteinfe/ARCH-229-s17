@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drawing Data</title>
+    <link rel="stylesheet" type="text/css" href="../../css/arch229s17.css"><!-- the standard CSS file for our class -->
+    
+    <!-- Here we load in the scripts we need.--> 
+    <!--Note that this setup is intended to work while testing locally, in the ARCH-229-s17 sandbox directory. Links will break elsewhere -->
+    <script src="../../js/d3.v3.min.js"></script> <!-- a relative link to D3. We keep a copy in our local library -->
+
+    
+    <!-- we wouldn't normally define styles here--> 
+    <style>
+    .bar {
+        fill: DodgerBlue;
+    }
+    </style>
+    
+</head>
+
+<body>
+<!-- The dy-head div contains UI for loading external local files --> 
+<div id="dy-head">
+    <p id="dy-head-title">Drawing Data</p>
+    <p id="dy-head-attribution">by Kyle Steinfeld for ARCH 229 s17</p>
+</div>
+
+<!-- The dy-canvas div is where you should create any SVGs using D3 -->
+<div id = "dy-canvas" style="top: 100px;"></div>
+
+
+<script>
+    var dObj = [ // monthlyDryBulb for Oakland, CA
+        {mean:-3.6469,mode:1.0,q4:6.0,q3:-1.0,q2:-3.0,q1:-6.0,q0:-17.0},
+        {mean:-6.2699,mode:-7.0,q4:8.0,q3:-2.0,q2:-7.0,q1:-10.0,q0:-19.0},
+        {mean:5.347,mode:2.0,q4:26.0,q3:10.0,q2:5.0,q1:0.0,q0:-7.0},
+        {mean:10.0508,mode:2.2,q4:27.2,q3:15.6,q2:9.4,q1:4.725,q0:-4.9},
+        {mean:12.8831,mode:12.0,q4:24.0,q3:16.0,q2:13.0,q1:9.0,q0:2.0},
+        {mean:21.1726,mode:19.4,q4:33.2,q3:24.4,q2:20.5,q1:18.1,q0:8.5},
+        {mean:23.102,mode:22.8,q4:35.0,q3:26.7,q2:22.9,q1:19.175,q0:12.8},
+        {mean:22.5401,mode:19.0,q4:36.0,q3:26.0,q2:22.0,q1:19.0,q0:11.0},
+        {mean:18.8322,mode:17.0,q4:29.0,q3:23.0,q2:19.0,q1:15.0,q0:4.0},
+        {mean:10.5843,mode:10.0,q4:28.0,q3:13.6,q2:10.0,q1:7.0,q0:0.0},
+        {mean:7.9176,mode:4.0,q4:19.0,q3:12.0,q2:7.0,q1:4.0,q0:-2.0},
+        {mean:-0.8938,mode:0.0,q4:8.0,q3:1.0,q2:-0.5,q1:-2.0,q0:-15.0}
+    ];
+    
+    //Width and height of the SVG
+    var w = 400;
+    var h = 200;
+    var barPadding = 1;  // space between the bars
+    
+    //Create SVG element
+    var svg = d3.select("#dy-canvas")
+        .append("svg")
+        .attr("class", "board") // the board class is defined in the standard CSS file for the class, and should be applied to all SVGs we place in the canvas
+        .attr("width", w)
+        .attr("height", h);
+    
+    svg.selectAll("rect")
+        .data(dObj)
+        .enter()
+        .append("rect")
+        .attr({
+            class: "bar",
+            x: function(d, i) { return i * (w / dObj.length); }, // notice that we can iterate over both data items and indices at the same time            
+            width: w / dObj.length - barPadding,
+            y: function(d) { return h - (d.mean + 10)*5; },
+            height: function(d) { return (d.mean + 10)*5; }
+        });
+        
+        
+    /*
+    // VERBOSE VERSION
+    svg.selectAll("rect")
+        .data(dObj)
+        .enter()
+        .append("rect")
+        .attr("x", function(d, i) { // notice that we can iterate over both data items and indices at the same time
+            return i * (w / dObj.length);
+        })
+        .attr("width", w / dObj.length - barPadding)
+        .attr("y", function(d) {
+            return h - (d.mean + 10)*5; // what we really need here is a proper scale
+        })        
+        .attr("height", function(d) {
+            return (d.mean + 10)*5; // what we really need here is a proper scale
+        });
+    
+    */
+    
+</script> 
+
+</body>
+</html>
