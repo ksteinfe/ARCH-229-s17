@@ -4,7 +4,7 @@ function OnDataLoaded(dObj) {
     console.log("data is loaded, i'm ready to go!");
     console.log(dObj);
     
-    d3.select("body").selectAll("p")
+    d3.select("#dy-canvas").selectAll("p")
         .data(dObj)
         .enter()
         .append("p")
