@@ -27,27 +27,31 @@ function OnDataLoaded(dObj) {
       
     // x-axis
     board.g.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + (board.dDims.height +10) + ")")
-            .style("font-size","8px")
+            .attr({
+                class: "x axis",
+                transform: "translate(0," + (board.dDims.height +10) + ")"
+            })
             .call(xAxis)
 
     // y-axis
     board.g.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(-10,0)")
-            .style("font-size","8px")
-            .call(yAxis) 
+            .attr({
+                class: "y axis",
+                transform: "translate(-10,0)"
+            })
+            .call(yAxis)             
       
     // draw dots
     board.g.selectAll(".dot")
         .data(dObj.hrs)
         .enter().append("circle")
-            .attr("class", "dot")
-            //.attr("class", function(d){ if (d.data.EPW.DewPt > 0) {return "dot high-dew"} else {return "dot low-dew"}  })
-            .attr("r", 1.5)
-            .attr("cx", function(d) { return xMap(d);})
-            .attr("cy", function(d) { return yMap(d);});
+            .attr({
+                class: "dot",
+                //class: function(d){ if (d.data.EPW.DewPt > 0) {return "dot high-dew"} else {return "dot low-dew"}  },
+                r: 1.5,
+                cx: function(d) { return xMap(d);} ,
+                cy: function(d) { return yMap(d);} ,
+            })        
       
 }
 

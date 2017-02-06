@@ -1,5 +1,8 @@
 
 
+.bar {
+    fill: black;
+}
 
 .axis path, .axis line {
   fill: none;
@@ -7,20 +10,9 @@
   shape-rendering: crispEdges;
 }
 
-.tick, .label {
-    fill: #ccc;
+.y .tick, .x .tick {
+    font-size:8px;
+    fill: #666;    
     font-family: Tahoma, Geneva, sans-serif;
 }
 
-.dot {
-    fill-opacity: 0.1;
-    fill: blue;
-}
-
-.high-dew{
-    fill: red;
-}
-
-.low-dew{
-    fill: green;
-}
