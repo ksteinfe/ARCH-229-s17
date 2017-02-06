@@ -1,0 +1,26 @@
+
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.tick, .label {
+    fill: #ccc;
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+.dot {
+    fill-opacity: 0.1;
+    fill: blue;
+}
+
+.high-dew{
+    fill: red;
+}
+
+.low-dew{
+    fill: green;
+}

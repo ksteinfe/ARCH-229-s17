@@ -8,3 +8,32 @@ clone these repos to your local harddrive.
     the default location is X
     i suggest you just leave it here, but you can choose another location, so long as both repos are cloned into the same folder
     
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+install firefox   
+    https://www.mozilla.org/en-US/firefox/new/
+install the firebug plugin for firefox
+    https://getfirebug.com/downloads/
+

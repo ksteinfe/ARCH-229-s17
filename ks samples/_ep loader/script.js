@@ -1,8 +1,8 @@
 
 
-function OnDataLoaded(darr) {
+function OnDataLoaded(dObj) {
     console.log("dy: data is loaded, i'm ready to go!");
-    console.log(darr);
+    console.log(dObj);
     
         
       
