@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EnergyPlus Results Template</title>
+    <title>EPW Weather File Template</title>
     <link rel="stylesheet" type="text/css" href="../../css/arch229s17.css"><!-- the standard CSS file for our class -->
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- the CSS for your drawing  -->
     
@@ -16,13 +16,12 @@
 <body>
 <!-- The dy-head div contains UI for loading external local files --> 
 <div id="dy-head">
-    <p id="dy-head-title">EnergyPlus Results Template</p>
+    <p id="dy-head-title">EPW Weather File Template</p>
     <p id="dy-head-attribution">by YOUR NAME for ARCH 229 s17</p>
         
-    <p id="dy-head-upload-message">Please select an <b>EnergyPlus CSV results</b> file. Your data is private. Nothing will be uploaded or stored on our servers, nor communicated to others in any way.</p>
+    <p id="dy-head-upload-message">Please select an <b>EPW Weather</b> file. Your data is private. Nothing will be uploaded or stored on our servers, nor communicated to others in any way.</p>
     <input type="file" id="csv-file" name="files"/>
-    <script>$(document).ready(function(){ $("#csv-file").change(dY.parser.handleSingleEPlusFileUpload); });
-    </script>
+    <script>$(document).ready(function(){ $("#csv-file").change(dY.parser.handleSingleEPWFileUpload); });</script>
 </div>
 
 <!-- The dy-canvas div is where you should create any SVGs using D3 -->

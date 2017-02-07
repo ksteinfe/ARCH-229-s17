@@ -4,23 +4,76 @@ function onDataLoaded(dObj) {
     console.log("dy: data is loaded, i'm ready to go!");
     console.log(dObj);
     
-    // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
+    
+    // FIRST GRAPHIC
+    //
+    
+    // add a board (an SVG) to the canvas.
     board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
 
     // Setup Color
     //
-    zonekey = ["Environment","Outdoor Dry Bulb [C](Hourly)"];
+    zonekey = ["EPW","DryBulbTemp"];
     cValue = function(d) { return d.valueOf(zonekey)};
     cScale = d3.scale.linear()
-        .domain(dObj.metaOf(zonekey).domain)
+        .domain([-25,45])
         .interpolate(d3.interpolate)
-        .range([d3.rgb("#0000ff"), d3.rgb('#ff0000')]);
+        .range([d3.rgb("#fff"), d3.rgb('#000')]);
         
     cMap = function(d) { return cScale(cValue(d)) }
     
-    drawHeatmap(dObj, board, cMap ) // draw a heatmap to the board
+    // draw a heatmap to the board
+    drawHeatmap(dObj, board, cMap) 
+    
+    
+    
+    // SECOND GRAPHIC
+    //
+    
+    // add another board (an SVG) to the canvas.
+    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
+    
+    // Setup Color
+    //
+    zonekey = ["EPW","RelHumid"];
+    cValue = function(d) { return d.valueOf(zonekey)};
+    cScale = d3.scale.linear()
+        .domain([0,100])
+        .interpolate(d3.interpolate)
+        .range([d3.rgb("#fff"), d3.rgb('#000')]);
+        
+    cMap = function(d) { return cScale(cValue(d)) }
+    
+    // draw another heatmap to the board
+    drawHeatmap(dObj, board, cMap)     
     
 
+    
+    // THIRD GRAPHIC
+    //
+    
+    // add another board (an SVG) to the canvas.
+    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
+    
+    // Setup Color
+    //
+    keyA = ["EPW","DryBulbTemp"];
+    keyB = ["EPW","RelHumid"];
+    scaleAWhenBHigh = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#00f"), d3.rgb('#f00')]);
+    scaleAWhenBLow = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#fff"), d3.rgb('#ff0')]);
+    scaleB = d3.scale.linear().interpolate(d3.interpolate).domain([0,100]);
+    cMap = function(d) { 
+        a = d.valueOf(keyA);
+        b = d.valueOf(keyB);
+        colorLow = scaleAWhenBLow(a);
+        colorHigh = scaleAWhenBHigh(a);
+        scaleB.range([colorLow, colorHigh]);
+        return scaleB(b);
+    }
+    
+    // draw another heatmap to the board
+    drawHeatmap(dObj, board, cMap)         
+    
 }
 
 
