@@ -1,6 +1,6 @@
 
 
-function OnDataLoaded(dObj) {
+function onDataLoaded(dObj) {
     console.log("data is loaded, i'm ready to go!");
     console.log(dObj);
     
@@ -11,14 +11,16 @@ function OnDataLoaded(dObj) {
     board = dY.graph.addBoard("#dy-canvas",{inWidth:400, inHeight:200,margin:40});
     console.log(board);  
     
-
-    // setup y
-    // A function that, given a data item, returns the proper value for this axis
+    // We define yValue as a function that, given a data item, returns the proper value for this axis
     var yValue = function(d) { return d.mean; }; // data -> value   
-    // A function that, given a value in one domain (the domain of values taken from our data), returns a coordinate on the canvas (a location within the drawing dimensions of our board). 
+    
+    // We define yScale as a D3 scale function that, given a value in one domain (the domain of values taken from our data), returns a coordinate on the canvas (a location within the drawing dimensions of our board). 
     // Recall that x-coordinates move from left to right and y-coordinates move from top to bottom.
-    var yScale = d3.scale.linear().domain([28,-15]).range((board.dDims.yRange)); // value -> display
-    // Combines the two functions defined above.
+    var yScale = d3.scale.linear()  // value -> display
+        .domain([28,-15])
+        .range((board.dDims.yRange));
+    
+    // We define yMap as a combonation of the two functions defined above.
     // A function that, given a data item, returns a coordinate on the canvas
     var yMap = function(d) { return yScale(yValue(d));}; // data -> display
     
@@ -30,12 +32,12 @@ function OnDataLoaded(dObj) {
         .orient("left");
     
     // draw the y-axis
-    board.g.append("g")
-            .attr({
-                class: "y axis",
-                transform: "translate(-10,0)"
-            })
-            .call(yAxis) 
+    board.g.append("g") // appends a new group to the board
+        .attr({
+            class: "y axis",
+            transform: "translate(-10,0)" // moves this group a bit to the left
+        })
+        .call(yAxis) 
     
     // draw the bars
     board.g.selectAll("rect")

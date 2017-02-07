@@ -45,7 +45,7 @@
                 if ((results.errors.length ==1)&&(results.errors[0].code=="TooFewFields")){
                     results.data.splice(results.data.length-1,1);
                 }
-                OnDataLoaded(results.data);
+                onDataLoaded(results.data);
             }
         });
     }    

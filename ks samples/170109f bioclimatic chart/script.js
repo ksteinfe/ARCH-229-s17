@@ -1,6 +1,6 @@
 
 
-function OnDataLoaded(dObj) {
+function onDataLoaded(dObj) {
     console.log("data is loaded, i'm ready to go!");
     console.log(dObj);
     
@@ -12,14 +12,18 @@ function OnDataLoaded(dObj) {
 
     // setup x
     var xValue = function(d) { return d.data.EPW.DryBlb; }; // data -> value
-    var xScale = d3.scale.linear().domain([-20,40]).range((board.dDims.xRange)); // value -> display
+    var xScale = d3.scale.linear()  // value -> display
+        .domain([-20,40])
+        .range((board.dDims.xRange));
     var xMap = function(d) { return xScale(xValue(d));}; // data -> display
     var xAxis = d3.svg.axis()
         .scale(xScale);
       
     // setup y
     var yValue = function(d) { return d.data.EPW.RelHmd; }; // data -> value
-    var yScale = d3.scale.linear().domain([100,0]).range((board.dDims.yRange)); // value -> display
+    var yScale = d3.scale.linear() // value -> display
+        .domain([100,0])
+        .range((board.dDims.yRange)); 
     var yMap = function(d) { return yScale(yValue(d));}; // data -> display
     var yAxis = d3.svg.axis()
         .scale(yScale)
@@ -27,19 +31,19 @@ function OnDataLoaded(dObj) {
       
     // x-axis
     board.g.append("g")
-            .attr({
-                class: "x axis",
-                transform: "translate(0," + (board.dDims.height +10) + ")"
-            })
-            .call(xAxis)
+        .attr({
+            class: "x axis",
+            transform: "translate(0," + (board.dDims.height +10) + ")"
+        })
+        .call(xAxis)
 
     // y-axis
     board.g.append("g")
-            .attr({
-                class: "y axis",
-                transform: "translate(-10,0)"
-            })
-            .call(yAxis)             
+        .attr({
+            class: "y axis",
+            transform: "translate(-10,0)"
+        })
+        .call(yAxis)
       
     // draw dots
     board.g.selectAll(".dot")

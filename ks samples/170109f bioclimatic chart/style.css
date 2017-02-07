@@ -7,7 +7,7 @@
   shape-rendering: crispEdges;
 }
 
-.y .tick, .x .tick {
+.y .tick text, .x .tick text{
     font-size:8px;
     fill: #666;    
     font-family: Tahoma, Geneva, sans-serif;
