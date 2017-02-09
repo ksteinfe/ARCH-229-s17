@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>First Javascripts</title>
-    <link rel="stylesheet" type="text/css" href="../../../css/arch229s17.css"><!-- the standard CSS file for our class -->
-    
-    <!-- Here we load in the scripts we need.--> 
+    <link rel="stylesheet" type="text/css" href="../../../css/arch229s17.css">
+    <!-- the standard CSS file for our class -->
+
+    <!-- Here we load in the scripts we need.-->
     <!--Note that this setup is intended to work while testing locally, in the ARCH-229-s17 sandbox directory. Links will break elsewhere -->
-    <script src="../../../js/d3.v3.min.js"></script> <!-- a relative link to D3. We keep a copy in our local library -->
-           
+    <script src="../../../js/d3.v3.min.js"></script>
+    <!-- a relative link to D3. We keep a copy in our local library -->
+
 </head>
 
 <body>
-<!-- The dy-head div contains UI for loading external local files --> 
-<div id="dy-head">
-    <p id="dy-head-title">First Javascripts</p>
-    <p id="dy-head-attribution">by Kyle Steinfeld for ARCH 229 s17</p>
-</div>
+    <!-- The dy-head div contains UI for loading external local files -->
+    <div id="dy-head">
+        <p id="dy-head-title">First Javascripts</p>
+        <p id="dy-head-attribution">by Noah Pitts for ARCH 229 s17</p>
+    </div>
 
-<!-- The dy-canvas div is where you should create any SVGs using D3 -->
-<div id = "dy-canvas" style="top: 100px;"></div>
+    <!-- The dy-canvas div is where you should create any SVGs using D3 -->
+    <div id="dy-canvas" style="top: 100px;"></div>
 
-<script>
+    <script>
+        var lorem = "Bacon ipsum dolor amet turducken short loin sirloin pork fatback. Rump beef ribs tongue sausage strip steak ribeye cow. Pork loin hamburger turducken, tenderloin sausage tri-tip strip steak fatback venison cow beef sirloin turkey pork chop. Corned beef tri-tip ham hock landjaeger boudin. Hamburger shankle biltong ball tip venison ribeye kevin pancetta drumstick salami jowl. Porchetta pig jowl, frankfurter capicola bacon kielbasa."
 
-    var lorem = "Bacon ipsum dolor amet turducken short loin sirloin pork fatback. Rump beef ribs tongue sausage strip steak ribeye cow. Pork loin hamburger turducken, tenderloin sausage tri-tip strip steak fatback venison cow beef sirloin turkey pork chop. Corned beef tri-tip ham hock landjaeger boudin. Hamburger shankle biltong ball tip venison ribeye kevin pancetta drumstick salami jowl. Porchetta pig jowl, frankfurter capicola bacon kielbasa."
-
-    d3.select("#dy-canvas") // returns a reference to the dy-canvas div
-        .append("p") // returns a reference to a newly-created <p> tag within the #dy-canvas div
-        .text(lorem); 
+        d3.select("#dy-canvas") // returns a reference to the dy-canvas div
+            .append("p") // returns a reference to a newly-created <p> tag within the #dy-canvas div
+            .text(lorem);
 
     /*
     d3
@@ -45,7 +47,8 @@
         The all-important semicolon indicates the end of this line of code. Chain over.
     */
 
-</script> 
+    </script>
 
 </body>
+
 </html>

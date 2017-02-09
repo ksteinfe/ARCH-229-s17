@@ -1,48 +1,50 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Binding Data</title>
-    <link rel="stylesheet" type="text/css" href="../../../css/arch229s17.css"><!-- the standard CSS file for our class -->
-    
-    <!-- Here we load in the scripts we need.--> 
+    <link rel="stylesheet" type="text/css" href="../../../css/arch229s17.css">
+    <!-- the standard CSS file for our class -->
+
+    <!-- Here we load in the scripts we need.-->
     <!--Note that this setup is intended to work while testing locally, in the ARCH-229-s17 sandbox directory. Links will break elsewhere -->
-    <script src="../../../js/d3.v3.min.js"></script> <!-- a relative link to D3. We keep a copy in our local library -->
-           
+    <script src="../../../js/d3.v3.min.js"></script>
+    <!-- a relative link to D3. We keep a copy in our local library -->
+
 </head>
 
 <body>
-<!-- The dy-head div contains UI for loading external local files --> 
-<div id="dy-head">
-    <p id="dy-head-title">Binding Data</p>
-    <p id="dy-head-attribution">by Kyle Steinfeld for ARCH 229 s17</p>
-</div>
+    <!-- The dy-head div contains UI for loading external local files -->
+    <div id="dy-head">
+        <p id="dy-head-title">Binding Data</p>
+        <p id="dy-head-attribution">by Kyle Steinfeld for ARCH 229 s17</p>
+    </div>
 
-<!-- The dy-canvas div is where you should create any SVGs using D3 -->
-<div id = "dy-canvas" style="top: 100px;"></div>
+    <!-- The dy-canvas div is where you should create any SVGs using D3 -->
+    <div id="dy-canvas" style="top: 100px;"></div>
+
+    <script>
+        var dObj = [
+            { Food: "Apples", Deliciousness: 9 },
+            { Food: "Green Beans", Deliciousness: 5 },
+            { Food: "Egg Salad Sandwich", Deliciousness: 4 },
+            { Food: "Cookies", Deliciousness: 10 },
+            { Food: "Vegemite", Deliciousness: 0.2 },
+            { Food: "Burrito", Deliciousness: 7 }
+        ];
+        console.log(dObj);
+
+        d3.select("#dy-canvas").selectAll("p")
+            .data(dObj)
+            .enter()
+            .append("p")
+            .style("color", "white")
+            .text("hello");
 
 
-<script>
-    var dObj = [
-        { Food: "Apples", Deliciousness : 9} ,     
-        { Food: "Green Beans", Deliciousness : 5} ,     
-        { Food: "Egg Salad Sandwich", Deliciousness : 4} ,     
-        { Food: "Cookies", Deliciousness : 10} ,     
-        { Food: "Vegemite", Deliciousness : 0.2} ,     
-        { Food: "Burrito", Deliciousness : 7} 
-    ];
-    console.log(dObj);
-    
-    d3.select("#dy-canvas").selectAll("p")
-        .data(dObj)
-        .enter()
-        .append("p")
-        .style("color", "white")
-        .text("hello");
-        
-       
     /*
-    // Version Two - Setting Text using a function 
-    
+    // Version Two - Setting Text using a function
+
     d3.select("#dy-canvas").selectAll("p")
     .data(dObj)
     .enter()
@@ -50,44 +52,45 @@
     .style("color", "white")
     .text(function(d) { return d.Food; });
     */
-       
+
     /*
     // Version Three - Setting Style using a conditional function
-    
+
     d3.select("#dy-canvas").selectAll("p")
         .data(dObj)
         .enter()
         .append("p")
         .style("color", function(d) {
-            if (d.Deliciousness > 6) { return "red"; } 
+            if (d.Deliciousness > 6) { return "red"; }
             else { return "black"; }
         })
         .text(function(d) { return d.Food; });
-    */        
+    */
 
     /*
-    
+
     d3.select("#dy-canvas")
         Finds the dy-canvas div in the DOM and hands off a reference to the next step in the chain.
-    
+
     .selectAll("p")
         Selects all paragraphs in the given DOM element. Because none exist yet, this returns an empty selection. Think of this empty selection as representing the paragraphs that will soon exist.
-    
+
     .data(dataset)
         Counts and parses our data values. There are six values in our array called dataset, so everything past this point is executed six times, once for each value.
-    
+
     .enter()
         To create new, data-bound elements, you must use enter(). This method looks at the current DOM selection, and then at the data being handed to it. If there are more data values than corresponding DOM elements, then enter() creates a new placeholder element on which you can work your magic. It then hands off a reference to this new placeholder to the next step in the chain.
-    
+
     .append("p")
         Takes the empty placeholder selection created by enter() and appends a p element into the DOM. Hooray! Then it hands off a reference to the element it just created to the next step in the chain.
-    
+
     .text("New paragraph!")
         Takes the reference to the newly created p and inserts a text value.
-    
+
     */
-    
-</script> 
+
+    </script>
 
 </body>
+
 </html>
