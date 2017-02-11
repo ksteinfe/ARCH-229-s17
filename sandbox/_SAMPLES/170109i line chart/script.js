@@ -51,7 +51,7 @@ function onDataLoaded(dObj) {
         .call(yAxis)
       
     board.g.append("path")
-        .attr("d", lineFunction(dObj.hrs))
+        .attr("d", lineFunction(dObj.ticks))
         .attr("stroke", "blue")
         .attr("stroke-width", 0.5)
         .attr("fill", "none");

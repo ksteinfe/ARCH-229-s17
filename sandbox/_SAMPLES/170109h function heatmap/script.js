@@ -132,7 +132,7 @@ function drawHeatmap(dObj, board, colorMap) {
 
     // draw pixels
     board.g.selectAll("rect")
-        .data(dObj.hrs)
+        .data(dObj.ticks)
         .enter().append("rect")
             .attr({
                 class: "pxl",

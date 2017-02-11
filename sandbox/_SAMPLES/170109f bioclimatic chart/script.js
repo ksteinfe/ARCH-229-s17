@@ -47,7 +47,7 @@ function onDataLoaded(dObj) {
       
     // draw dots
     board.g.selectAll(".dot")
-        .data(dObj.hrs)
+        .data(dObj.ticks)
         .enter().append("circle")
             .attr({
                 class: "dot",
