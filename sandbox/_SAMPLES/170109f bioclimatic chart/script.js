@@ -11,7 +11,7 @@ function onDataLoaded(dObj) {
       
 
     // setup x
-    var xValue = function(d) { return d.valueOf(["EPW","DryBulbTemp"]); }; // data -> value
+    var xValue = function(d) { return d.valueOf("DryBulbTemp"); }; // data -> value
     var xScale = d3.scale.linear()  // value -> display
         .domain([-20,40])
         .range((board.dDims.xRange));
@@ -20,7 +20,7 @@ function onDataLoaded(dObj) {
         .scale(xScale);
       
     // setup y
-    var yValue = function(d) { return d.valueOf(["EPW","RelHumid"]); }; // data -> value
+    var yValue = function(d) { return d.valueOf("RelHumid"); }; // data -> value
     var yScale = d3.scale.linear() // value -> display
         .domain([100,0])
         .range((board.dDims.yRange)); 

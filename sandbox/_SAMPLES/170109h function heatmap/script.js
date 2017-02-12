@@ -13,7 +13,7 @@ function onDataLoaded(dObj) {
 
     // Setup Color
     //
-    zonekey = ["EPW","DryBulbTemp"];
+    zonekey = "DryBulbTemp";
     cValue = function(d) { return d.valueOf(zonekey)};
     cScale = d3.scale.linear()
         .domain([-25,45])
@@ -35,7 +35,7 @@ function onDataLoaded(dObj) {
     
     // Setup Color
     //
-    zonekey = ["EPW","RelHumid"];
+    zonekey = "RelHumid";
     cValue = function(d) { return d.valueOf(zonekey)};
     cScale = d3.scale.linear()
         .domain([0,100])
@@ -57,8 +57,8 @@ function onDataLoaded(dObj) {
     
     // Setup Color
     //
-    keyA = ["EPW","DryBulbTemp"];
-    keyB = ["EPW","RelHumid"];
+    keyA = "DryBulbTemp";
+    keyB = "RelHumid";
     scaleAWhenBHigh = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#00f"), d3.rgb('#f00')]);
     scaleAWhenBLow = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#fff"), d3.rgb('#ff0')]);
     scaleB = d3.scale.linear().interpolate(d3.interpolate).domain([0,100]);

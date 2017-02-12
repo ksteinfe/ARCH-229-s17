@@ -44,8 +44,7 @@ function onDataLoaded(dObj) {
     
     // Setup Color
     //
-    zonekey = ["EPW","DryBulbTemp"];
-    zonekey = ["EPW","RelHumid"];
+    zonekey = "DryBulbTemp";
     //zonekey = ["ZONE1","Zone People Number Of Occupants [](Hourly)"];
     //zonekey = ["ZONE1","Zone Mean Air Temperature [C](Hourly)"];
     var cValue = function(d) { return d.valueOf(zonekey)};
