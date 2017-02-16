@@ -1,8 +1,18 @@
 
-.dryBulb {
-    fill: pink;
+.dryBulbHigh {
+    fill: #0072ae;
 }
 
-.relHum {
-    fill: lightskyblue
+.dryBulbLow {
+    fill: #ffffff;
+}
+
+.dryBulbMean {
+    stroke: #1e1e1e;
+    stroke-dasharray: 1, 1;
+    fill-opacity: 0.0;
+}
+
+.relHumHigh {
+    fill: #1e96e6
 }
