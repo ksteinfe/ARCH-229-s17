@@ -30,7 +30,7 @@ function onDataLoaded(dObj) {
     // 
     var yValue = function(d) { return d.hourOfDay();}; // data -> value
     var yScale = d3.scale.linear()  // value -> display
-        .domain([0,23])
+        .domain([23,0])
         .range((board.dDims.yRange));
     var yMap = function(d) { return yScale(yValue(d));}; // data -> display
     var yAxis = d3.svg.axis()

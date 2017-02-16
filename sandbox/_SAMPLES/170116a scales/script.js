@@ -20,7 +20,7 @@ function onDataLoaded(dObj) {
         .domain([28,-15])
         .range((board.dDims.yRange));
     
-    // We define yMap as a combonation of the two functions defined above.
+    // We define yMap as a combination of the two functions defined above.
     // A function that, given a data item, returns a coordinate on the canvas
     var yMap = function(d) { return yScale(yValue(d));}; // data -> display
     
@@ -40,7 +40,7 @@ function onDataLoaded(dObj) {
         .call(yAxis) 
     
     // draw the bars
-    board.g.selectAll("rect")
+    board.g.append("g").selectAll("rect")
         .data(dObj)
         .enter()
         .append("rect")
