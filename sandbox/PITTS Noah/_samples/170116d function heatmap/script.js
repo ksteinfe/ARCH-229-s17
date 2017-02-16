@@ -1,14 +1,85 @@
 
 
 function onDataLoaded(dObj) {
-    //dObj.hrs = dObj.hrs.slice(0,744);
     console.log("dy: data is loaded, i'm ready to go!");
     console.log(dObj);
     
-    // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
+    
+    // FIRST GRAPHIC
+    //
+    
+    // add a board (an SVG) to the canvas.
+    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
+
+    // Setup Color
+    //
+    zonekey = "DryBulbTemp";
+    cValue = function(d) { return d.valueOf(zonekey)};
+    cScale = d3.scale.linear()
+        .domain([-25,45])
+        .interpolate(d3.interpolate)
+        .range([d3.rgb("#fff"), d3.rgb('#000')]);
+        
+    cMap = function(d) { return cScale(cValue(d)) }
+    
+    // draw a heatmap to the board
+    drawHeatmap(dObj, board, cMap) 
+    
+    
+    
+    // SECOND GRAPHIC
+    //
+    
+    // add another board (an SVG) to the canvas.
     board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
     
+    // Setup Color
+    //
+    zonekey = "RelHumid";
+    cValue = function(d) { return d.valueOf(zonekey)};
+    cScale = d3.scale.linear()
+        .domain([0,100])
+        .interpolate(d3.interpolate)
+        .range([d3.rgb("#fff"), d3.rgb('#000')]);
+        
+    cMap = function(d) { return cScale(cValue(d)) }
+    
+    // draw another heatmap to the board
+    drawHeatmap(dObj, board, cMap)     
+    
 
+    
+    // THIRD GRAPHIC
+    //
+    
+    // add another board (an SVG) to the canvas.
+    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
+    
+    // Setup Color
+    //
+    keyA = "DryBulbTemp";
+    keyB = "RelHumid";
+    scaleAWhenBHigh = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#00f"), d3.rgb('#f00')]);
+    scaleAWhenBLow = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#fff"), d3.rgb('#ff0')]);
+    scaleB = d3.scale.linear().interpolate(d3.interpolate).domain([0,100]);
+    cMap = function(d) { 
+        a = d.valueOf(keyA);
+        b = d.valueOf(keyB);
+        colorLow = scaleAWhenBLow(a);
+        colorHigh = scaleAWhenBHigh(a);
+        scaleB.range([colorLow, colorHigh]);
+        return scaleB(b);
+    }
+    
+    // draw another heatmap to the board
+    drawHeatmap(dObj, board, cMap)         
+    
+}
+
+
+
+function drawHeatmap(dObj, board, colorMap) {
+    
     // Setup X
     //
     var xValue = function(d) { return d.dayOfYear(); }; // data -> value
@@ -22,9 +93,9 @@ function onDataLoaded(dObj) {
     var xAxis = d3.svg.axis()
         .scale(dayScale)
         .orient('bottom')
-        .ticks(d3.time.months) //should display 1 month intervals
+        .ticks(d3.time.months)//should display 1 year intervals
         .tickSize(16, 0)
-        .tickFormat(d3.time.format("%B"));
+        .tickFormat(d3.time.format("%b"));
 
     // Setup Y
     // 
@@ -40,20 +111,6 @@ function onDataLoaded(dObj) {
      
     // dimension of a single heatmap rectangle
     var pixelDim = [ board.dDims.width / 365,  board.dDims.height / 24 ];
-    
-    
-    // Setup Color
-    //
-    zonekey = ["EPW","DryBulbTemp"];
-    zonekey = ["EPW","RelHumid"];
-    //zonekey = ["ZONE1","Zone People Number Of Occupants [](Hourly)"];
-    //zonekey = ["ZONE1","Zone Mean Air Temperature [C](Hourly)"];
-    var cValue = function(d) { return d.valueOf(zonekey)};
-    var cScale = d3.scale.linear()
-        .domain(dObj.metaOf(zonekey).domain)
-        .interpolate(d3.interpolate)
-        .range([d3.rgb("#0000ff"), d3.rgb('#ff0000')]);
-    
     
     // draw x-axis        
     board.g.append("g")
@@ -75,7 +132,7 @@ function onDataLoaded(dObj) {
 
     // draw pixels
     board.g.selectAll("rect")
-        .data(dObj.hrs)
+        .data(dObj.ticks)
         .enter().append("rect")
             .attr({
                 class: "pxl",
@@ -84,8 +141,7 @@ function onDataLoaded(dObj) {
                 x: function(d) { return xMap(d);},
                 y: function(d) { return yMap(d);},
                 transform: "translate("+pixelDim[0]*-0.5+","+pixelDim[1]*-0.5+")",
-                fill: function(d) { return cScale(cValue(d));}
+                fill: function(d) { return colorMap(d);}
             });
-      
+            
 }
-

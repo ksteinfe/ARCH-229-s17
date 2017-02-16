@@ -1,0 +1,28 @@
+
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.y .tick text, .x .tick text{
+    font-size:8px;
+    fill: #666;    
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+
+.dot {
+    fill-opacity: 0.1;
+    fill: blue;
+}
+
+.high-dew{
+    fill: red;
+}
+
+.low-dew{
+    fill: green;
+}
