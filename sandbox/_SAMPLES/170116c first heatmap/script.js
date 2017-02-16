@@ -1,7 +1,7 @@
 
 
 function onDataLoaded(dObj) {
-    //dObj.hrs = dObj.hrs.slice(0,744);
+    //dObj.ticks = dObj.ticks.slice(0,744);
     console.log("dy: data is loaded, i'm ready to go!");
     console.log(dObj);
     
@@ -44,8 +44,7 @@ function onDataLoaded(dObj) {
     
     // Setup Color
     //
-    zonekey = ["EPW","DryBulbTemp"];
-    zonekey = ["EPW","RelHumid"];
+    zonekey = "DryBulbTemp";
     //zonekey = ["ZONE1","Zone People Number Of Occupants [](Hourly)"];
     //zonekey = ["ZONE1","Zone Mean Air Temperature [C](Hourly)"];
     var cValue = function(d) { return d.valueOf(zonekey)};
@@ -75,7 +74,7 @@ function onDataLoaded(dObj) {
 
     // draw pixels
     board.g.selectAll("rect")
-        .data(dObj.hrs)
+        .data(dObj.ticks)
         .enter().append("rect")
             .attr({
                 class: "pxl",

@@ -4,61 +4,16 @@ function onDataLoaded(dObj) {
     console.log("dy: data is loaded, i'm ready to go!");
     console.log(dObj);
     
-    
-    // FIRST GRAPHIC
-    //
-    
-    // add a board (an SVG) to the canvas.
-    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
-
-    // Setup Color
-    //
-    zonekey = ["EPW","DryBulbTemp"];
-    cValue = function(d) { return d.valueOf(zonekey)};
-    cScale = d3.scale.linear()
-        .domain([-25,45])
-        .interpolate(d3.interpolate)
-        .range([d3.rgb("#fff"), d3.rgb('#000')]);
-        
-    cMap = function(d) { return cScale(cValue(d)) }
-    
-    // draw a heatmap to the board
-    drawHeatmap(dObj, board, cMap) 
-    
-    
-    
-    // SECOND GRAPHIC
-    //
-    
-    // add another board (an SVG) to the canvas.
-    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
-    
-    // Setup Color
-    //
-    zonekey = ["EPW","RelHumid"];
-    cValue = function(d) { return d.valueOf(zonekey)};
-    cScale = d3.scale.linear()
-        .domain([0,100])
-        .interpolate(d3.interpolate)
-        .range([d3.rgb("#fff"), d3.rgb('#000')]);
-        
-    cMap = function(d) { return cScale(cValue(d)) }
-    
-    // draw another heatmap to the board
-    drawHeatmap(dObj, board, cMap)     
-    
-
-    
     // THIRD GRAPHIC
     //
     
     // add another board (an SVG) to the canvas.
-    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
+    board = dY.graph.addBoard("#dy-canvas",{inWidth: 365, inHeight:60, margin:35});
     
     // Setup Color
     //
-    keyA = ["EPW","DryBulbTemp"];
-    keyB = ["EPW","RelHumid"];
+    keyA = "DryBulbTemp";
+    keyB = "RelHumid";
     scaleAWhenBHigh = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#00f"), d3.rgb('#f00')]);
     scaleAWhenBLow = d3.scale.linear().interpolate(d3.interpolate).domain([-25,45]).range([d3.rgb("#fff"), d3.rgb('#ff0')]);
     scaleB = d3.scale.linear().interpolate(d3.interpolate).domain([0,100]);
@@ -107,7 +62,7 @@ function drawHeatmap(dObj, board, colorMap) {
     var yAxis = d3.svg.axis()
         .scale(yScale)
         .orient("left")
-        .tickValues([0,6,12,18,23]); // we can explicitly set tick values this way
+        .tickValues([0,12,23]); // we can explicitly set tick values this way
      
     // dimension of a single heatmap rectangle
     var pixelDim = [ board.dDims.width / 365,  board.dDims.height / 24 ];
@@ -132,7 +87,7 @@ function drawHeatmap(dObj, board, colorMap) {
 
     // draw pixels
     board.g.selectAll("rect")
-        .data(dObj.hrs)
+        .data(dObj.ticks)
         .enter().append("rect")
             .attr({
                 class: "pxl",
