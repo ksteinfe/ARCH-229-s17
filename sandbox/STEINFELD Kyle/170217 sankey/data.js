@@ -1,53 +1,79 @@
+
+var mockup = {
+    "nodes":[
+        {
+            "name":"Walls", 
+            "category":"foo", 
+            "stored": 20
+            "children":[
+                {"name": "wall 1", "category", "stored":10},
+                {"name": "wall 2", "category", "stored":10}
+            ]
+        },
+    
+    ],
+    "parentLinks":[
+        {"source":0,"target":1,"value":20},
+        {"source":1,"target":2,"value":124.729}
+    ]    
+    "childLinks":[
+        {"source":[0,0],"target":[1,1],"value":10},
+        {"source":[0,0],"target":[1,0],"value":10}
+    ]
+}
+
+
+
 var dObj = {
     "nodes":[
-        {"name":"Agricultural 'waste'", "category":"foo", value: 10},
-        {"name":"Bio-conversion", "category":"bar", value: 10},
-        {"name":"Liquid", "category":"qux", value: 10},
-        {"name":"Losses", "category":"baz", value: 10},
-        {"name":"Solid", "category":"baz", value: 10},
-        {"name":"Gas", "category":"baz", value: 10},
-        {"name":"Biofuel imports", "category":"baz", value: 10},
-        {"name":"Biomass imports", "category":"baz", value: 10},
-        {"name":"Coal imports", "category":"baz", value: 10},
-        {"name":"Coal", "category":"baz", value: 10},
-        {"name":"Coal reserves", "category":"baz", value: 10},
-        {"name":"District heating", "category":"baz", value: 10},
-        {"name":"Industry", "category":"baz", value: 10},
-        {"name":"Heating and cooling - commercial", "category":"baz", value: 10},
-        {"name":"Heating and cooling - homes", "category":"baz", value: 10},
-        {"name":"Electricity grid", "category":"baz", value: 10},
-        {"name":"Over generation / exports", "category":"baz", value: 10},
-        {"name":"H2 conversion", "category":"baz", value: 10},
-        {"name":"Road transport", "category":"baz", value: 10},
-        {"name":"Agriculture", "category":"baz", value: 10},
-        {"name":"Rail transport", "category":"baz", value: 10},
-        {"name":"Lighting & appliances - commercial", "category":"baz", value: 10},
-        {"name":"Lighting & appliances - homes", "category":"baz", value: 10},
-        {"name":"Gas imports", "category":"baz", value: 10},
-        {"name":"Ngas", "category":"baz", value: 10},
-        {"name":"Gas reserves", "category":"baz", value: 10},
-        {"name":"Thermal generation", "category":"baz", value: 10},
-        {"name":"Geothermal", "category":"baz", value: 10},
-        {"name":"H2", "category":"baz", value: 10},
-        {"name":"Hydro", "category":"baz", value: 10},
-        {"name":"International shipping", "category":"baz", value: 10},
-        {"name":"Domestic aviation", "category":"baz", value: 10},
-        {"name":"International aviation", "category":"baz", value: 10},
-        {"name":"National navigation", "category":"baz", value: 10},
-        {"name":"Marine algae", "category":"baz", value: 10},
-        {"name":"Nuclear", "category":"baz", value: 10},
-        {"name":"Oil imports", "category":"baz", value: 10},
-        {"name":"Oil", "category":"baz", value: 10},
-        {"name":"Oil reserves", "category":"baz", value: 10},
-        {"name":"Other waste", "category":"baz", value: 10},
-        {"name":"Pumped heat", "category":"baz", value: 10},
-        {"name":"Solar PV", "category":"baz", value: 10},
-        {"name":"Solar Thermal", "category":"baz", value: 10},
-        {"name":"Solar", "category":"baz", value: 10},
-        {"name":"Tidal", "category":"baz", value: 10},
-        {"name":"UK land based bioenergy", "category":"baz", value: 10},
-        {"name":"Wave", "category":"baz", value: 10},
-        {"name":"Wind", "category":"baz", value: 10}
+        {"name":"Agricultural 'waste'", "category":"foo", "wval": 20},
+        {"name":"Bio-conversion", "category":"bar", "wval": 100},
+        {"name":"Liquid", "category":"qux", "wval": 10},
+        {"name":"Losses", "category":"baz", "wval": 10},
+        {"name":"Solid", "category":"baz", "wval": 10},
+        {"name":"Gas", "category":"baz", "wval": 10},
+        {"name":"Biofuel imports", "category":"baz", "wval": 10},
+        {"name":"Biomass imports", "category":"baz", "wval": 10},
+        {"name":"Coal imports", "category":"baz", "wval": 10},
+        {"name":"Coal", "category":"baz", "wval": 10},
+        {"name":"Coal reserves", "category":"baz", "wval": 10},
+        {"name":"District heating", "category":"baz", "wval": 10},
+        {"name":"Industry", "category":"baz", "wval": 10},
+        {"name":"Heating and cooling - commercial", "category":"baz", "wval": 10},
+        {"name":"Heating and cooling - homes", "category":"baz", "wval": 10},
+        {"name":"Electricity grid", "category":"baz", "wval": 10},
+        {"name":"Over generation / exports", "category":"baz", "wval": 10},
+        {"name":"H2 conversion", "category":"baz", "wval": 10},
+        {"name":"Road transport", "category":"baz", "wval": 10},
+        {"name":"Agriculture", "category":"baz", "wval": 10},
+        {"name":"Rail transport", "category":"baz", "wval": 10},
+        {"name":"Lighting & appliances - commercial", "category":"baz", "wval": 10},
+        {"name":"Lighting & appliances - homes", "category":"baz", "wval": 10},
+        {"name":"Gas imports", "category":"baz", "wval": 10},
+        {"name":"Ngas", "category":"baz", "wval": 10},
+        {"name":"Gas reserves", "category":"baz", "wval": 10},
+        {"name":"Thermal generation", "category":"baz", "wval": 10},
+        {"name":"Geothermal", "category":"baz", "wval": 10},
+        {"name":"H2", "category":"baz", "wval": 10},
+        {"name":"Hydro", "category":"baz", "wval": 10},
+        {"name":"International shipping", "category":"baz", "wval": 10},
+        {"name":"Domestic aviation", "category":"baz", "wval": 10},
+        {"name":"International aviation", "category":"baz", "wval": 10},
+        {"name":"National navigation", "category":"baz", "wval": 10},
+        {"name":"Marine algae", "category":"baz", "wval": 10},
+        {"name":"Nuclear", "category":"baz", "wval": 10},
+        {"name":"Oil imports", "category":"baz", "wval": 10},
+        {"name":"Oil", "category":"baz", "wval": 10},
+        {"name":"Oil reserves", "category":"baz", "wval": 10},
+        {"name":"Other waste", "category":"baz", "wval": 10},
+        {"name":"Pumped heat", "category":"baz", "wval": 10},
+        {"name":"Solar PV", "category":"baz", "wval": 10},
+        {"name":"Solar Thermal", "category":"baz", "wval": 10},
+        {"name":"Solar", "category":"baz", "wval": 10},
+        {"name":"Tidal", "category":"baz", "wval": 10},
+        {"name":"UK land based bioenergy", "category":"baz", "wval": 10},
+        {"name":"Wave", "category":"baz", "wval": 10},
+        {"name":"Wind", "category":"baz", "wval": 10}
     ],
     "links":[
         {"source":0,"target":1,"value":124.729},

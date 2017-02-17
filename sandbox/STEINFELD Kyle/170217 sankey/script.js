@@ -17,12 +17,12 @@ function onDataLoaded(dObj) {
     var cValue = function(d) { return d.category};
     var cScale = d3.scale.ordinal()
         .domain(["foo", "bar", "baz", "qux"])
-        .range(colorbrewer.RdGy[4]); // see http://colorbrewer2.org/#type=diverging&scheme=RdGy&n=10 
+        .range(colorbrewer.RdYlGn[4]); // see http://colorbrewer2.org/#type=diverging&scheme=RdGy&n=10 
     var cMap = function(d) { return cScale(cValue(d));}; // data -> display        
     
     
     var sankey = d3.sankey()
-        .nodeWidth(10)
+        .nodeWidth(8)
         .nodePadding(8)
         .size(board.dDims.range);
 
@@ -57,7 +57,7 @@ function onDataLoaded(dObj) {
 
     node.append("rect")
         .attr("height", function(d) { return d.dy; })
-        .attr("width", sankey.nodeWidth())
+        .attr("width", function(d) { return d.wval; })
         .style("fill", function(d) { return cMap(d); })
         .style("stroke", function(d) { return d3.rgb(cMap(d)).darker(2); })
     .append("title")
