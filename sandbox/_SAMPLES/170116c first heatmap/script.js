@@ -52,6 +52,7 @@ function onDataLoaded(dObj) {
         .domain(dObj.metaOf(zonekey).domain)
         .interpolate(d3.interpolate)
         .range([d3.rgb("#0000ff"), d3.rgb('#ff0000')]);
+    var cMap = function(d) { return cScale(cValue(d));}; // data -> display
     
     
     // draw x-axis        
@@ -83,7 +84,7 @@ function onDataLoaded(dObj) {
                 x: function(d) { return xMap(d);},
                 y: function(d) { return yMap(d);},
                 transform: "translate("+pixelDim[0]*-0.5+","+pixelDim[1]*-0.5+")",
-                fill: function(d) { return cScale(cValue(d));}
+                fill: function(d) { return cMap(d);}
             });
       
 }
