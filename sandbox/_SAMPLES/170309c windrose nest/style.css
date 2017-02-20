@@ -4,22 +4,31 @@
   font: 10px sans-serif;
 }
 
-.axis line,
-.axis circle {
+.axis path, .axis line, .outer-arc {
   fill: none;
-  stroke: #aaa;
+  stroke: #333;
+  stroke-width: 0.5px;
+}
+
+.dashed line,
+.dashed circle {
+  fill: none;
+  stroke: #999;
   stroke-dasharray: 1,3;
 }
 
-.axis :last-of-type circle {
-  stroke: #333;
-  stroke-dasharray: none;
-}
+
 
 .axis :first-of-type circle {
   stroke: #333;
   stroke-dasharray: none;
+  stroke-width: 0.5px;
 }
+
+.axis :last-of-type circle {
+  display: none;
+}
+
 
 .dot {
     fill: red;
