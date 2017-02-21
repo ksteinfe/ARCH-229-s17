@@ -5,7 +5,6 @@ body {
 			font-family: Tahoma, Geneva, sans-serif;
 			fill: white;
 			font-size: 12px;
-			text-align: center;
 			background-color: #171f3e;
 			color:white
 		}
@@ -39,4 +38,8 @@ font-size:8px;
 
 .low-dew{
     fill: green;
+}
+
+svg.board {
+    background: #171f3e;
 }

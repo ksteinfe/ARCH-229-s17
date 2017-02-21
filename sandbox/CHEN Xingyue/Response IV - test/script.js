@@ -1,25 +1,43 @@
 
-      
-    var screenWidth = window.innerWidth;
 
-    var margin = { left: 20, top: 20, right: 20, bottom: 20 },
-        width = Math.min(screenWidth, 500) - margin.left - margin.right,
-        height = Math.min(screenWidth, 500) - margin.top - margin.bottom;
 
-    var originX = 0
+function onDataLoaded(dObj) {
+    //console.log(dObj)
+    // I used this to manipulate the incoming data to test validity of graph
+    for (var t in dObj.ticks) {
+        tick = dObj.ticks[t];
+        //tick.data.EPW.DryBulbTemp = tick.hourOfDay();
+        //tick.data.EPW.WindSpd = 10;
+        //if (tick.data.EPW.DryBulbTemp < 0) console.log(tick);
+    }
+    
+    
+    // summary information for each day of the year
+    var dSum = dObj.dailySummary();
+    console.log(dSum);
+    // I used this to manipulate the incoming data to test validity of graph
+    for (var st in dSum) {
+        stick = dSum[st];
+        //stick.data.EPW.DryBulbTemp.max = 30;
+        //stick.data.EPW.DryBulbTemp.min = -20;
+        //stick.data.EPW.DryBulbTemp.average = 20;
+    }    
+    
+    var originX = 0;
     var originY = 0;
 
-
-    var svg = d3.select("#chart").append("svg")
-                .attr("width", (width + margin.left + margin.right))
-                .attr("height", (height + margin.top + margin.bottom))
-               .append("g").attr("class", "wrapper")
-                .attr("transform", "translate(" + (width / 2 + margin.left) + "," + (height / 2 + margin.top) + ")");
-
-     
-   // Data and color
+    // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
+    // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
+    var board = dY.graph.addBoard("#dy-canvas",{inWidth: 400, inHeight:400, margin:50});
+    var width = board.dDims.width;
+    var height = board.dDims.height;
     
+    var svg = board.g.append("g").attr("class", "wrapper")
+        .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
+
+    
+   // Data and color
     
     var monthsData = [
         { name: "Janurary", value: 10 },
@@ -172,12 +190,7 @@
 
 
 
-var parseDate = d3.time.format("%Y-%m-%d").parse;
 
-
-weatherBoston.forEach(function(d) {
-	d.date = parseDate(d.date);
-});
 
 
 var outerRadius = rZeroCircle*1.6,
@@ -196,7 +209,7 @@ var barScale = d3.scale.linear()
 
 var angle = d3.scale.linear()
 	.range([-180, 180])
-	.domain(d3.extent(weatherBoston, function(d) { return d.date; }));	 
+	.domain([0,364]);
 
 
 //  Axes
@@ -229,15 +242,15 @@ axes.append("text")
 //Draw a bar per day were the height is the difference between the minimum and maximum temperature
 //And the color is based on the mean temperature
 barWrapper.selectAll(".tempBar")
- 	.data(weatherBoston)
+ 	.data(dSum)
  	.enter().append("rect")
  	.attr("class", "tempBar")
- 	.attr("transform", function(d,i) { return "rotate(" + (angle(d.date)) + ")"; })
+ 	.attr("transform", function(d,i) { return "rotate(" + (angle(i)) + ")"; })
  	.attr("width", 1.5)
-	.attr("height", function(d,i) { return barScale(d.max_temp) - barScale(d.min_temp); })
+	.attr("height", function(d,i) { return barScale(d.maxOf("DryBulbTemp")) - barScale(d.minOf("DryBulbTemp")); })
  	.attr("x", -0.75)
- 	.attr("y", function(d,i) {return barScale(d.min_temp); })
- 	.style("fill", function(d) { return colorScale(d.mean_temp); });
+ 	.attr("y", function(d,i) {return barScale(d.minOf("DryBulbTemp")); })
+ 	.style("fill", function(d) { return colorScale(d.averageOf("DryBulbTemp")); });
 	
 ///////////////////////////////////////////////////////////////////////////
 //////////////// Create the gradient for the legend ///////////////////////
@@ -313,5 +326,5 @@ barWrapper.selectAll(".tempBar")
 //	.attr("class", "axis")
 //	.attr("transform", "translate(0," + (10) + ")")
 //	.call(xAxis);
-
+}
 
