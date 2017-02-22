@@ -10,20 +10,24 @@ function onDataLoaded(dObj) {
     //console.log(board);    
     
     // Setup Bins
-    // Here we construct a new dataset "bins" which represents the distribution of data by grouping discrete data points into bins
-    // To use the d3 histogram() layout, we'll first need an array of values to bin
-    
-    // Here we build an array of values to bin using the JavaScript map() method of arrays.
-    var key = "DryBulbTemp" // try these: DryBulbTemp HorzVis OpqSkyCvr SnowDepth
-    var vals = dObj.ticks.map(function(d) {return d.valueOf(key);});
     /*
+    // In this section we construct a new dataset "bins" 
+    // which represent the distribution of data by grouping discrete data points
+    // for this, we'll eventually use the d3 histogram layout.
+    // But first, we'll first need an array of values to bin.
+    */
+    
+    // First we build an array of values to bin
+    var vals = dObj.valuesOf("DryBulbTemp"); // try these: DryBulbTemp HorzVis OpqSkyCvr SnowDepth
+    console.log(vals);
+    //console.log(d3.extent(vals));
+    /*
+    // we could also have accomplished this by by using the JavaScript Array.map() method.
+    var vals = dObj.ticks.map(function(d) {return d.valueOf(key);});
     // the above statement is equivalent to:  
     var vals = [];
     for (var t in dObj.ticks) { vals.push( dObj.ticks[t].valueOf("DryBulbTemp") ) }
     */
-    console.log(vals);
-    //console.log(d3.extent(vals));
-    
     
     // we'll use this scale to define nicely spaced bins for our data
     var binScale = d3.scale.linear()
@@ -42,13 +46,18 @@ function onDataLoaded(dObj) {
      
      
     // Let's Draw!
+    /*
+    // In this section we used our binned data to draw our histogram.
+    // A vertical bar will be drawn for each bin, and will reflect the number of values (the y) of each bin.
+    */
+    
     // Here are some variables we'll need
      var barPad = 3; // padding between the displayed bars
      var barWidth = board.dDims.width / bins.length - barPad ; // width of the the displayed bars
      var textInBarThresh = 50 ; // counts below this value will show up above bars, while counts above will show up inside bars
      var barTooNarrowForTextThresh = 20 ; // we won't plot text if bars are thinner than this
      var textOfst = 15 ; // approximate text height (actual height set in CSS)
-     var yScaleToCounts = true; 
+     var yScaleToCounts = true; // if true, the y-scale is set to the maximum of values found in a bin. If false, is set to 8760.
 
      // setup x
     var xMap = function(d) { return binScale(d.x) + barPad/2;}; // data -> display    
@@ -57,7 +66,8 @@ function onDataLoaded(dObj) {
         .ticks(binCount)
         .scale(binScale);    
         
-    // setup y     
+    // setup y   
+    // we setup our y-axis to scale to the maximum of values found in a bin.
     var maxCount = d3.max(bins, function(d) { return d.y; }) ;
     var yScale = d3.scale.linear()  // value -> display
         .domain( [maxCount,0] ).nice()
@@ -67,6 +77,7 @@ function onDataLoaded(dObj) {
         .orient("left")
         .scale(yScale)
                 
+    // if we don't want y-axis scaled to maximum of values in a bin, we adjust here.
     if (!yScaleToCounts){
         yScale.domain([8760,0]) 
         yAxis.tickValues([0,maxCount,8760]);
