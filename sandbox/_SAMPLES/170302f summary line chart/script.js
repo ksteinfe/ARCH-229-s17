@@ -17,7 +17,7 @@ function onDataLoaded(dObj) {
     var xValue = function(d) { return d.midTick; }; // data -> value
     var xScale = d3.scale.linear()  // value -> display
         .domain([0,8760])
-        .range((board.dDims.xRange));
+        .range(board.dDims.xRange);
     var xMap = function(d) { return xScale(xValue(d));}; // data -> display
     var xAxis = d3.svg.axis()
         .scale(xScale);        
