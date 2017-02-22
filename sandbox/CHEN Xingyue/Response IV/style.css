@@ -1,6 +1,14 @@
 
 
 
+body {
+			font-family: Tahoma, Geneva, sans-serif;
+			fill: white;
+			font-size: 12px;
+			background-color: #171f3e;
+			color:white
+		}
+
 .axis path, .axis line {
   fill: none;
   stroke: #ccc;
@@ -13,6 +21,11 @@
     font-family: Tahoma, Geneva, sans-serif;
 }
 
+.donutData.name text{
+font-size:8px;
+    fill: white;    
+    font-family: Tahoma, Geneva, sans-serif;
+}
 
 .dot {
     fill-opacity: 0.1;
@@ -25,4 +38,8 @@
 
 .low-dew{
     fill: green;
+}
+
+svg.board {
+    background: #171f3e;
 }
