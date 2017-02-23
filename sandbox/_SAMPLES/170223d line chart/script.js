@@ -2,6 +2,9 @@
 
 function onDataLoaded(dObj) {
     console.log("data is loaded, i'm ready to go!");
+    
+    dObj.ticks = dObj.ticks.slice(0,100)
+    
     console.log(dObj);
     
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
