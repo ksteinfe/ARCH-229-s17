@@ -1,0 +1,25 @@
+
+
+.bar {
+    fill: gray;
+}
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.y .tick text, .x .tick text{
+    font-size:8px;
+    fill: #666;
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+
+svg.board {
+    background: #e9ebee;
+    /*transform: translate(250px, 20px);*/
+    margin: 0px;
+}
