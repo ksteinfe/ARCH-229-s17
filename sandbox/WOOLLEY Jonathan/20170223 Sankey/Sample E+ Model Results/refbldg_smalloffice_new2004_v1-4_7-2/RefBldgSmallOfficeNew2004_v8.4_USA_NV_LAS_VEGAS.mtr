@@ -1,4 +1,4 @@
-Program Version,EnergyPlus, Version 8.4.0-09f5359d8a, YMD=2017.02.23 08:52
+Program Version,EnergyPlus, Version 8.4.0-09f5359d8a, YMD=2017.02.23 11:46
 1,5,Environment Title[],Latitude[deg],Longitude[deg],Time Zone[],Elevation[m]
 2,6,Day of Simulation[],Month[],Day of Month[],DST Indicator[1=yes 0=no],Hour[],StartMinute[],EndMinute[],DayType
 3,3,Cumulative Day of Simulation[],Month[],Day of Month[],DST Indicator[1=yes 0=no],DayType  ! When Daily Meters Requested

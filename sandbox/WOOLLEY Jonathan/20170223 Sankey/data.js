@@ -48,7 +48,8 @@ var dObj = {
 	
 	
     "links":[
-        {"source":0,"target":8,"value":0.001},	
+        {"source":0,"target":8,"value":10},	
+		{"source":0,"target":8,"value":10},	
         {"source":0,"target":9,"value":0.001},
         {"source":0,"target":10,"value":0.001},
         {"source":0,"target":13,"value":0.001},
@@ -70,7 +71,11 @@ var dObj = {
 		
         {"source":5,"target":10,"value":27.14},
 		
-        {"source":6,"target":8,"value":342.165},
+        {"source":6,"target":8,"value":30},
+		{"source":6,"target":8,"value":40},
+		{"source":6,"target":8,"value":50},
+		{"source":6,"target":8,"value":60},
+		{"source":6,"target":8,"value":70},
         {"source":6,"target":9,"value":37.797},
 		{"source":6,"target":10,"value":4.412},
 		
