@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="d3.layout.cloud.js"></script>
+<head>
+    <title>Word Cloud Example</title>
+</head>
+<style> 
+
+    body { 
+        font-family:"Lucida Grande","Droid Sans",Arial,Helvetica,sans-serif;
+    }
+    .legend {
+        border: 2px solid #91deff;
+        border-radius: 5px 5px 5px 5px;
+        font-size: 0.em;
+        margin: 5px;
+        padding: 8px;
+    }
+    .bld {
+        font-weight: bold;
+    }
+</style>
+<body>
+
+</body>
+<svg width="320" height="320"></svg>
+<script>
+    function draw(words) {
+        d3.select("body").append("svg")
+                .attr("width", 1250)
+                .attr("height", 880)
+                .attr("class", "wordcloud")
+                .append("g")
+                // without the transform, words words would get cutoff to the left and top, they would
+                // appear outside of the SVG area
+                .attr("transform", "translate(550,400)")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function(d) { return d.size + "px"; })
+                .style("fill", function(d, i) { return color(i); })
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) { return d.text; });
+    }
+	var frequency_list = [{"text":"January","size":80},{"text":"January","size":80},{"text":"January","size":80},{"text":"January","size":80},
+    {"text":"February","size":45},{"text":"February","size":45},{"text":"February","size":45},{"text":"February","size":45},
+    {"text":"March","size":30},{"text":"March","size":30},{"text":"March","size":30},{"text":"March","size":30},
+    {"text":"April","size":80},{"text":"April","size":80},{"text":"April","size":80},{"text":"April","size":80},
+    {"text":"May","size":45},{"text":"May","size":45},{"text":"May","size":45},{"text":"May","size":45},
+    {"text":"June","size":30},{"text":"June","size":30},{"text":"June","size":30},{"text":"June","size":30},
+    {"text":"July","size":80},{"text":"July","size":80},{"text":"July","size":80},{"text":"July","size":80},
+    {"text":"August","size":45},{"text":"August","size":45},{"text":"August","size":45},{"text":"August","size":45},
+    {"text":"September","size":30},{"text":"September","size":30},{"text":"September","size":30},{"text":"September","size":30},
+    {"text":"October","size":80},{"text":"October","size":80},{"text":"October","size":80},{"text":"October","size":80},
+    {"text":"November","size":45},{"text":"November","size":45},{"text":"November","size":45},{"text":"November","size":45},
+    {"text":"December","size":30},{"text":"December","size":30},{"text":"December","size":30},{"text":"December","size":30}];
+
+
+    var color = d3.scale.linear()
+            .domain([0,1,2,3,4,5,6,30,45,20,100])
+            .range(["#ddd", "#ccc", "#bbb", "#aaa", "#009ba0", "#05f7ff", "#49f9ff", "#77faff", "#93f6f9", "#bef5f7"]);
+
+    d3.layout.cloud().size([1024, 960])
+            .words(frequency_list)
+            .rotate(0)
+            .fontSize(function(d) { return d.size; })
+            .on("end", draw)
+            .start();
+
+    
+</script>
+</body>
+
+
+<div style="width: 80%;">
+    <div class="legend">
+        Larger gray months have higher potential for induced fog. Larger blue months have more average rain inches recorded. Larger red months have higher average temperatures recorded.
+    </div>
+
+</div>
+
+
+</html>
