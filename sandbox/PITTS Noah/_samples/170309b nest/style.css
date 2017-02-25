@@ -1,0 +1,23 @@
+
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis line,
+.axis circle {
+  fill: none;
+  stroke: #aaa;
+  stroke-dasharray: 1,3;
+}
+
+.axis :last-of-type circle {
+  stroke: #333;
+  stroke-dasharray: none;
+}
+
+.axis :first-of-type circle {
+  stroke: #333;
+  stroke-dasharray: none;
+}
+
