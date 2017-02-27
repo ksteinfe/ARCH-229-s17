@@ -116,11 +116,7 @@ function onDataLoaded(dObj) {
                 x: outerRadius,
                 y: 2*outerRadius  - textPadding
             });
-            
-/*            
-cx: function(d) { return( radScale(0)*Math.cos(angScale(geomAtDay.sunrise)) - Math.PI); }  ,
-cy: function(d) { return( radScale(0)*Math.sin(angScale(geomAtDay.sunrise)) - Math.PI); }  
-   */         
+                    
         
     }
     
