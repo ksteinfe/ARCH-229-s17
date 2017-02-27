@@ -61,7 +61,7 @@ function onDataLoaded(dObj) {
      
       
     
-    for (var dayOfYear=127; dayOfYear<130; dayOfYear+=1){
+    for (var dayOfYear=0; dayOfYear<364; dayOfYear+=1){
         console.log(dayOfYear)
         // calculate solar and lunar geometry for this day
         var sGeomAtDay = dY.solarGeom.hourlyAtGivenDay(dObj.location, dayOfYear);
@@ -118,16 +118,18 @@ function onDataLoaded(dObj) {
             
         var moonUpSunUps = false;
         if (moonUps.hasOwnProperty(true) ) {
-            moonUpSunUps = moonUps[true]; // grab all up moons for which the sun is up
-            // add in fake sunrise and sunset hour
-            if (moonUpSunUps[0].hourOfDay == riseHrs[1])  moonUpSunUps.unshift({hourOfDay: sGeomAtDay.sunrise, altitudeDeg:moonAltAtSunrise}); 
-            if (moonUpSunUps[moonUpSunUps.length-1].hourOfDay == setHrs[0] ) moonUpSunUps.push({hourOfDay: sGeomAtDay.sunset, altitudeDeg:moonAltAtSunset}); 
+            moonUpSunUps = splitAtDiscontinuousHours( moonUps[true] , "hourOfDay" );  // grab all up moons for which the sun is up, and split at discontinuous hours
+            for (var m in moonUpSunUps){
+                // add in fake sunrise and sunset hour
+                if (moonUpSunUps[m][0].hourOfDay == riseHrs[1])  moonUpSunUps[m].unshift({hourOfDay: sGeomAtDay.sunrise, altitudeDeg:moonAltAtSunrise}); 
+                if (moonUpSunUps[m][moonUpSunUps[m].length-1].hourOfDay == setHrs[0] ) moonUpSunUps[m].push({hourOfDay: sGeomAtDay.sunset, altitudeDeg:moonAltAtSunset});                
+            }            
         }
         console.log(moonUpSunUps);
         
         var moonUpSunDns = false;
         if (moonUps.hasOwnProperty(false) ) {
-            moonUpSunDns = splitAtDiscontinuousHours( moonUps[false] , "hourOfDay" );  // grab all up moons for which the sun is down, and split at discontinous hours
+            moonUpSunDns = splitAtDiscontinuousHours( moonUps[false] , "hourOfDay" );  // grab all up moons for which the sun is down, and split at discontinuous hours
             for (var m in moonUpSunDns){
                 // add in fake sunrise and sunset hour
                 if (moonUpSunDns[m][0].hourOfDay == setHrs[1])  moonUpSunDns[m].unshift({hourOfDay: sGeomAtDay.sunset, altitudeDeg:moonAltAtSunset}); 
@@ -181,49 +183,49 @@ function onDataLoaded(dObj) {
                     .attr("d", area);                
                 
         ctrdGrp.append("g")
-            .attr("class", "sun-inline")
+            .attr("class", "sunup-inline")
             .append("path")
                 .datum(sGeomAtDay.data)
                 .attr("d", inLine);
                 
-        ctrdGrp.append("g")
-            .attr("class", "sun-outline")
-            .append("path")
-                .datum(sGeomAtDay.data)
-                .attr("d", outLine);     
         
-        /*
+        
         ctrdGrp.append("g")
-            .attr("class", "downmoon-outline")
+            .attr("class", "downline")
             .selectAll("path")
                 .data(moonDns)
                 .enter().append("path")
                     .attr("d", outLine);
-        */
+        
         
         ctrdGrp.append("g")
-            .attr("class", "upmoon-outline")
+            .attr("class", "moonup-outline")
             .selectAll("path")
                 .data(moonUpSunDns)
                 .enter().append("path")
                     .attr("d", outLine);
                     
         ctrdGrp.append("g")
-            .attr("class", "moon-inline")
+            .attr("class", "moonup-inline")
             .selectAll("path")
                 .data(moonUpSunDns)
                 .enter().append("path")
                     .attr("d", inLine);
         
-        
         if (moonUpSunUps){
             ctrdGrp.append("g")
-                .attr("class", "downmoon-outline moonup sunup")
-                .append("path")
-                    .datum(moonUpSunUps)
-                    .attr("d", outLine);
-        }
+                .attr("class", "downline")
+                .selectAll("path")
+                    .data(moonUpSunUps)
+                    .enter().append("path")
+                        .attr("d", outLine);  
+        } 
 
+        ctrdGrp.append("g")
+            .attr("class", "sunup-outline")
+            .append("path")
+                .datum(sGeomAtDay.data)
+                .attr("d", outLine);     
         
         
         var dotRad = 2.0;

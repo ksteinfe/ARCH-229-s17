@@ -2,13 +2,17 @@
 
 
 
-.sun-outline, .sun-inline, .upmoon-outline, .downmoon-outline, .moon-inline {
+.sunup-outline, .sunup-inline, .moonup-outline, .moonup-inline, .downline {
     fill: none;
     stroke: #000;
     stroke-width: 1px;
 }
-.sun-outline { stroke: #000; }
-.sun-inline, .moon-inline { stroke: #999; }
+.downline { stroke: #ccc; }
+
+.sunup-outline { stroke: #000; }
+.sunup-inline, .moon-inline { stroke: #999; }
+.moonup-outline { stroke: #000; }
+
 
 .sun-fill {
     fill: #FFFACD;
@@ -17,11 +21,12 @@
 
 .moon-fill {
     fill: #e8f6ff;
-    stroke: none;
+    /*
+    stroke-width: 1px;
+    stroke: #d0dde5;
+    */
 }
 
-.upmoon-outline { stroke: #000; }
-.downmoon-outline { stroke: #ccc; }
 
 .sundown { 
     stroke: red; 
@@ -44,3 +49,4 @@
 .day-label{
     font: 10px sans-serif;
 }
+
