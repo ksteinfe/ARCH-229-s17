@@ -1,0 +1,36 @@
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #333;
+  stroke-width: 0.5px;
+}
+
+
+
+.y .tick text, .x .tick text{
+    font-size:8px;
+    fill: #666;    
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+
+.x .tick text{
+    transform: translate(6px,-12px);
+    font-size: 10px;
+}
+
+.groundline path{
+    fill: none;
+    stroke: #f00;
+    stroke-width: 1px;
+}
+
+.temp-area {
+    fill: #ccc;
+}
+
+.temp-average {
+    fill: none;
+    stroke: #000;
+}
