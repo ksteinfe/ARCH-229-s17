@@ -55,7 +55,7 @@ function onDataLoaded(dObj) {
                 r: 1.5,
                 cx: function(d) { return xMap(d);} ,
                 cy: function(d) { return yMap(d);} ,
-            })        
+            })
       
 }
 

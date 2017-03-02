@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+
+<div id="pieChart"></div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.4/d3.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/benkeen/d3pie/0.1.3/d3pie/d3pie.min.js"></script>
+<script>
+var pie = new d3pie("pieChart", {
+	"header": {
+		"title": {
+			"text": "Abu Dhabi, UAE",
+			"fontSize": 22,
+			"font": "verdana"
+		},
+		"subtitle": {
+			"text": "Ground + Air Temperature to Evaluate Fog Possibility Climate/Weather Conditions vs. Date Harvesting",
+			"color": "#413a3a",
+			"fontSize": 10,
+			"font": "verdana"
+		},
+		"titleSubtitlePadding": 14
+	},
+	"footer": {
+		"text": "Ground Temperature (6.5 ft below ground)",
+		"color": "#413a3a",
+		"fontSize": 14,
+		"font": "open sans",
+		"location": "bottom-center"
+	},
+	"size": {
+		"canvasHeight": 400,
+		"canvasWidth": 590,
+		"pieOuterRadius": "95%"
+	},
+	"data": {
+		"content": [
+			{
+				"label": "Jan:75F",
+				"value": 3.3,
+				"color": "#ffb200"
+			},
+			{
+				"label": "Feb:77F",
+				"value": 3.3,
+				"color": "#fffb32"
+			},
+			{
+				"label": "Mar:84F",
+				"value": 3.3,
+				"color": "#fffb32"
+			},
+			{
+				"label": "Apr:91F",
+				"value": 3.3,
+				"color": "#fffb32"
+			},
+			{
+				"label": "May:100F",
+				"value": 3.3,
+				"color": "#ffb200"
+			},
+			{
+				"label": "Jun:104F",
+				"value": 3.3,
+				"color": "#ff6d05"
+			},
+			{
+				"label": "Jul:108F",
+				"value": 3.3,
+				"color": "#ff6d05"
+			},
+			{
+				"label": "Aug:108F",
+				"value": 3.3,
+				"color": "#ff2600"
+			},
+			{
+				"label": "Sept:104F",
+				"value": 3.3,
+				"color": "#a51800"
+			},
+			{
+				"label": "Oct:97F",
+				"value": 3.3,
+				"color": "#a51800"
+			},
+			{
+				"label": "Nov:88F",
+				"value": 3.3,
+				"color": "#ff2600"
+			},
+			{
+				"label": "Dec:79F",
+				"value": 3.3,
+				"color": "#ff6d05"
+			}
+		]
+	},
+	"labels": {
+		"outer": {
+			"pieDistance": 32
+		},
+		"inner": {
+			"format": "none"
+		},
+		"mainLabel": {
+			"font": "verdana"
+		},
+		"percentage": {
+			"color": "#e1e1e1",
+			"font": "verdana",
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#e1e1e1",
+			"font": "verdana"
+		},
+		"lines": {
+			"enabled": true,
+			"color": "#cccccc"
+		},
+		"truncation": {
+			"enabled": true
+		}
+	},
+	"effects": {
+		"pullOutSegmentOnClick": {
+			"effect": "linear",
+			"speed": 400,
+			"size": 8
+		}
+	}
+});
+</script>
+
+</body>
+</html>

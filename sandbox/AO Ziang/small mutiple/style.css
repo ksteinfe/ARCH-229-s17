@@ -1,0 +1,33 @@
+
+
+
+
+.sun-outline, .sun-inline {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1px;
+}
+.sun-outline { stroke: #000; }
+.sun-inline { stroke: #999; }
+
+.sun-fill {
+    fill: #FFFACD;
+    stroke: none;
+}
+
+.axis path, .axis line, .outer-arc {
+  fill: none;
+  stroke: #333;
+  stroke-width: 0.5px;
+}
+
+.dashed line,
+.dashed circle {
+  fill: none;
+  stroke: #999;
+  stroke-dasharray: 1,3;
+}
+
+.day-label{
+    font: 10px sans-serif;
+}
