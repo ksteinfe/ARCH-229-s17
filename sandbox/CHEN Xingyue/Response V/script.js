@@ -143,9 +143,6 @@ function onDataLoaded(dObj) {
 		  .enter().append("path")
 			.attr("class", "donutArcSlices")
 			.attr("d", arc)
-			.style("fill", function (d, i) {
-			     return colorScale(i);
-			})
 			.each(function (d, i) {
                 ///////////////////////////BELOW IS THE TUTORIAL//////////////////////////////////////////
 			    //A regular expression that captures all in between the start of a string (denoted by ^) and a capital letter L
@@ -258,6 +255,8 @@ for (var t in dObj.ticks) {
     tick = dObj.ticks[t];
     //tick.data.EPW.WindDir = 45;
     //tick.data.EPW.WindSpd = 10;
+    
+    //if (tick.dayOfYear() < 10) tick.data.EPW.WindSpd = 1;
 }
 
 
@@ -276,9 +275,9 @@ var radMap = function (d) { return radScale(radValue(d)); }; // data -> display
 
     // setup angle
     // Wind direction is recorded in degrees east of north, with zero degrees indicating wind from the north, and 90 degrees indicating wind from the east.
-var angValue = function (d) { return d.valueOf("WindDir"); }; // data -> value
+var angValue = function (d) { return d.dayOfYear(); }; // data -> value
 var angScale = d3.scale.linear() // value -> display
-    .domain([0, 360])
+    .domain([0, 364])
     .range([0, 2 * Math.PI]);
 var angMap = function (d) { return angScale(angValue(d)); }; // data -> display
 
@@ -290,12 +289,11 @@ ctrdGrp.append("g").selectAll(".dot")
             class: "dot",
             r: 1.5,
             cx: function (d) { return (radMap(d) * Math.cos(angMap(d))); },
-            cy: function (d) { return (radMap(d) * Math.sin(angMap(d))); },
-            fill:"white"
+            cy: function (d) { return (radMap(d) * Math.sin(angMap(d))); }
         })
        
 
-
+/*
 //var radAxisGroups = ctrdGrp.append("g") // radAxisGroups is a reference to a collection of subgroups within this group. each subgroup has data bound to it related to a value along the radial axis
 //   .attr("class", "radius axis")
 //  .selectAll("g")
@@ -317,7 +315,7 @@ radAxisGroups.append("circle") // append a circle to each
 //    .text(function (d) { return d; })
 //    .attr("transform", "rotate(90) translate(0, " + (board.bDims.margin.bottom / 2 + board.dDims.height / 2) + ")") // rotate to horizontal, translate to bottom of board
 //    .style("text-anchor", "middle");
-
+*/
 
     /*
     should have done this instead
