@@ -88,7 +88,7 @@ function drawHeatmap(dObj, board, colorMap) {
         .range(board.dDims.xRange); 
     var xMap = function(d) { return xScale(xValue(d));}; // data -> display
     var dayScale = d3.time.scale()
-        .domain([new Date(dY.datetime.year, 0, 1), new Date(dY.datetime.year, 11, 31)])
+        .domain([new Date(dY.dt.year, 0, 1), new Date(dY.dt.year, 11, 31)])
         .range(board.dDims.xRange);
     var xAxis = d3.svg.axis()
         .scale(dayScale)

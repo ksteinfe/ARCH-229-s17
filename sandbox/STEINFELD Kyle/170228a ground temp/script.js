@@ -29,7 +29,7 @@ function onDataLoaded(dObj) {
         .range(board.dDims.xRange);     
         
     var xScaleTime = d3.time.scale()
-        .domain([new Date(dY.datetime.year, 0, 1), new Date(dY.datetime.year, 11, 31)])
+        .domain([new Date(dY.dt.year, 0, 1), new Date(dY.dt.year, 11, 31)])
         .range(board.dDims.xRange);
         
     var xAxisMnth = d3.svg.axis()

@@ -250,7 +250,7 @@ function onDataLoaded(dObj) {
 
 
         
-        var dateStr = (dY.datetime.hourOfYearToDate(sGeomAtDay.dayOfYear*24).getUTCMonth()+1) + " / " + dY.datetime.hourOfYearToDate(sGeomAtDay.dayOfYear*24).getUTCDate() 
+        var dateStr = (dY.dt.hourOfYearToDate(sGeomAtDay.dayOfYear*24).getUTCMonth()+1) + " / " + dY.dt.hourOfYearToDate(sGeomAtDay.dayOfYear*24).getUTCDate() 
         board.g.append("text")
             .text( dayOfYear )
             .style("text-anchor", "middle")

@@ -134,7 +134,7 @@ function onDataLoaded(dObj) {
             });
             */
             
-        var dateStr = (dY.datetime.hourOfYearToDate(geomAtDay.dayOfYear*24).getUTCMonth()+1) + " / " + dY.datetime.hourOfYearToDate(geomAtDay.dayOfYear*24).getUTCDate() 
+        var dateStr = (dY.dt.hourOfYearToDate(geomAtDay.dayOfYear*24).getUTCMonth()+1) + " / " + dY.dt.hourOfYearToDate(geomAtDay.dayOfYear*24).getUTCDate() 
         board.g.append("text")
             .text( dateStr )
             .style("text-anchor", "middle")
