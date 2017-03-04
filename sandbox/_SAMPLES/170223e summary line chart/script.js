@@ -14,7 +14,7 @@ function onDataLoaded(dObj) {
     //console.log(board);
         
     // setup x
-    var xValue = function(d) { return d.midTick; }; // data -> value
+    var xValue = function(d) { return d.hourOfYear(); }; // data -> value
     var xScale = d3.scale.linear()  // value -> display
         .domain([0,8760])
         .range(board.dDims.xRange);
