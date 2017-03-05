@@ -59,31 +59,6 @@ function onDataLoaded(dObj) {
         return arr.slice(0).sort(custom_sort).sort(custom_sort);
     };
     
-    // function to find max in an array of arrays
-    var custom_max = function(arr, pos) {
-            var len = arr.length;
-            var max = arr[0][pos];
-            for(var i = 1; i < len; i += 1) {
-                if (max < arr[i][pos]) {
-                    max = arr[i][pos];
-                }
-            }
-            return max;
-    };
-    
-    // function to find min in an array of arrays
-    var custom_min = function(arr, pos) {
-            var len = arr.length;
-            var min = arr[0][pos];
-            for(var i = 1; i < len; i += 1) {
-                if (min > arr[i][pos]) {
-                    min = arr[i][pos];
-                }
-            }
-            return min;
-    };
-    
-    
     var color_domain = [50, 150, 350, 750, 1500]
     
     var color = d3.scale.threshold()
@@ -114,6 +89,9 @@ function onDataLoaded(dObj) {
     
     var sorted_points_x = sort_copy(points, sort_x);
     var sorted_points_y = sort_copy(points, sort_y);
+    
+    // max_x = d3.max(points, function(d) { return d[0]; });
+    // max_y = d3.max(points, function(d) { return d[1]; });
     
     
     // draw polygon shapes
