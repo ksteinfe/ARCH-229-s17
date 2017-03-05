@@ -112,17 +112,17 @@ function onDataLoaded(dObj) {
             cy: barOriginY,
             r: (Math.PI) * (rZeroCircle) / 365,
             opacity: 1,
-            fill: "#002aff",
+            fill: "#5c6277",
             stroke: "none"
         });
-        var outbar = svg.append("circle").attr({
-            cx: barOuterOriginX,
-            cy: barOuterOriginy,
-            r: (Math.PI) * (rOuterCircle) / 365,
-            opacity: 1,
-            fill: "#00c2f3",
-            stroke: "none"
-        });
+        //var outbar = svg.append("circle").attr({
+        //    cx: barOuterOriginX,
+        //    cy: barOuterOriginy,
+        //    r: ((Math.PI) * (rOuterCircle) / 365)*0.8,
+        //    opacity: 1,
+        //    fill: "#00c2f3",
+        //    stroke: "none"
+        //});
     }
     
 
@@ -246,6 +246,55 @@ barWrapper.selectAll(".tempBar")
 
 
 
+    //PRECIPITATION
+
+var outerRadiusRain = rZeroCircle * 2.3,
+	innerRadiusRain = outerRadiusRain * 0.8;
+
+    // Color according to mean temperature. 
+var colorScale = d3.scale.linear()
+	.domain([40, 50, 60])
+	.range(["#89fffb", "#518eff", "#005aff"])
+	.interpolate(d3.interpolateHcl);
+
+    //bar height
+var barScale = d3.scale.pow().exponent(2)
+	.range([innerRadiusRain, outerRadiusRain])
+	.domain([0, 100]);
+
+var angle = d3.scale.linear()
+	.range([-180, 180])
+	.domain([0, 364]);
+
+
+    //  Axes
+
+    //Wrapper for the bars and to position it downward
+var barWrapper = svg.append("g")
+	.attr("transform", "translate(" + 0 + "," + 0 + ")");
+
+   
+
+
+
+
+
+    // Draw bars 
+
+    //Draw a bar per day were the height is the difference between the minimum and maximum temperature
+    //And the color is based on the mean temperature
+barWrapper.selectAll(".rainBar")
+ 	.data(dSum)
+ 	.enter().append("rect")
+ 	.attr("class", "rainBar")
+ 	.attr("transform", function (d, i) { return "rotate(" + (angle(i)) + ")"; })
+ 	.attr("width", 1.5)
+	.attr("height", function (d, i) { return barScale(d.averageOf("RelHumid")) - barScale(40); })
+ 	.attr("x", -0.75)
+ 	.attr("y", function (d, i) { return barScale(40); })
+ 	.style("fill", function (d) { return colorScale(d.averageOf("RelHumid")); });
+
+
 
 
     //// //draw wind circle
@@ -339,16 +388,16 @@ radAxisGroups.append("circle") // append a circle to each
 //  .enter().append("g")
 //    .attr("transform", function (d) { return "rotate(" + d + ")"; }); // rotate each subgroup about the origin by the proper angle
 
-angAxisGroups.append("line") // append a line to each 
-    .attr("x1", ctrOffset) // we only need to define x1 and x2, allowing y0 and y1 to default to 0
-    .attr("x2", radius);
+//angAxisGroups.append("line") // append a line to each 
+//    .attr("x1", ctrOffset) // we only need to define x1 and x2, allowing y0 and y1 to default to 0
+//    .attr("x2", radius);
 
-angAxisGroups.append("text") // append some text to each
-    .attr("x", radius + textPadding * 2)
-    .attr("dy", textPadding / 2) // nudge text down a bit
-    .style("text-anchor", function (d) { return d > 180 ? "end" : null; })
-    .attr("transform", function (d) { return d > 180 ? "rotate(180 " + (radius + textPadding * 2) + ",0)" : null; })
-    .text(function (d) { return d > 90 && d < 180 ? null : d; });
+//angAxisGroups.append("text") // append some text to each
+//    .attr("x", radius + textPadding * 2)
+//    .attr("dy", textPadding / 2) // nudge text down a bit
+//    .style("text-anchor", function (d) { return d > 180 ? "end" : null; })
+//    .attr("transform", function (d) { return d > 180 ? "rotate(180 " + (radius + textPadding * 2) + ",0)" : null; })
+//    .text(function (d) { return d > 90 && d < 180 ? null : d; });
 
 
 

@@ -31,6 +31,9 @@ font-size:8px;
     fill: #5c6277;
 }
 
+.axisText{
+fill: #5c6277;
+}
 
 .dot {
     fill-opacity: 0.1;
