@@ -59,19 +59,18 @@ function onDataLoaded(dObj) {
         return arr.slice(0).sort(custom_sort).sort(custom_sort);
     };
     
-    var color_domain = [50, 150, 350, 750, 1500]
+    var subset_points = function(arr, min, max, pos) {
+            var len = arr.length;
+            var subset = [];
+            for(var i = 0; i < len; i += 1){
+                if (arr[i][pos] >= min && arr[i][pos] <= max) {
+                    subset.push(arr[i])
+                }
+            }
+            return subset;
+    };
     
-    var color = d3.scale.threshold()
-                        .domain(color_domain)
-                        .range(["#adfcad", "#ffcb40", "#ffba00", "#ff7d73", "#ff4e40", "#ff1300"]);
-    
-    var projection = d3.geoAlbers()
-                       .parallels([34, 40.5])
-                       .rotate([120, 0])
-                       .fitSize([board.dDims.width, board.dDims.height]);
-                           
-    var path = d3.geoPath().projection(null);
-    
+    // read and parse map geoJson
     var map = dObj;
     var features = topojson.feature(map, map.objects.tracts).features;
 
@@ -81,7 +80,25 @@ function onDataLoaded(dObj) {
         selection = {type: "FeatureCollection", features: counties.features.filter(function(d) {
                  return d.id.slice(0,3);   
         })};
-           
+    
+    // define scales
+    var color_domain = [50, 150, 350, 750, 1500]
+    var color = d3.scale.threshold()
+                        .domain(color_domain)
+                        .range(["#adfcad", "#ffcb40", "#ffba00", "#ff7d73", "#ff4e40", "#ff1300"]);
+    
+    var mapScale = d3.scale.linear()
+                   .domain([map_bounds[0], map_bounds[2]])
+                   .range(board.dDims.xRange);
+    
+    var projection = d3.geoAlbers()
+                       .parallels([34, 40.5])
+                       .rotate([120, 0])
+                       //.scale(100);
+                       .fitSize([board.dDims.width, board.dDims.height]);
+                           
+    var path = d3.geoPath().projection(null);
+        
     var points = get_all_points(path(counties));
     
     var sort_x = custom_sort(0);
@@ -90,10 +107,57 @@ function onDataLoaded(dObj) {
     var sorted_points_x = sort_copy(points, sort_x);
     var sorted_points_y = sort_copy(points, sort_y);
     
-    // max_x = d3.max(points, function(d) { return d[0]; });
-    // max_y = d3.max(points, function(d) { return d[1]; });
+    // define grid size
+    var grid_x = 20;
+    var grid_y = 20;
+    var search_size = 20;
+    
+    var grid_lines_x = function(grid_x, search_size){
+        var min_map_x = d3.min(points, function(d) { return d[0]; });
+        var max_map_x = d3.max(points, function(d) { return d[0]; });
+        
+        var size_map_x = (max_map_x - min_map_x)/grid_x;
+        
+        var grid_arr = []
+        for(var i = 0; i < grid_x; i += 1) {
+            var grid_line = min_map_x + size_map_x*i;
+            var max = grid_line + search_size;
+            var min = grid_line - search_size;
+            
+            var pts = subset_points(points, min, max, 0);
+            var max_y = d3.max(pts, function(d) { return d[1]; });
+            var min_y = d3.min(pts, function(d) { return d[1]; });
+            grid_arr.push([grid_line, min_y, grid_line, max_y]);
+        };
+        return grid_arr;
+    };
+    
+    var grid_lines_y = function(grid_y, search_size){
+        var min_map_y = d3.min(points, function(d) { return d[1]; });
+        var max_map_y = d3.max(points, function(d) { return d[1]; });
+        
+        var size_map_y = (max_map_y - min_map_y)/grid_y;
+        
+        var grid_arr = []
+        for(var i = 0; i < grid_y; i += 1) {
+            var grid_line = min_map_y + size_map_y*i;
+            var max = grid_line + search_size;
+            var min = grid_line - search_size;
+            
+            var pts = subset_points(points, min, max, 1);
+            var max_x = d3.max(pts, function(d) { return d[0]; });
+            var min_x = d3.min(pts, function(d) { return d[0]; });
+            grid_arr.push([min_x, grid_line, max_x, grid_line]);
+        };
+        return grid_arr;
+    };
     
     
+    var lines_x = grid_lines_x(grid_x, search_size);
+    var lines_y = grid_lines_y(grid_y, search_size);
+    
+    
+    //max_x = d3.max(points, function(d) { return d[0]; });
     // draw polygon shapes
     board.g.append("g")
            .attr("class", "region")
@@ -104,6 +168,47 @@ function onDataLoaded(dObj) {
            .style("fill", function(d) {
                return color(d.properties.density);
            });
+    
+    // draw lines
+    board.g.append("g")
+           .attr("class", "circles_x")
+           .selectAll("line")
+           .data(lines_x)
+           .enter().append("line")
+           .attr("x1", function(d) {
+               return d[0];
+           })
+           .attr("x2", function(d) {
+               return d[2];
+           })
+           .attr("y1", function(d) {
+               return d[1];
+           })
+           .attr("y2", function(d) {
+               return d[3];
+           })
+           .attr("stroke", "#ccc");
+    
+    // draw lines
+    board.g.append("g")
+           .attr("class", "circles_y")
+           .selectAll("line")
+           .data(lines_y)
+           .enter().append("line")
+           .attr("x1", function(d) {
+               return d[0];
+           })
+           .attr("x2", function(d) {
+               return d[2];
+           })
+           .attr("y1", function(d) {
+               return d[1];
+           })
+           .attr("y2", function(d) {
+               return d[3];
+           })
+           .attr("stroke", "#ccc");
+    
     
     // draw county boundaries
     board.g.append("path")
