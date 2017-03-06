@@ -6,7 +6,7 @@
 
 .axis path, .axis line, .axis circle, .outer-arc {
   fill: none;
-  stroke: #ddd;
+  stroke: #ccc;
   stroke-width: 0.5px;
 }
 
@@ -16,10 +16,17 @@
 }
 
 .analemma.front{
-    stroke: black;
+    stroke: white;
+    stroke-width: 2px;
 }
 
 .analemma.back{
-    stroke: grey;
+    stroke: black;
     stroke-dasharray: 1,3;
+}
+
+
+path.valueline{
+    stroke-width: 1px;
+    fill: none;
 }
