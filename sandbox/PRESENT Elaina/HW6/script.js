@@ -50,8 +50,34 @@ function onDataLoaded(dObj) {
 
 	//simpleArcs
     var arc = d3.svg.arc()
-        .innerRadius(50)
+        .innerRadius(60)
         .outerRadius(70)
+        .startAngle(function(d) {return d*(pi/12)+gap ;})
+        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .cornerRadius(2);    
+    
+    ctrdGrp.append("g").selectAll("path")
+        .data(arrRecRoom)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc);
+			
+	var arc = d3.svg.arc()
+        .innerRadius(50)
+        .outerRadius(60)
+        .startAngle(function(d) {return d*(pi/12)+gap ;})
+        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .cornerRadius(2);    
+    
+    ctrdGrp.append("g").selectAll("path")
+        .data(arrLivingRoom)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc);
+			
+	var arc = d3.svg.arc()
+        .innerRadius(40)
+        .outerRadius(50)
         .startAngle(function(d) {return d*(pi/12)+gap ;})
         .endAngle(function(d) {return (d+1)*(pi/12);})
         .cornerRadius(2);    
@@ -60,7 +86,20 @@ function onDataLoaded(dObj) {
         .data(arrBR2)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
-            .attr("d", arc);
+            .attr("d", arc)
+			
+	var arc = d3.svg.arc()
+        .innerRadius(30)
+        .outerRadius(40)
+        .startAngle(function(d) {return d*(pi/12)+gap ;})
+        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .cornerRadius(2);    
+    
+    ctrdGrp.append("g").selectAll("path")
+        .data(arrBR1)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc)
 			
  /*   ctrdGrp.append("g").selectAll("path")
         .data(arrBR2)
