@@ -27,6 +27,11 @@ function onDataLoaded(dObj) {
 	
 	//data
 	var dummy = [71,72,73,74,75,76,77,78,78,89,90,91,79,78,75,72,70,60,40,40,38, 60, 70, 71]
+    
+    // by the way, here's how to extract data for a particular zone given your data structure
+    var arrBR1 = dObj.ticks.map(function(d){ return d.data.BR1.OperativeTemperature; });
+    var arrBR2 = dObj.ticks.map(function(d){ return d.data.BR2.OperativeTemperature; });
+    var arrDSBath = dObj.ticks.map(function(d){ return d.data.DSBath.OperativeTemperature; });
 	    
 	// Color according to temperature. 
 	var colorScale = d3.scale.linear()
