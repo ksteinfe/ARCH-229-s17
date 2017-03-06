@@ -1,0 +1,25 @@
+
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path, .axis line, .axis circle, .outer-arc {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 0.5px;
+}
+
+
+.analemma{
+    fill: none;
+}
+
+.analemma.front{
+    stroke: black;
+}
+
+.analemma.back{
+    stroke: grey;
+    stroke-dasharray: 1,3;
+}
