@@ -38,6 +38,22 @@ function onDataLoaded(dObj) {
 //	var color = d3.scale.category10();
 
 	//simpleArcs
+    var arc = d3.svg.arc()
+        .innerRadius(50)
+        .outerRadius(70)
+        .startAngle(function(d) {return d*(pi/12)+gap ;})
+        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .cornerRadius(2);    
+    
+    ctrdGrp.append("g").selectAll("path")
+        .data(dummy)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc);
+    
+    /*
+    REPLCAED BY KYLE'S CODE ABOVE
+    You're mixing approaches here. d3 wants you to use the select->data->enter->append chain of methods (as above) to associate data with graphics on the page. In some situations, you might instead use something like a loop. In the code below, you appear to be trying to do both at the same time. 
 	for (var d=0; d<24; d++){
 		var arc = d3.svg.arc()
 			.innerRadius(50)
@@ -50,7 +66,8 @@ function onDataLoaded(dObj) {
 		ctrdGrp.append("path") 
 			.attr("fill", function(d) {return colorScale(dummy[d]);})
 			.attr("d", arc);
-	}		
+	}
+    */
 
 //	for (var s in dObj.schema){
 //        console.log(s);
