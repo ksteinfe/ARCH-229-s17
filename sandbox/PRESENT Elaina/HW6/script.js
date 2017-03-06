@@ -29,10 +29,16 @@ function onDataLoaded(dObj) {
 	var dummy = [71,72,73,74,75,76,77,78,78,89,90,91,79,78,75,72,70,60,40,40,38, 60, 70, 71]
     
     // by the way, here's how to extract data for a particular zone given your data structure
-    var arrBR1 = dObj.ticks.map(function(d){ return d.data.BR1.OperativeTemperature; });
+    var arrRecRoom = dObj.ticks.map(function(d){ return d.data.RecRoom.OperativeTemperature; });
+    var arrLivingRoom = dObj.ticks.map(function(d){ return d.data.LivingRoom.OperativeTemperature; });
     var arrBR2 = dObj.ticks.map(function(d){ return d.data.BR2.OperativeTemperature; });
-    var arrDSBath = dObj.ticks.map(function(d){ return d.data.DSBath.OperativeTemperature; });
-	    
+	var arrBR1 = dObj.ticks.map(function(d){ return d.data.BR1.OperativeTemperature; });
+	var arrKitchen = dObj.ticks.map(function(d){ return d.data.Kitchen.OperativeTemperature; });
+	var arrDiningRoom = dObj.ticks.map(function(d){ return d.data.DiningRoom.OperativeTemperature; });
+	var arrDSBath = dObj.ticks.map(function(d){ return d.data.DSBath.OperativeTemperature; });
+	var arrLaundry = dObj.ticks.map(function(d){ return d.data.Laundry.OperativeTemperature; });
+	var arrUSBath = dObj.ticks.map(function(d){ return d.data.USBath.OperativeTemperature; }); 
+	
 	// Color according to temperature. 
 	var colorScale = d3.scale.linear()
 		.domain([40, 74, 100])
@@ -51,10 +57,16 @@ function onDataLoaded(dObj) {
         .cornerRadius(2);    
     
     ctrdGrp.append("g").selectAll("path")
-        .data(dummy)
+        .data(arrBR2)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc);
+			
+ /*   ctrdGrp.append("g").selectAll("path")
+        .data(arrBR2)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc);	
     
     /*
     REPLCAED BY KYLE'S CODE ABOVE
