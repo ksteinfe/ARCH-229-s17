@@ -1,6 +1,3 @@
-.bar {
-    fill: black;
-}
 
 .axis path, .axis line {
   fill: none;
@@ -18,4 +15,10 @@
   fill: none;
   stroke: #ccc;
   stroke-width: 2px;
+}
+
+.city text{
+    font-size:8px;
+    fill: #666;    
+    font-family: Tahoma, Geneva, sans-serif;
 }

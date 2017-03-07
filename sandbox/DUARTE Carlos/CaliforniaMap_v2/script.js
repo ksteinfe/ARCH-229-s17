@@ -7,52 +7,155 @@ function onDataLoaded(dObj, map) {
     
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
-    board = dY.graph.addBoard("#dy-canvas",{inWidth:900, inHeight:800, margin:40});
+    board = dY.graph.addBoard("#dy-canvas",{inWidth:960, inHeight:960, margin:40});
     console.log(board);
     
     // define variables used later
-    var map_scale = 2000;
-    var climates = topojson.feature(map, map.objects.ca_climate);
+    var w = board.dDims.width,
+        h = board.dDims.height;
+    
+    var map_scale = 4000;
+    map = topojson.simplify(topojson.presimplify(map));                 // simplify topojson
+    map = topojson.quantize(map, 1e5);                                  // reduce size of topology
+    var climates = topojson.feature(map, map.objects.climates);
     
     //zone numbers
-    var cz = {
-        "CZ01RV2": 1,
-        "CZ02RV2": 2,
-        "CZ03RV2": 3,
-        "CZ04RV2": 4,
-        "CZ05RV2": 5,
-        "CZ06RV2": 6,
-        "CZ07RV2": 7,
-        "CZ08RV2": 8,
-        "CZ09RV2": 9,
-        "CZ10RV2": 10,
-        "CZ11RV2": 11,
-        "CZ12RV2": 12,
-        "CZ13RV2": 13,
-        "CZ14RV2": 14,
-        "CZ15RV2": 15,
-        "CZ16RV2": 16
-    };
+    var cz_rev = [
+        {"Zone": 1, "name": "CZ01RV2", "city": "Arcata", "coordinates": [-124.0828, 40.8665], "population": 17697},
+        {"Zone": 2, "name": "CZ02RV2", "city": "Santa Rosa", "coordinates": [-122.7141, 38.4404], "population": 171990},
+        {"Zone": 3, "name": "CZ03RV2", "city": "Oakland", "coordinates": [-122.2711, 37.8044], "population": 406253},
+        {"Zone": 4, "name": "CZ04RV2", "city": "San Jose", "coordinates": [-121.8863, 37.3382], "population": 998537},
+        {"Zone": 5, "name": "CZ05RV2", "city": "Santa Maria", "coordinates": [-120.4357, 34.9530], "population": 102216},
+        {"Zone": 6, "name": "CZ06RV2", "city": "Torrance", "coordinates": [-118.3406, 33.8358], "population": 147478},
+        {"Zone": 7, "name": "CZ07RV2", "city": "San Diego", "coordinates": [-117.1611, 32.7157], "population": 1356000},
+        {"Zone": 8, "name": "CZ08RV2", "city": "Fullerton", "coordinates": [-117.9243, 33.8704], "population": 138981},
+        {"Zone": 9, "name": "CZ09RV2", "city": "Burbank", "coordinates": [-118.3090, 34.1808], "population": 104709},
+        {"Zone": 10, "name": "CZ10RV2", "city": "Riverside", "coordinates": [-117.3962, 33.9533], "population": 316619},
+        {"Zone": 11, "name": "CZ11RV2", "city": "Red Bluff", "coordinates": [-122.2358, 40.1785], "population": 14104},
+        {"Zone": 12, "name": "CZ12RV2", "city": "Sacramento", "coordinates": [-121.4944, 38.5816], "population": 479686},
+        {"Zone": 13, "name": "CZ13RV2", "city": "Fresno", "coordinates": [-119.7726, 36.7468], "population": 509924},
+        {"Zone": 14, "name": "CZ14RV2", "city": "Palmdale", "coordinates": [-118.1165, 34.5794], "population": 157161},
+        {"Zone": 15, "name": "CZ15RV2", "city": "Palm Spring", "coordinates": [-116.5453, 33.8303], "population": 46281},
+        {"Zone": 16, "name": "CZ16RV2", "city": "Blue Canyon", "coordinates": [-120.7110, 39.2571], "population": 2005}
+    ];
     
-    var cz_rev = {
-        1: "CZ01RV2",
-        2: "CZ02RV2",
-        3: "CZ03RV2",
-        4: "CZ04RV2",
-        5: "CZ05RV2",
-        6: "CZ06RV2",
-        7: "CZ07RV2",
-        8: "CZ08RV2",
-        9: "CZ09RV2",
-        10: "CZ10RV2",
-        11: "CZ11RV2",
-        12: "CZ12RV2",
-        13: "CZ13RV2",
-        14: "CZ14RV2",
-        15: "CZ15RV2",
-        16: "CZ16RV2"
-    };
+    // define projection of map
+    var projection = d3.geo.albers()
+                       .parallels([34, 40.5])
+                       .center([0, 37.7750])
+                       .rotate([120, 0])
+                       .scale(map_scale)
+                       .translate([w/2, h/2]);
     
+    var path = d3.geo.path()
+                 .projection(projection);
+    
+    
+    // draw county boundaries
+    board.g.append("path")
+        .datum(topojson.mesh(map, map.objects.climates, function(a,b){ return a === b; }))
+        .attr("class", "climate-boundaries")
+        .attr("d", path);
+    
+    
+    // draw climates cities
+    var city = board.g.selectAll("g.city")
+           .data(cz_rev)
+           .enter().append("g")
+           .attr("class", "city")
+           .attr("transform", function(d) {
+               return "translate(" + projection([ d.coordinates[0], d.coordinates[1] ]) + ")"; 
+                                })
+    
+    
+    city.append("circle")
+        .attr("r", 3)
+        .style("fill", "lime")
+        .style("opacity", 0.75)
+       .on("mouseover", function(d) {
+            var xPosition = d3.mouse(this)[0] + w/2;
+            var yPosition = d3.mouse(this)[1] + h/2;
+            
+            board.g.append("text")
+                   .attr("id", "tooltip")
+                   .attr("x", xPosition)
+                   .attr("y", yPosition)
+                   //.attr("text-anchor", "middle")
+                   .attr("font-family", "sans-serif")
+                   .attr("font-size", "11px")
+                   .attr("font-weight", "bold")
+                   .attr("fill", "black")
+                   .text(d.name + " "+ xPosition + " " + yPosition);
+                   
+            d3.select(this)
+              .style("fill", "#509e2f")
+              .attr("r", 10)
+
+        })
+        .on("mouseout", function(d) {
+            d3.select("#tooltip").remove();
+            
+            d3.select(this)
+              .transition()
+              .duration(250)
+              .style("fill", "lime")
+              .attr("r", 3);
+        });
+        
+    city.append("text")
+        .attr("x", 5)
+        .text(function(d){ return d.city; })
+       .on("mouseover", function(d) {
+            var xPosition = d3.mouse(this)[0] + w/2;
+            var yPosition = d3.mouse(this)[1] + h/2;
+            
+            board.g.append("text")
+                   .attr("id", "tooltip")
+                   .attr("x", xPosition)
+                   .attr("y", yPosition)
+                   .attr("text-anchor", "middle")
+                   .attr("font-family", "sans-serif")
+                   .attr("font-size", "11px")
+                   .attr("font-weight", "bold")
+                   .attr("fill", "black")
+                   .text(d.Zone);
+                   
+            d3.select(this)
+              .style("fill", "#509e2f")
+              
+
+        })
+        .on("mouseout", function(d) {
+            d3.select("#tooltip").remove();
+            
+            d3.select(this)
+              .transition()
+              .duration(250)
+              .style("fill", "black");
+        });
+    /*
+
+        
+        board.g.append("g")
+           .attr("class", "circles_x")
+           .selectAll("line")
+           .data(lines_x)
+           .enter().append("line")
+           .attr("x1", function(d) {
+               return d[0];
+           })
+           .attr("x2", function(d) {
+               return d[2];
+           })
+           .attr("y1", function(d) {
+               return d[1];
+           })
+           .attr("y2", function(d) {
+               return d[3];
+           })
+           .attr("stroke", "#ccc");
+           
+           
     // split svg path elements in individual strings
     var split_path_element = function(str) {
             return str.split(/(?=[LMC])/)
@@ -145,7 +248,13 @@ function onDataLoaded(dObj, map) {
                             .domain(color_domain_chw);
     
     // map processsing
-    var path = d3.geo.path().projection(customScale((1/map_scale)));
+    var path = d3.geo.albers()
+                 .parallels([34, 40.5])
+                 .rotate([120, 0]);
+                 //.fit([960, 960]);
+    
+    
+    
     var points = get_all_points(path(climates));
     
     var min_map_x = d3.min(points, function(d) { return d[0]; });
@@ -183,8 +292,8 @@ function onDataLoaded(dObj, map) {
     board.g.append("path")
         .datum(climate_boundary)
         .attr("class", "climate-boundaries")
-        .attr("d", path)
-        .attr("transform", "scale(" + (mod_map_scale) + ") " + "translate(" + (1*map_bounds[1]) + "," + (-1*map_bounds[2]) +")");
+        .attr("d", path);
+    */
     /*
     // draw polygon shapes
     board.g.append("g")
