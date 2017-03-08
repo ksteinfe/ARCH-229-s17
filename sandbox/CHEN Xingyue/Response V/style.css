@@ -27,6 +27,11 @@ font-size:8px;
     font-family: Tahoma, Geneva, sans-serif;
 }
 
+.donutArcSlices, .donutText{
+    fill: #5c6277;
+}
+
+
 .dot {
     fill-opacity: 0.1;
     fill: blue;

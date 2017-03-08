@@ -4,47 +4,30 @@ function onDataLoaded(dObj) {
     console.log("data is loaded, i'm ready to go!");
     console.log(dObj);
     
-    // summary information for each day of the year
-    var dSum = dObj.dailySummary(4);
-    console.log(dSum);
-    
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
-    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:200, margin:40});
+    board = dY.graph.addBoard("#dy-canvas",{inWidth: 200, inHeight:200, margin:40});
     //console.log(board);
-        
+    
+    
     // setup x
-    var xValue = function(d) { return d.hourOfYear(); }; // data -> value
+    var xValue = function(d,i) { return i; }; // data -> value // i is the index of the data point
     var xScale = d3.scale.linear()  // value -> display
-        .domain([0,8760])
+        .domain([0,23])
         .range((board.dDims.xRange));
-    var xMap = function(d) { return xScale(xValue(d));}; // data -> display
+    var xMap = function(d,i) { return xScale(xValue(d,i));}; // data -> display
     var xAxis = d3.svg.axis()
-        .scale(xScale);        
+        .scale(xScale);
       
     // setup y
     var yScale = d3.scale.linear() // value -> display
-        .domain([40,-20])
+        .domain([90,70])
         .range((board.dDims.yRange)); 
     var yAxis = d3.svg.axis()
         .scale(yScale)
         .orient("left");
-        
-    var yMapAvg = function(d) { return yScale(d.averageOf("DryBulbTemp")) }; // data -> display
-    var yMapHigh = function(d) { return yScale(d.maxOf("DryBulbTemp")) }; // data -> display
-    var yMapLow = function(d) { return yScale(d.minOf("DryBulbTemp")) }; // data -> display
-        
-    var lineFunctionAvg = d3.svg.line()
-        .x(xMap)
-        .y(yMapAvg)
-        .interpolate("linear");
-        
-    var areaFunctionHiLo = d3.svg.area()
-        .x(xMap)
-        .y0(yMapLow)
-        .y1(yMapHigh)
-        .interpolate("linear");   
-        
+
+
     // x-axis
     board.g.append("g")
         .attr({
@@ -52,7 +35,13 @@ function onDataLoaded(dObj) {
             transform: "translate(0," + (board.dDims.height +10) + ")"
         })
         .call(xAxis)
-        
+	
+	// Color according to temperature. 
+	var colorScale = d3.scale.linear()
+		.domain([40, 74, 100])
+		.range(["#2c7bb6", "#ffff8c", "#d7191c"])
+		.interpolate(d3.interpolateHcl);
+
     // y-axis
     board.g.append("g")
         .attr({
@@ -60,18 +49,29 @@ function onDataLoaded(dObj) {
             transform: "translate(-10,0)"
         })
         .call(yAxis)
-      
-    board.g.append("path")
-        .attr("d", areaFunctionHiLo(dSum))
-        .attr("fill", "#ccc");      
-      
-    board.g.append("path")
-        .attr("d", lineFunctionAvg(dSum))
-        .attr("stroke", "black")
-        .attr("stroke-width", 1.5)
-        .attr("fill", "none");
-      
-
-      
+        
+    for (var s in dObj.schema){
+        console.log(s);
+    
+        var yValue = function(d) { return d.data[s].OperativeTemperature; }; // data -> value
+        var color = function(d) {return colorScale(yValue);};
+		
+        // draw dots
+        board.g.append("g")
+            .attr("class",s)
+            .style("fill", color(d))
+            .selectAll(".dot")
+                .data(dObj.ticks)
+                .enter().append("circle")
+                    .attr({
+                        class: "dot",
+                        //class: function(d){ if (d.data.EPW.DewPt > 0) {return "dot high-dew"} else {return "dot low-dew"}  },
+                        r: 3,
+                        cx: function(d,i) { return xMap(d,i);} ,
+                        cy: function(d) { return yScale(yValue(d)); } 
+                    })
+            
+    }
+            
 }
 

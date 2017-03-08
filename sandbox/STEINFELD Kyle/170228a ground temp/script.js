@@ -29,7 +29,7 @@ function onDataLoaded(dObj) {
         .range(board.dDims.xRange);     
         
     var xScaleTime = d3.time.scale()
-        .domain([new Date(dY.datetime.year, 0, 1), new Date(dY.datetime.year, 11, 31)])
+        .domain([new Date(dY.dt.year, 0, 1), new Date(dY.dt.year, 11, 31)])
         .range(board.dDims.xRange);
         
     var xAxisMnth = d3.svg.axis()
@@ -66,12 +66,12 @@ function onDataLoaded(dObj) {
         .interpolate('step-before');
       
     var lineFunctionDryBulbAvg = d3.svg.line()
-        .x( function(d){ return xScaleHr(d.midTick); } )
+        .x( function(d){ return xScaleHr(d.hourOfYear()); } )
         .y(yMapAvg)
         .interpolate("linear");
         
     var areaFunctionDryBulbHiLo = d3.svg.area()
-        .x( function(d){ return xScaleHr(d.midTick); } )
+        .x( function(d){ return xScaleHr(d.hourOfYear()); } )
         .y0(yMapLow)
         .y1(yMapHigh)
         .interpolate("linear");   
