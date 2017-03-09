@@ -47,13 +47,13 @@ function onDataLoaded(dObj) {
     }
 
     // draw the bins
-    sunPath.append("g").selectAll("path")
-        .data(bins)
-        .enter().append("path")
-        .attr({
-            d: pathLine,
-            class: "valueline",
-            stroke: function (d) { return cScale(d.value); }
-        })
+    // sunPath.append("g").selectAll("path")
+    //     .data(bins)
+    //     .enter().append("path")
+    //     .attr({
+    //         d: pathLine,
+    //         class: "valueline",
+    //         stroke: function (d) { return cScale(d.value); }
+    //     })
 }
 

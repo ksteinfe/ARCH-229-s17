@@ -16,10 +16,10 @@ function bin(lat, lon, startDay, endDay, startHour, endHour) {
         var d3 = this.startDay;
         var dStep = 1; // TODO: implement dynamic scaling
 
-        var h0 = max(this.startHour, sunrise(d0));
-        var h1 = max(this.startHour, sunrise(d1));
-        var h2 = min(this.startHour, sunset(d2));
-        var h3 = min(this.startHour, sunset(d3));
+        var h0 = Math.max(this.startHour, sunrise(d0));
+        var h1 = Math.max(this.startHour, sunrise(d1));
+        var h2 = Math.min(this.startHour, sunset(d2));
+        var h3 = Math.min(this.startHour, sunset(d3));
         var hSTep = 0.1; // TODO: implement dynamic scaling
 
         // generate side 0
@@ -27,28 +27,28 @@ function bin(lat, lon, startDay, endDay, startHour, endHour) {
             var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
                      azimuth: solarAzimuth(lat, lon, d, h)
                    };
-            path.push(data);
+            this.path.push(data);
         }
         // generate side 1
         for (var d = d1, h = h1; hour < endHour; h += hStep) {
             var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
                      azimuth: solarAzimuth(lat, lon, d, h)
                    };
-            path.push(data);
+            this.path.push(data);
         }
         // generate side 2
         for (var d = d2; day > endDay; d -= dStep) {
             var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
                      azimuth: solarAzimuth(lat, lon, d, h)
                    };
-            path.push(data);
+            this.path.push(data);
         }
         // generate side 3
         for (var d = d3, h = h3; hour > startHour; h -= hStep) {
             var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
                      azimuth: solarAzimuth(lat, lon, d, h)
                    };
-            path.push(data);
+            this.path.push(data);
         }
     }
 }
