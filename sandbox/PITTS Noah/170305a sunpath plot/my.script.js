@@ -11,9 +11,9 @@ function onDataLoaded(dObj) {
     };
 
     // Margin around Sun Path Diagram
-    var margin = 50;
+    var margin = 40;
     // Radius of Sun Path Diagram
-    var radius = 200
+    var radius = 350
     // Art Board
     var board = dY.graph.addBoard("#dy-canvas", { inWidth: radius * 2, inHeight: radius * 2, margin: margin });
 
@@ -68,8 +68,8 @@ function onDataLoaded(dObj) {
 
     console.log(dObj);
 
-    var dayStep = 21;
-    var hourStep = 1 / 2;
+    var dayStep = 10;
+    var hourStep = 1 / 3.5;
 
     for (var d = 2; d < 351; d += dayStep) {
         for (var h = 0; h < 22; h += hourStep) {
@@ -115,7 +115,7 @@ function onDataLoaded(dObj) {
     var axisCirc = sunPath.append("g").attr("class", "axis")
     axisCirc.append("circle")
         .attr({
-            cx: 3.65,
+            cx: 5.5,
             r: radius
         });
 
