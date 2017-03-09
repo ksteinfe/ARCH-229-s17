@@ -3,175 +3,57 @@
 function onDataLoaded(dObj) {
     console.log("data is loaded, i'm ready to go!");
 
-    // I used this to manipulate the incoming data to test validity of graph
-    for (var t in dObj.ticks) {
-        tick = dObj.ticks[t];
-        //tick.data.EPW.WindDir = 50;
-        //tick.data.EPW.WindSpd = 10;
-    }
-    //console.log(dObj);
-
-
-    // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
-    // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).
-
     // Margin around Sun Path Diagram
     var margin = 50;
     // Radius of Sun Path Diagram
     var radius = 200
     // Art Board
-    var board = dY.graph.addBoard("#dy-canvas", { inWidth: radius * 2 * 2 + margin, inHeight: radius * 2, margin: margin });
+    var board = dY.graph.addBoard("#dy-canvas", { inWidth: radius * 2, inHeight: radius * 2, margin: margin });
 
-
-    // since it's more convienent to plot with (0,0) at the center of our radial plot, let's create a SVG group with the origin translated to the center of the board
-
-    // left diagram is the winter (March 21 - September 21)
-    var ctrdGrpWntr = board.g.append("g")
+    // Board for SunPath
+    var sunPath = board.g.append("g")
         .attr("transform", "translate(" + radius + "," + radius + ") ");
 
-    // right diagram is the summer (September 21 - March 21)
-    var ctrdGrpSumr = board.g.append("g")
-        .attr("transform", "translate(" + (radius * 3 + margin) + "," + radius + ") ");
-
-
-    // Setup Scales and Maps to nest data and do a solar plot
-
-    // Setup Angular Axis
-    // Wind direction is recorded in degrees east of north, with zero degrees indicating wind from the north, and 90 degrees indicating wind from the east.
-
-    // Returns the azimuth angle of the data
-    var angValue = function (d) { return d.azimuthDeg; };
     // Scales the value to polar coordinate theta
     var angScale = d3.scale.linear()
         .domain([0, 360])
-        .range([0, 2 * Math.PI]); // an angle of 0 should be pointing up toward the top of the canvas. TODO: change convention for scale function depending on data
+        .range([0, 2 * Math.PI]);
 
-    // Setup Radial Axis
-    // return the altitude angle of the data
-    var radValue = function (d) { return d.altitudeDeg; };
     // Scales the value to polar coordinate r
     var radScale = d3.scale.linear()
-        //.domain(dObj.metaOf("WindSpd").domain) - TODO:remove comment?
         .domain([90, 0])
         .range([0, radius]);
 
-
-    // Setup Color - TODO: find scheme for coloring
-    //
-    var cScale = d3.scale.linear()
-        .domain([-5, 35])
-        .interpolate(d3.interpolate)
-        .range([d3.rgb("#0000ff"), d3.rgb('#ff0000')]);
-
-
-
     // Draw Value Paths
-    //
-    var valLine = d3.svg.line.radial()
-        .radius(function (d) { return radScale(d.altitudeDeg); })
-        .angle(function (d) { return angScale(d.azimuthDeg); });
+    var pathLine = d3.svg.line.radial()
+        .radius(function (d) { return radScale(d.path.altitude); })
+        .angle(function (d) { return angScale(d.path.azimuth); });
 
-    // calculate solar geom near every given tick
-    // and enrich results with value taken from tick (in this case, DryBulbTemp)
-    var sGeom = dObj.ticks.map(function (tick) {
-        var result = dY.solarGeom.geomNearHourOfYear(dObj.location, tick.hourOfYear);
-        result.data.value = tick.valueOf("DryBulbTemp"); // i wish i could bind this to the result itself (up one level) but can't figure how to refer to that later
-        return result;
-    });
+    // create bins
+    var bins = [];
+    var lat = dObj;
+    var lon = dObj;
+    for (var d = 0; d < 335; d += 30) {
+        for (var h = 0; h < 23; h += 1) {
+            var startDay = d;
+            var endDay = d + 30;
+            var startHour = h;
+            var endHour = h + 1;
 
-    //console.log(sGeom[0]);
-    var filteredForSunup = sGeom.filter(function (d) { return d.sunUpPercent > 0.3; });
-    var filteredForWntr = filteredForSunup.filter(function (d) { return dY.timeSpan.hourOfYear(d.hourOfYear).season() <= 1; }); // looks for season values of 0 or 1 (winter or spring)
-    var filteredForSumr = filteredForSunup.filter(function (d) { return dY.timeSpan.hourOfYear(d.hourOfYear).season() >= 2; }); // looks for season values of 2 or 3 (summer or fall)
+            var newBin = new bin(lat, lon, startDay, endDay, startHour, endHour);
+            newBin.generateSolarGeo();
+            bins.push(newBin);
+        }
+    }
 
-    console.log(filteredForWntr);
-    ctrdGrpWntr.append("g").selectAll("path")
-        .data(filteredForWntr)
+    // draw the bins
+    sunPath.append("g").selectAll("path")
+        .data(bins)
         .enter().append("path")
-        .datum(function (d) { return d.data; })
         .attr({
-            d: valLine,
+            d: pathLine,
             class: "valueline",
             stroke: function (d) { return cScale(d.value); }
         })
-
-
-    // ctrdGrpSumr.append("g").selectAll("path")
-    //     .data(filteredForSumr)
-    //     .enter().append("path")
-    //     .datum(function (d) { return d.data; })
-    //     .attr({
-    //         d: valLine,
-    //         class: "valueline",
-    //         stroke: function (d) { return cScale(d.value); }
-    //     });
-
-
-
-    // Draw Analemma
-    //
-    // drawAnalemma(dObj.location, radScale, angScale, ctrdGrpWntr, ctrdGrpSumr);
-
-
-    // Draws the Boarder
-    //     var axisWntr = ctrdGrpWntr.append("g").attr("class", "axis")
-    //     axisWntr.append("circle")
-    //         .attr({
-    //             r: radius
-    //         });
-
-    //     var axisSumr = ctrdGrpSumr.append("g").attr("class", "axis")
-    //     axisSumr.append("circle")
-    //         .attr({
-    //             r: radius
-    //         });
-    // }
-
-
-    // function drawAnalemma(location, radScale, angScale, gWntr, gSumr) {
-    //     var analemmaData = [];
-    //     for (var h = 0; h < 24; h++) analemmaData.push(dY.solarGeom.dailyAtGivenHour(location, h));
-
-    //     var analemmaLine = d3.svg.line.radial()
-    //         .radius(function (d) { return radScale(d.altitudeDeg); })
-    //         .angle(function (d) { return angScale(d.azimuthDeg); });
-
-    //     var gFrontWntr = gWntr.append("g").attr("class", "analemma front");
-    //     var gBackWntr = gWntr.append("g").attr("class", "analemma back");
-    //     var gFrontSumr = gSumr.append("g").attr("class", "analemma front");
-    //     var gBackSumr = gSumr.append("g").attr("class", "analemma back");
-
-    //     for (var ana in analemmaData) {
-    //         var filteredForSunup = analemmaData[ana].data.filter(function (d) { return d.altitudeDeg > 0; });
-    //         var filteredForWntr = filteredForSunup.filter(function (d) { return dY.timeSpan.dayOfYear(d.dayOfYear).season() <= 1; }); // looks for season values of 0 or 1 (winter or spring)
-    //         var filteredForSumr = filteredForSunup.filter(function (d) { return dY.timeSpan.dayOfYear(d.dayOfYear).season() >= 2; }); // looks for season values of 2 or 3 (summer or fall)
-    //         //console.log(filteredForSunup);
-
-
-    //         if (filteredForWntr.length > 0) {
-    //             var grouped = dY.util.splitAtDiscontinuousHours(filteredForWntr, "dayOfYear");
-    //             for (var g in grouped) {
-    //                 gFrontWntr.append("path")
-    //                     .datum(grouped[g])
-    //                     .attr("d", analemmaLine);
-    //                 gBackSumr.append("path")
-    //                     .datum(grouped[g])
-    //                     .attr("d", analemmaLine);
-    //             }
-    //         }
-    //         if (filteredForSumr.length > 0) {
-    //             var grouped = dY.util.splitAtDiscontinuousHours(filteredForSumr, "dayOfYear");
-    //             for (var g in grouped) {
-    //                 gBackWntr.append("path")
-    //                     .datum(grouped[g])
-    //                     .attr("d", analemmaLine);
-    //                 gFrontSumr.append("path")
-    //                     .datum(grouped[g])
-    //                     .attr("d", analemmaLine);
-    //             }
-    //         }
-
-
-    //     }
 }
 

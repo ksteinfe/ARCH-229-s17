@@ -1,20 +1,15 @@
-function bin(lat, lon, radius, startDay, endDay, startHour, endHour) {
-    // this.lat = lat;
-    // this.lon = lon;
-    // this.radius;
+function bin(lat, lon, startDay, endDay, startHour, endHour) {
+    this.lat = lat;
+    this.lon = lon;
 
     this.startDay = startDay;
     this.endDay = endDay;
     this.startHour = startHour;
     this.endHour = endHour;
 
-    this.fill = "none";
-    this.stroke = "black";
-    this.stroke_width = "1px";
-
     this.path = [];
 
-    this.generatePath = function () {
+    this.generateSolarGeo = function () {
         var d0 = this.startDay;
         var d1 = this.endDay;
         var d2 = this.endDay;
@@ -29,19 +24,31 @@ function bin(lat, lon, radius, startDay, endDay, startHour, endHour) {
 
         // generate side 0
         for (var d = d0; d < d1; d += dStep) {
-
+            var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
+                     azimuth: solarAzimuth(lat, lon, d, h)
+                   };
+            path.push(data);
         }
         // generate side 1
         for (var d = d1, h = h1; hour < endHour; h += hStep) {
-
+            var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
+                     azimuth: solarAzimuth(lat, lon, d, h)
+                   };
+            path.push(data);
         }
         // generate side 2
-        for (var d = d2, h = h2; day > endDay; d -= dStep) {
-
+        for (var d = d2; day > endDay; d -= dStep) {
+            var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
+                     azimuth: solarAzimuth(lat, lon, d, h)
+                   };
+            path.push(data);
         }
         // generate side 3
         for (var d = d3, h = h3; hour > startHour; h -= hStep) {
-
+            var data = { altitude: solarAltitude(this.lat, this.lon, d, h),
+                     azimuth: solarAzimuth(lat, lon, d, h)
+                   };
+            path.push(data);
         }
     }
 }
@@ -57,13 +64,13 @@ sunset = function (day) {
 }
 
 solarDeclination = function (lat, lon, day, hour) {
-    return 0;
+    return 0;  //TODO: implement this
 }
 
 solarAzimuth = function (lat, lon, day, hour) {
-    return 0;
+    return 0;  //TODO: implement this
 }
 
 solarAltitude = function (lat, lon, day, hour) {
-    return 0;
+    return 0;  //TODO: implement this
 }
