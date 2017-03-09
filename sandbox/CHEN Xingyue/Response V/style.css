@@ -27,14 +27,6 @@ font-size:8px;
     font-family: Tahoma, Geneva, sans-serif;
 }
 
-.donutArcSlices, .donutText{
-    fill: #5c6277;
-}
-
-.axisText{
-fill: #5c6277;
-}
-
 .dot {
     fill-opacity: 0.1;
     fill: blue;
@@ -49,5 +41,5 @@ fill: #5c6277;
 }
 
 svg.board {
-    background: #171f3e;
+    background: #000000;
 }
