@@ -2,6 +2,7 @@
 
 function onDataLoaded(dObj) {
     console.log("data is loaded, i'm ready to go!");
+
     // create a location object
     var location = {
         lat: dObj.location.latitude,
@@ -68,9 +69,9 @@ function onDataLoaded(dObj) {
     console.log(dObj);
 
     var dayStep = 21;
-    var hourStep = 1 / 3;
+    var hourStep = 1 / 2;
 
-    for (var d = 0; d < 351; d += dayStep) {
+    for (var d = 2; d < 351; d += dayStep) {
         for (var h = 0; h < 22; h += hourStep) {
             var newBin = new bin(location, d, d + dayStep, h, h + hourStep);
             if (newBin.isVisible()) {
@@ -96,13 +97,7 @@ function onDataLoaded(dObj) {
     }
     console.log(bins);
 
-    // draw the circle
-    var axisCirc = sunPath.append("g").attr("class", "axis")
-    axisCirc.append("circle")
-        .attr({
-            cx: 3.5,
-            r: radius
-        });
+
 
     // draw the bins
     sunPath.append("g").selectAll("path")
@@ -116,7 +111,13 @@ function onDataLoaded(dObj) {
         });
 
 
-
+    // draw the circle
+    var axisCirc = sunPath.append("g").attr("class", "axis")
+    axisCirc.append("circle")
+        .attr({
+            cx: 3.65,
+            r: radius
+        });
 
     console.log(solarTime(location, 150, 13));
 }
