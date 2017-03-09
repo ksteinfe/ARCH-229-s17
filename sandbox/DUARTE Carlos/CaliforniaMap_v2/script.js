@@ -50,8 +50,38 @@ function onDataLoaded(dObj, map) {
     var path = d3.geo.path()
                  .projection(projection);
     
+    var data_by_climate = d3.nest().key(function(d) {return d["Design Day"]; }).entries(dObj)
+    var chw_points = d3.values(dObj).map(function(d) { return d["ChW Supply"]; });
+    var population = d3.values(cz_rev).map(function(d) { return d["population"]; });
     
-    // draw county boundaries
+    var chw_max = d3.max(chw_points);
+    var chw_min = d3.min(chw_points);
+    
+    var color_chw = d3.scale.linear()
+                      .domain([13, 26])
+                      .range(["#99d8c9", "#2ca25f"]) //"#e5f5f9",
+    
+    var scale_pop = d3.scale.linear()
+                      .domain([d3.min(population), d3.max(population)])
+                      .range([3, 20]);
+    
+                 
+                 
+    // drawing map poly gons
+    board.g.append("g")
+        .attr("class", "climate zones")
+        .selectAll("path")
+        .data(climates.features)
+        .enter().append("path")
+        .attr("d", path)
+        .style("fill", function(d) {
+             //var filter_data = data_by_climate[(d.Zone) - 1];
+             //var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; });
+             return '#ffdb99'//color_chw(d3.median(filter_chw)) ;
+        });
+        
+    
+    // draw climate boundaries lines
     board.g.append("path")
         .datum(topojson.mesh(map, map.objects.climates, function(a,b){ return a === b; }))
         .attr("class", "climate-boundaries")
@@ -69,37 +99,91 @@ function onDataLoaded(dObj, map) {
     
     
     city.append("circle")
-        .attr("r", 3)
-        .style("fill", "lime")
+        .attr("r", function(d) { 
+                    return scale_pop(d.population) } )
+        .style("fill", function(d) {
+             var filter_data = data_by_climate[(d.Zone) - 1];
+             var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; });
+             return color_chw(d3.median(filter_chw)) ;
+        })
         .style("opacity", 0.75)
-       .on("mouseover", function(d) {
+        .on("mouseover", function(d) {
             var xPosition = d3.mouse(this)[0] + w/2;
             var yPosition = d3.mouse(this)[1] + h/2;
             
-            board.g.append("text")
-                   .attr("id", "tooltip")
-                   .attr("x", xPosition)
-                   .attr("y", yPosition)
-                   //.attr("text-anchor", "middle")
-                   .attr("font-family", "sans-serif")
-                   .attr("font-size", "11px")
-                   .attr("font-weight", "bold")
-                   .attr("fill", "black")
-                   .text(d.name + " "+ xPosition + " " + yPosition);
+            var filter_data = data_by_climate[(d.Zone) - 1];
+            var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; });
+            
+            var values = filter_chw;
+            var max = d3.max(values);
+            var min = d3.min(values);
+            
+            var x = d3.scale.linear()
+                  .domain([min, max])
+                  .range((board.dDims.xRange));
+
+            // Generate a histogram using twenty uniformly-spaced bins.
+            var data = d3.layout.histogram()
+                         .bins(x.ticks(20))
+                         (values);
+           
+            
+            
+            var yMax = d3.max(data, function(d){return d.length});
+            var yMin = d3.min(data, function(d){return d.length});
+            
+             var color = "steelblue";
+            var colorScale = d3.scale.linear()
+                                     .domain([yMin, yMax])
+                                     .range([d3.rgb(color).brighter(), d3.rgb(color).darker()]);
+
+            var y = d3.scale.linear()
+                      .domain([yMax, 0])
+                      .range((board.dDims.yRange));
+
+            var bar = board.g.selectAll("g.bar")
+                           .data(data)
+                           .enter().append("g")
+                           .attr("class", "bar")
+                           .attr("id", "tooltip")
+                           .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+                           
+                           
+                bar.append("rect")
+                    .attr("x", w/4)
+                    .attr("y", -h/2)
+                    .attr("width", 50)
+                    .attr("height", 100)
+                    .attr("fill", "#ccc");
+ 
+//            board.g.append("text")
+//                   .attr("id", "tooltip")
+//                   .attr("x", xPosition)
+//                   .attr("y", yPosition)
+//                   //.attr("text-anchor", "middle")
+//                   .attr("font-family", "sans-serif")
+//                   .attr("font-size", "11px")
+//                   .attr("font-weight", "bold")
+//                   .attr("fill", "black")
+//                   .text(d.name + " "+ xPosition + " " + yPosition);
                    
             d3.select(this)
-              .style("fill", "#509e2f")
-              .attr("r", 10)
+              .attr("r", 50)
 
         })
         .on("mouseout", function(d) {
-            d3.select("#tooltip").remove();
+            d3.selectAll("#tooltip").remove();
             
             d3.select(this)
               .transition()
               .duration(250)
-              .style("fill", "lime")
-              .attr("r", 3);
+              .style("fill", function(d) {
+                     var filter_data = data_by_climate[(d.Zone) - 1];
+                     var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; })
+                     return color_chw(d3.median(filter_chw)); })
+              .attr("r", function(d){
+                    return scale_pop(d.population)
+              });
         });
         
     city.append("text")
