@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EPW Version</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/arch229s17.css"><!-- the standard CSS file for our class -->
+    <link rel="stylesheet" type="text/css" href="style.css"> <!-- the CSS for your drawing  -->
+
+    <!-- Here we load in the scripts we need.-->
+    <!--Note that this setup is intended to work while testing locally, in the ARCH-229-s17 sandbox directory. Links will break elsewhere -->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js" integrity="sha256-h0cGsrExGgcZtSZ/fRz4AwV+Nn6Urh/3v3jFRQ0w9dQ=" crossorigin="anonymous"></script> <!-- a URL link to JQuery (will need Internet connection). We need JQuery to work the "Choose File" Button -->
+    <script src="../../../js/d3.v3.min.js"></script> <!-- a relative link to D3. We keep a copy in our local library -->
+    <script src="../../../../dy_working/dy.v0.min.js"></script> <!-- a relative link to DY. This should point to the dy_working repo -->
+
+</head>
+
+<body>
+<!-- The dy-head div contains UI for loading external local files -->
+<div id="dy-head">
+    <p id="dy-head-title">Away from the Comfort Zone</p>
+    <p id="dy-head-attribution">by Lauren Yatar for ARCH 229 s17</p>
+    <p id="dy-head-upload-message"><b>Based off California Energy Code Comfort Model, 2013</b><br>Please select an <b>EPW Weather</b> file. Your data is private. Nothing will be uploaded or stored on our servers, nor communicated to others in any way.</p>
+    <input type="file" id="csv-file" name="files"/>
+    <script>$(document).ready(function(){ $("#csv-file").change(dY.parser.handleSingleEPWFileUpload); });</script>
+</div>
+
+<!-- The dy-canvas div is where you should create any SVGs using D3 -->
+<div id = "dy-canvas"></div>
+
+<!-- Here we load your D3 script -->
+<script src="script3.js"></script>
+
+</body>
+</html>
