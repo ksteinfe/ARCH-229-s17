@@ -31,20 +31,34 @@ function onDataLoaded(dObj) {
 
     // create bins
     var bins = [];
-    var lat = dObj;
-    var lon = dObj;
-    for (var d = 0; d < 335; d += 30) {
-        for (var h = 0; h < 23; h += 1) {
-            var startDay = d;
-            var endDay = d + 30;
-            var startHour = h;
-            var endHour = h + 1;
+    console.log(bins);
+    console.log(dObj);
 
-            var newBin = new bin(lat, lon, startDay, endDay, startHour, endHour);
-            newBin.generateSolarGeo();
-            bins.push(newBin);
-        }
-    }
+    var lat = dObj.location.latitude;
+    var lon = dObj.location.longitude;
+    var tmz = dObj.location.timezone;
+
+
+    // Testing
+    var startDay = d;
+    var endDay = d + 30;
+    var startHour = h;
+    var endHour = h + 1;
+
+    var newBin = new bin(lat, lon, tmz, startDay, endDay, startHour, endHour);
+
+    // for (var d = 0; d < 335; d += 300) {
+    //     for (var h = 0; h < 23; h += 24) {
+    //         var startDay = d;
+    //         var endDay = d + 30;
+    //         var startHour = h;
+    //         var endHour = h + 1;
+
+    //         var newBin = new bin(lat, lon, tmz, startDay, endDay, startHour, endHour);
+    //         newBin.generateSolarGeo();
+    //         bins.push(newBin);
+    //     }
+    // }
 
     // draw the bins
     // sunPath.append("g").selectAll("path")
