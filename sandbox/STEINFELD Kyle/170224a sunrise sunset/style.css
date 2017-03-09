@@ -18,7 +18,7 @@
 .axis path, .axis line, .outer-arc {
   fill: none;
   stroke: #333;
-  stroke-width: 0.5px;
+  stroke-width: 0.2px;
 }
 
 .dashed line,
@@ -29,5 +29,5 @@
 }
 
 .day-label{
-    font: 10px sans-serif;
+    font: 5px sans-serif;
 }

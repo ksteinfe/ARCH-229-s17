@@ -1,0 +1,23 @@
+
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.y .tick text, .x .tick text{
+    font-size:8px;
+    fill: #ccc;    
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+.x .tick {
+    font-size:10px;
+}
+
+.x .tick text{
+    transform: translate(6px,-12px);
+    font-size: 10px;
+}

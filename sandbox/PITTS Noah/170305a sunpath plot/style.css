@@ -1,0 +1,21 @@
+
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path, .axis line, .axis circle, .outer-arc {
+  stroke: rgb(200,200,200);
+  stroke-width: 0.5px;
+  fill: none;
+}
+
+svg.board {
+    background-color: rgb(30, 30, 30);
+    fill: rgb(30, 30, 30);
+}
+
+path.bin{
+    stroke-width: 0.1px;
+    stroke: rgb(200,200,200);
+}
