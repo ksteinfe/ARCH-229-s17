@@ -34,13 +34,6 @@ GROUND TEMPERATURES,3,.5,,,,22.80,20.20,19.49,20.11,23.61,27.54,31.23,33.91,34.6
 HOLIDAYS/DAYLIGHT SAVINGS,No,0,0,0
 COMMENTS 1,"IWEC- WMO#412170 - Asia -- Original Source Data (c) 2001 American Society of Heating, Refrigerating and Air-Conditioning Engineers (ASHRAE), Inc., Atlanta, GA, USA.  www.ashrae.org  All rights reserved as noted in the License Agreement and Additional Conditions. DISCLAIMER OF WARRANTIES: The data is provided 'as is' without warranty of any kind, either expressed or implied. The entire risk as to the quality and performance of the data is with you. In no event will ASHRAE or its contractors be liable to you for any damages, including without limitation any lost profits, lost savings, or other incidental or consequential damages arising out of the use or inability to use this data."
 COMMENTS 2, -- Ground temps produced with a standard soil diffusivity of 2.3225760E-03 {m**2/day}
-
-
-
-
-
-
-
 DATA PERIODS,1,1,Data,Sunday, 1/ 1,12/31
 1997,1,1,1,60,C9C9C9C9*0?9?9?9?9?9?9?9A7A7C8C8A7*0*0E8*0*0,16.0,12.3,78,101700,0,1415,325,0,0,0,0,0,0,0,190,0.5,2,0,9.9,77777,9,999999999,0,0.0550,0,88,0.000,0.0,0.0
 1997,1,1,2,60,C9C9C9C9*0?9?9?9?9?9?9?9A7A7C8C8A7*0*0E8*0*0,15.6,12.5,82,101700,0,1415,324,0,0,0,0,0,0,0,120,2.1,2,0,9.9,77777,9,999999999,0,0.0550,0,88,0.000,0.0,0.0

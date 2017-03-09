@@ -26,6 +26,12 @@
     stroke-width: 1px;
 }
 
+.groundlinefill path{
+    fill: #f00;
+    stroke: none;
+    stroke-width:0 ;
+}
+
 .temp-area {
     fill: #ccc;
 }
