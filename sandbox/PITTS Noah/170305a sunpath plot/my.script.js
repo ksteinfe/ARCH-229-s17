@@ -12,27 +12,27 @@ function onDataLoaded(dObj) {
 
     // Board for SunPath
     var sunPath = board.g.append("g")
-        .attr("transform", "translate(" + radius + "," + radius + ") ");
+        .attr("transform", "translate(" + radius + "," + radius + ") ")
+        .attr({ class: "sunpath" });
 
     // Scales the value to polar coordinate theta
     var angScale = d3.scale.linear()
-        .domain([0, 360])
+        .domain([0, 2 * Math.PI])
         .range([0, 2 * Math.PI]);
 
     // Scales the value to polar coordinate r
     var radScale = d3.scale.linear()
-        .domain([90, 0])
+        .domain([Math.PI, 0])
         .range([0, radius]);
 
     // Draw Value Paths
     var pathLine = d3.svg.line.radial()
-        .radius(function (d) { return radScale(d.path.altitude); })
-        .angle(function (d) { return angScale(d.path.azimuth); });
+        .radius(function (d) { return radScale(d.altitude); })
+        .angle(function (d) { return angScale(d.azimuth); })
+        .interpolate("basis-closed");
 
     // create bins
     var bins = [];
-    console.log(bins);
-    console.log(dObj);
 
     var lat = dObj.location.latitude;
     var lon = dObj.location.longitude;
@@ -40,12 +40,22 @@ function onDataLoaded(dObj) {
 
 
     // Testing
-    var startDay = d;
-    var endDay = d + 30;
-    var startHour = h;
-    var endHour = h + 1;
+    var startDay = 85;
+    var endDay = 105;
+    var startHour = 10;
+    var endHour = 14;
 
     var newBin = new bin(lat, lon, tmz, startDay, endDay, startHour, endHour);
+
+    console.log(newBin.binIsVisible());
+
+    if (newBin.binIsVisible()) {
+        bins.push(newBin);
+        newBin.generateSolarGeo();
+    }
+
+    console.log(bins);
+
 
     // for (var d = 0; d < 335; d += 300) {
     //     for (var h = 0; h < 23; h += 24) {
@@ -61,13 +71,18 @@ function onDataLoaded(dObj) {
     // }
 
     // draw the bins
-    // sunPath.append("g").selectAll("path")
-    //     .data(bins)
-    //     .enter().append("path")
-    //     .attr({
-    //         d: pathLine,
-    //         class: "valueline",
-    //         stroke: function (d) { return cScale(d.value); }
-    //     })
+    sunPath.append("g").selectAll("path")
+        .data(bins)
+        .enter().append("path")
+        .datum(function (d) { return d.path; })
+        .attr({
+            d: pathLine,
+            class: "bin",
+            stroke: "red",
+            fill: "none"
+        });
+
+
+    console.log(sunPath);
 }
 
