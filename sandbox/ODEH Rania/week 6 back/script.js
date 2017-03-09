@@ -13,13 +13,29 @@ function onDataLoaded(dObj) {
     
     // summary information for each day of the year
     var dSum = dObj.dailySummary();
+    //console.log(dSum);
     
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
     board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:200, margin:40});
     //console.log(board);
       
-
+    
+    var areaData = [];
+    for (var d in dSum){        
+        dobj = {}
+        dobj.airTemp = dSum[d].averageOf("DryBulbTemp");
+        dobj.monthOfYear = dSum[d].ts.monthOfYear();
+        
+        var firstGronudTemp = dObj.epwhead.ground[0].monthlyTemperature[dobj.monthOfYear];
+        var secondGronudTemp = dObj.epwhead.ground[1].monthlyTemperature[dobj.monthOfYear];
+        
+        dobj.groundTemp = firstGronudTemp;
+        areaData.push(dobj);
+    }
+    console.log(areaData);
+    
+    
     // Setup X
     var xScaleMnth = d3.scale.linear()  // value -> display
         .domain([0,mTempLen-1])
