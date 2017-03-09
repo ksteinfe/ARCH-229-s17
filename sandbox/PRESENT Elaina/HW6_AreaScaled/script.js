@@ -147,7 +147,7 @@ function onDataLoaded(dObj) {
 	
 	//RecRoom
     var arc = d3.svg.arc()
-        .innerRadius(90)
+        .innerRadius(80.88613)
         .outerRadius(100)
         .startAngle(function(d, i) {return i*(pi/12)+gap ;})
         .endAngle(function(d,i) {return (i+1)*(pi/12);})
@@ -201,8 +201,8 @@ function onDataLoaded(dObj) {
 			
 	//LivingRoom		
 	var arc = d3.svg.arc()
-        .innerRadius(80)
-        .outerRadius(90)
+        .innerRadius(70.75209)
+        .outerRadius(80.88613)
         .startAngle(function(d,i) {return i*(pi/12)+gap ;})
         .endAngle(function(d,i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
@@ -215,8 +215,8 @@ function onDataLoaded(dObj) {
 			
 	//BR2		
 	var arc = d3.svg.arc()
-        .innerRadius(70)
-        .outerRadius(80)
+        .innerRadius(63.21958)
+        .outerRadius(70.75209)
         .startAngle(function(d, i) {return i*(pi/12)+gap ;})
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
@@ -228,8 +228,8 @@ function onDataLoaded(dObj) {
             .attr("d", arc)
 	//BR1		
 	var arc = d3.svg.arc()
-        .innerRadius(60)
-        .outerRadius(70)
+        .innerRadius(56.12269)
+        .outerRadius(63.21958)
         .startAngle(function(d, i) {return i*(pi/12)+gap ;})
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
@@ -241,8 +241,8 @@ function onDataLoaded(dObj) {
             .attr("d", arc)
 	//kitchen
 	var arc = d3.svg.arc()
-        .innerRadius(50)
-        .outerRadius(60)
+        .innerRadius(48.59865)
+        .outerRadius(56.12269)
         .startAngle(function(d, i) {return i*(pi/12)+gap ;})
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
@@ -256,7 +256,7 @@ function onDataLoaded(dObj) {
 	//DiningRoom
 	var arc = d3.svg.arc()
         .innerRadius(40)
-        .outerRadius(50)
+        .outerRadius(48.59865)
         .startAngle(function(d, i) {return i*(pi/12)+gap ;})
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
