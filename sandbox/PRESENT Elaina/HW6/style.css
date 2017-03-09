@@ -12,3 +12,7 @@
     fill: #666;    
     font-family: Tahoma, Geneva, sans-serif;
 }
+
+svg.board {
+    background: black;
+}
