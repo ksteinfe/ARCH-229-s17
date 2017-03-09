@@ -9,6 +9,7 @@ function onDataLoaded(dObj) {
         dObj.epwhead.ground[g].monthlyTemperature.unshift( first );
     }
     var mTempLen = dObj.epwhead.ground[0].monthlyTemperature.length; // the new number of values in the monthlyTemperature array.
+    console.log(dObj);
     
     // summary information for each day of the year
     var dSum = dObj.dailySummary();
@@ -57,6 +58,15 @@ function onDataLoaded(dObj) {
     var yMapHigh = function(d) { return yScale(d.q3Of("DryBulbTemp")) }; // data -> display
     var yMapLow = function(d) { return yScale(d.q1Of("DryBulbTemp")) }; // data -> display
         
+    // Setup Color Scalse
+    var cScale = d3.scale.linear()
+    .domain([0,6])
+    .interpolate(d3.interpolate)
+    .range([d3.rgb("#aaa"), d3.rgb('#000')]);
+        
+        
+        
+        
     
     // Setup Line and Area Functions
         
@@ -75,6 +85,8 @@ function onDataLoaded(dObj) {
         .y0(yMapLow)
         .y1(yMapHigh)
         .interpolate("linear");   
+      
+      
       
       
     // draw x-axis
@@ -117,15 +129,9 @@ function onDataLoaded(dObj) {
         .selectAll("path")
             .data(dObj.epwhead.ground)
             .enter().append("path")
+                .attr("stroke", function(d){ return cScale(d.depth) ; })
                 .datum(function(d){ return d.monthlyTemperature; })
-                .attr( "d", lineFuncGroundTemp );  
+                .attr( "d", lineFuncGroundTemp )
 
-    board.g.append("g")
-        .attr("class", "groundlinefill")
-        .selectAll("fill")
-            .data(dObj.epwhead.ground)
-            .enter().append("fill")
-                .datum(function(d){ return d.monthlyTemperature; })
-                .attr( "d", lineFuncGroundTemp );  
 }
 
