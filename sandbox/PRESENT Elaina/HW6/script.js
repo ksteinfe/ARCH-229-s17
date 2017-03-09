@@ -13,8 +13,8 @@ function onDataLoaded(dObj) {
         .attr("transform", "translate(" + board.dDims.width / 2 + "," + board.dDims.height / 2 + ")");
     
 	//comfort range definition
-	var maxComfortF = 78
-	var minComfortF = 70
+	var maxComfortF = 76
+	var minComfortF = 72
 	
 	//layout parameters
 	var gap = 0.02
@@ -41,32 +41,157 @@ function onDataLoaded(dObj) {
 	
 	// Color according to temperature. 
 	var colorScale = d3.scale.linear()
-		.domain([40, 74, 100])
-		.range(["#2c7bb6", "#ffff8c", "#d7191c"])
+		.domain([60, minComfortF, maxComfortF, 88])
+		.range(["#2c7bb6", "#f5f5dc", "#f5f5dc", "#d7191c"])
 		.interpolate(d3.interpolateHcl);
 	
 	//easy color = effectively random
-//	var color = d3.scale.category10();
+	//	var color = d3.scale.category10();
 
+	//labels
+	var labs = [
+        { name: "Midnight", value: 10 },
+        { name: "1 AM", value: 10 },
+        { name: "2 AM", value: 10 },
+        { name: "3 AM", value: 10 },
+        { name: "4 AM", value: 10 },
+        { name: "5 AM", value: 10 },
+        { name: "6 AM", value: 10 },
+        { name: "7 AM", value: 10 },
+        { name: "8 AM", value: 10 },
+        { name: "9 AM", value: 10 },
+        { name: "10 AM", value: 10 },
+        { name: "11 AM", value: 10 },
+		{ name: "Noon", value: 10 },
+        { name: "1 PM", value: 10 },
+        { name: "2 PM", value: 10 },
+        { name: "3 PM", value: 10 },
+        { name: "4 PM", value: 10 },
+        { name: "5 PM", value: 10 },
+        { name: "6 PM", value: 10 },
+        { name: "7 PM", value: 10 },
+        { name: "8 PM", value: 10 },
+        { name: "9 PM", value: 10 },
+        { name: "10 PM", value: 10 },
+        { name: "11 PM", value: 10 },
+    ];
+	
+/*	// pie chart for labels. 
+    var pie = d3.layout.pie()
+       // .startAngle(0 * Math.PI / 180)
+       // .endAngle(0 * Math.PI / 180 + 2 * Math.PI)
+        .value(function (d) { return d.value; })
+        .padAngle(.01)
+        .sort(null);
+		
+	svg.selectAll(".donutArcSlices")
+			.data(pie(labs))
+		  .enter().append("path")
+			.attr("class", "donutArcSlices")
+			.attr("d", arc)
+			.each(function (d, i) {
+				var firstArcSection = /(^.+?)L/;
+				var newArc = firstArcSection.exec(d3.select(this).attr("d"))[1];
+				newArc = newArc.replace(/,/g, " ");
+				svg.append("path")
+					.attr("class", "hiddenDonutArcs")
+					.attr("id", "donutArc" + i)
+					.attr("d", newArc)
+					.style("fill", "none");
+			});
+    svg.selectAll(".donutText")
+        .data(labs)
+       .enter().append("text")
+        //.attr("class", "donutText")
+        //.attr("dy", -13)
+       .append("textPath")
+        .attr("startOffset", "50%")
+        .style("text-anchor", "middle")
+        .attr("xlink:href", function (d, i) { return "#donutArc" + i; })
+        .text(function (d) { return d.name; });
+	
+    // write month on top of svg
+    var fontSize = 15;
+	var width = 2;
+	var height = 3;
+	
+    svg.selectAll("text-top")
+        .data(labs)
+        .enter().append("text")
+        .attr("x", function(d, i) {
+            return (i + 2.2) * width - fontSize * 2.2;
+        })
+        .attr("y", function(d, i) {
+            return 1.1 * height;
+        })
+        .attr("fill", "#d7191c")
+        //.attr("font-family", "sans-serif")
+        .text(function (d) {
+            return labs["" + d];
+        });
+*/
 	//simpleArcs
+	
+	//RecRoom
     var arc = d3.svg.arc()
-        .innerRadius(60)
-        .outerRadius(70)
-        .startAngle(function(d) {return d*(pi/12)+gap ;})
-        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .innerRadius(90)
+        .outerRadius(100)
+        .startAngle(function(d, i) {return i*(pi/12)+gap ;})
+        .endAngle(function(d,i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
     ctrdGrp.append("g").selectAll("path")
         .data(arrRecRoom)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
-            .attr("d", arc);
+            .attr("d", arc)
+		
+	ctrdGrp.append("text")
+			.text(function (d,i) { return labs[i].name; })
+			.attr("x", function(d, i) {
+				return (i-30);
+			})
+			.attr("y", function(d, i) {
+				return (i-108);
+			})
+			.attr("fill", "#f4a460"); 
+
+	ctrdGrp.append("text")
+			.text(function (d,i) { return labs[i+6].name; })
+			.attr("x", function(d, i) {
+				return (i+102);
+			})
+			.attr("y", function(d, i) {
+				return (i+5);
+			})
+			.attr("fill", "#f4a460"); 	
+
+	ctrdGrp.append("text")
+			.text(function (d,i) { return labs[i+12].name; })
+			.attr("x", function(d, i) {
+				return (i-20);
+			})
+			.attr("y", function(d, i) {
+				return (i+116);
+			})
+			.attr("fill", "#f4a460"); 
 			
+	ctrdGrp.append("text")
+			.text(function (d,i) { return labs[i+18].name; })
+			.attr("x", function(d, i) {
+				return (i-140);
+			})
+			.attr("y", function(d, i) {
+				return (i+5);
+			})
+			.attr("fill", "#f4a460"); 		
+			
+	//LivingRoom		
 	var arc = d3.svg.arc()
-        .innerRadius(50)
-        .outerRadius(60)
-        .startAngle(function(d) {return d*(pi/12)+gap ;})
-        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .innerRadius(80)
+        .outerRadius(90)
+        .startAngle(function(d,i) {return i*(pi/12)+gap ;})
+        .endAngle(function(d,i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
     ctrdGrp.append("g").selectAll("path")
@@ -75,11 +200,12 @@ function onDataLoaded(dObj) {
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc);
 			
+	//BR2		
 	var arc = d3.svg.arc()
-        .innerRadius(40)
-        .outerRadius(50)
-        .startAngle(function(d) {return d*(pi/12)+gap ;})
-        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .innerRadius(70)
+        .outerRadius(80)
+        .startAngle(function(d, i) {return i*(pi/12)+gap ;})
+        .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
     ctrdGrp.append("g").selectAll("path")
@@ -87,16 +213,43 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+	//BR1		
 	var arc = d3.svg.arc()
-        .innerRadius(30)
-        .outerRadius(40)
-        .startAngle(function(d) {return d*(pi/12)+gap ;})
-        .endAngle(function(d) {return (d+1)*(pi/12);})
+        .innerRadius(60)
+        .outerRadius(70)
+        .startAngle(function(d, i) {return i*(pi/12)+gap ;})
+        .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
     ctrdGrp.append("g").selectAll("path")
         .data(arrBR1)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc)
+	//kitchen
+	var arc = d3.svg.arc()
+        .innerRadius(50)
+        .outerRadius(60)
+        .startAngle(function(d, i) {return i*(pi/12)+gap ;})
+        .endAngle(function(d, i) {return (i+1)*(pi/12);})
+        .cornerRadius(2);    
+    
+    ctrdGrp.append("g").selectAll("path")
+        .data(arrKitchen)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc)
+
+	//DiningRoom
+	var arc = d3.svg.arc()
+        .innerRadius(40)
+        .outerRadius(50)
+        .startAngle(function(d, i) {return i*(pi/12)+gap ;})
+        .endAngle(function(d, i) {return (i+1)*(pi/12);})
+        .cornerRadius(2);    
+    
+    ctrdGrp.append("g").selectAll("path")
+        .data(arrDiningRoom)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
