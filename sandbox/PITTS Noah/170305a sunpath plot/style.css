@@ -5,11 +5,15 @@
 }
 
 .axis path, .axis line, .axis circle, .outer-arc {
-  fill: none;
-  stroke: #ccc;
-  stroke-width: 0.5px;
+  fill: rgb(30,30,30);
+  stroke: white;
+  stroke-width: 1px;
 }
 
+.background {
+    background-color: rgb(30, 30, 30);
+    fill: rgb(30, 30, 30);
+}
 
 .analemma{
     fill: none;
@@ -26,7 +30,9 @@
 }
 
 
-path.valueline{
-    stroke-width: 2px;
-    fill: none;
+path.bin{
+    stroke-width: 0.125px;
+    stroke: white;
+
+
 }

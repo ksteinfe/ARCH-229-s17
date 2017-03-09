@@ -1,72 +1,109 @@
-function bin(lat, lon, tmz, startDay, endDay, startHour, endHour) {
-    this.lat = lat;
-    this.lon = lon;
-    this.tmz = tmz;
+function bin(location, d0, d1, h0, h1) {
+    this.loc = location;
 
-    this.startDay = startDay;
-    this.endDay = endDay;
-    this.startHour = startHour;
-    this.endHour = endHour;
+    this.startDay = Math.min(d0, d1);
+    this.endDay = Math.max(d0, d1);
+    this.startHour = Math.min(h0, h1);
+    this.endHour = Math.max(h0, h1);
+
+    this.pts = [
+        { day: d0, hour: solarTime(this.loc, d0, h0) },
+        { day: d0, hour: solarTime(this.loc, d0, h1) },
+        { day: d1, hour: solarTime(this.loc, d1, h1) },
+        { day: d1, hour: solarTime(this.loc, d1, h0) }];
+
+    // this.pts = [
+    //     { day: d0, hour: h0 },
+    //     { day: d0, hour: h1 },
+    //     { day: d1, hour: h1 },
+    //     { day: d1, hour: h0 }];
 
     this.path = [];
+    this.solarPath = [];
 
-    this.binIsVisible = function () {
-        if (sunrise(this.startDay) > this.endHour && sunrise(this.endDay) > this.endHour) return false;
-        if (sunset(this.startDay) < this.startHour && sunset(this.endDay) < this.startHour) return false;
+    this.isVisible = function () {
+        if (sunrise(this.loc.lat, this.startDay) > this.endHour && sunrise(this.loc.lat, this.endDay) > this.endHour) return false;
+        if (sunset(this.loc.lat, this.startDay) < this.startHour && sunset(this.loc.lat, this.endDay) < this.startHour) return false;
         return true;
     }
 
-    this.generateSolarGeo = function () {
+    this.generateSolarPath = function (res) {
+        // Interpolate points to form a path
+        for (var i = 0; i < this.pts.length; i++) {
+            var obj1 = this.pts[i];
+            if (i === this.pts.length - 1) obj2 = this.pts[0];
+            else obj2 = this.pts[i + 1];
 
-        var d0 = this.startDay;
-        var d1 = this.endDay;
-        var d2 = this.endDay;
-        var d3 = this.startDay;
-        var dStep = 10; // TODO: implement dynamic scaling
-
-        var h0 = Math.max(this.startHour, sunrise(d0));
-        var h1 = Math.max(this.startHour, sunrise(d1));
-        var h2 = Math.min(this.endHour, sunset(d2));
-        var h3 = Math.min(this.endHour, sunset(d3));
-        var hStep = 1 / 3; // TODO: implement dynamic scaling
-
-        var azi = 0;
-        var alt = 0;
-        var pathData = 0;
-
-        // generate side 0
-        for (var d = d0; d < d1; d += dStep) {
-            var h = Math.max(this.startHour, sunrise(d));
-            azi = solarAzimuth(this.lat, this.lon, this.tmz, d, h);
-            alt = solarAltitude(this.lat, this.lon, this.tmz, d, h);
-            pathData = { altitude: alt, azimuth: azi };
-            this.path.push(pathData);
+            for (var t = 0; t < 1; t += 1 / res) {
+                this.path.push(lerp(obj1, obj2, t));
+            }
         }
-        // generate side 1
-        for (var h = h1; h < h2; h += hStep) {
-            var d = d1;
-            azi = solarAzimuth(this.lat, this.lon, this.tmz, d, h);
-            alt = solarAltitude(this.lat, this.lon, this.tmz, d, h);
-            pathData = { altitude: alt, azimuth: azi };
-            this.path.push(pathData);
+        this.path.push(this.pts[0]);
 
+
+        for (var i = 0; i < this.path.length; i++) {
+            var sr = sunrise(this.loc.lat, this.path[i].day);
+            var ss = sunset(this.loc.lat, this.path[i].day);
+            // check path if it is on the boundry
+            if (this.path[i].hour < sr) this.path[i].hour = sr;
+            if (this.path[i].hour > ss) this.path[i].hour = ss;
+
+            // generate solar geometry for time;
+            this.solarPath.push(solarGeo(this.loc, this.path[i]))
         }
-        // generate side 2
-        for (var d = d2; d > d3; d -= dStep) {
-            var h3 = Math.min(this.endHour, sunset(d3));
-            azi = solarAzimuth(this.lat, this.lon, this.tmz, d, h);
-            alt = solarAltitude(this.lat, this.lon, this.tmz, d, h);
-            pathData = { altitude: alt, azimuth: azi };
-            this.path.push(pathData);
-        }
-        // generate side 3
-        for (var h = h3; h > h0; h -= hStep) {
-            var d = d3;
-            azi = solarAzimuth(this.lat, this.lon, this.tmz, d, h);
-            alt = solarAltitude(this.lat, this.lon, this.tmz, d, h);
-            pathData = { altitude: alt, azimuth: azi };
-            this.path.push(pathData);
-        }
+    }
+}
+
+lerp = function (obj1, obj2, t) {
+    var d_t = (1 - t) * obj1.day + t * obj2.day;
+    var h_t = (1 - t) * obj1.hour + t * obj2.hour;
+    return { day: d_t, hour: h_t }
+}
+
+solarGeo = function (loc, time) {
+    var lat = loc.lat;
+    var lng = loc.lon;
+    var tmz = loc.tmz;
+
+    var alpha = dY.solarGeom.calcAlpha(time.day, time.hour);
+
+    //calculate Declination Angle
+    var decDeg = 0.396372 - 22.91327 * Math.cos(alpha) + 4.02543 * Math.sin(alpha) - 0.387205 * Math.cos(2 * alpha) + 0.051967 * Math.sin(2 * alpha) - 0.154527 * Math.cos(3 * alpha) + 0.084798 * Math.sin(3 * alpha);
+    var decRad = dY.solarGeom.degToRad(decDeg);
+
+    // time correction for solar angle
+    var tc = 0.004297 + 0.107029 * Math.cos(alpha) - 1.837877 * Math.sin(alpha) - 0.837378 * Math.cos(2 * alpha) - 2.340475 * Math.sin(2 * alpha);
+
+    // calculate Solar Hour Angle, angle between local longitude and solar noon
+    var hAngDeg = (time.hour - 12 - tmz) * (360 / 24) + lng;// + tc;
+    if (hAngDeg >= 180) hAngDeg = hAngDeg - 360;
+    if (hAngDeg <= -180) hAngDeg = hAngDeg + 360;
+    var hAngRad = dY.solarGeom.degToRad(hAngDeg);
+
+    //calc Altitude Angle
+    var latRad = dY.solarGeom.degToRad(lat);
+    var cosZenith = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hAngRad);
+    if (cosZenith > 1) cosZenith = 1;
+    if (cosZenith < -1) cosZenith = -1;
+
+    var zenRad = Math.acos(cosZenith)
+    var altRad = Math.asin(cosZenith)
+
+    //calc Azimuth angle
+    var cosAzi = (Math.sin(decRad) - Math.sin(latRad) * Math.cos(zenRad)) / (Math.cos(latRad) * Math.sin(zenRad));
+    var aziDeg = dY.solarGeom.radToDeg(Math.acos(cosAzi));
+    if (hAngRad > 0) aziDeg = 360 - aziDeg;
+    var aziRad = dY.solarGeom.degToRad(aziDeg);
+
+    return {
+        altitude: altRad,
+        altitudeDeg: dY.solarGeom.radToDeg(altRad),
+        azimuth: aziRad,
+        azimuthDeg: aziDeg,
+        declinationRad: decRad,
+        declinationDeg: decDeg,
+        hourAngleRad: hAngRad,
+        hourAngleDeg: hAngDeg
     }
 }
 
@@ -75,9 +112,9 @@ sunrise = function (lat, day) {
     var hour = 0;
     var latRad = lat * (Math.PI / 180);
     var decRad = solarDeclination(day, hour);
-    var sunriseHourAngle = -Math.tan(latRad) * Math.tan(decRad);
+    var w_o = Math.acos(-Math.tan(latRad) * Math.tan(decRad));
 
-    return 4; //TODO: implement this
+    return 12 - w_o * 12 / Math.PI;
 }
 
 // returns Hour of sunrise for a given day of the year
@@ -86,10 +123,18 @@ sunset = function (lat, day) {
     var latRad = lat * (Math.PI / 180);
     var decRad = solarDeclination(day, hour);
     var sunriseHourAngle = -Math.tan(latRad) * Math.tan(decRad);
+    var w_o = Math.acos(-Math.tan(latRad) * Math.tan(decRad));
 
-    return 20; //TODO: implement this
+    return 12 + w_o * 12 / Math.PI;
 }
 
+solarTime = function (loc, day, hour) {
+    // var b = (day - 81) * 360 / 365.25;
+    var b = (day - 81) * 2 * Math.PI / 365.25; // check on degrees:
+    var e = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.58 * Math.sin(b)
+    var tc = (4 * (15 * loc.tmz - loc.lon) + e) / 60;
+    return hour + tc;
+}
 
 // ************************
 // CALCULATING SOLAR ANGLES

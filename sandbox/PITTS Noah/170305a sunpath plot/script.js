@@ -73,6 +73,8 @@ function onDataLoaded(dObj) {
     var filteredForSunup = sGeom.filter(function (d) { return d.sunUpPercent > 0.3; });
     var filteredForWntr = filteredForSunup.filter(function (d) { return dY.timeSpan.hourOfYear(d.hourOfYear).season() <= 1; }); // looks for season values of 0 or 1 (winter or spring)
     var filteredForSumr = filteredForSunup.filter(function (d) { return dY.timeSpan.hourOfYear(d.hourOfYear).season() >= 2; }); // looks for season values of 2 or 3 (summer or fall)
+
+
     console.log(filteredForWntr);
     ctrdGrpWntr.append("g").selectAll("path")
         .data(filteredForWntr)
