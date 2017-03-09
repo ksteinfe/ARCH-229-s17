@@ -6,11 +6,21 @@ function onDataLoaded(dObj) {
     
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
-    board = dY.graph.addBoard("#dy-canvas",{inWidth: 200, inHeight:200, margin:40});
+    board1 = dY.graph.addBoard("#dy-canvas",{inWidth: 500, inHeight:200, margin:40});
+	board2 = dY.graph.addBoard("#dy-canvas",{inWidth: 500, inHeight:200, margin:40});
     //console.log(board);
 	
-	var ctrdGrp = board.g.append("g")
-        .attr("transform", "translate(" + board.dDims.width / 2 + "," + board.dDims.height / 2 + ")");
+	var ctrdGrp1 = board1.g.append("g")
+        .attr("transform", "translate(" + board1.dDims.width / 5 + "," + board1.dDims.height / 2 + ")");
+		
+	var ctrdGrp2 = board1.g.append("g")
+        .attr("transform", "translate(" + 4*board1.dDims.width / 5 + "," + board1.dDims.height / 2 + ")");
+		
+	var ctrdGrp3 = board2.g.append("g")
+        .attr("transform", "translate(" + board2.dDims.width / 5 + "," + board2.dDims.height / 2 + ")");
+		
+	var ctrdGrp4 = board2.g.append("g")
+        .attr("transform", "translate(" + 4*board2.dDims.width / 5 + "," + board2.dDims.height / 2 + ")");
     
 	//comfort range definition
 	var maxComfortF = 76
@@ -38,6 +48,9 @@ function onDataLoaded(dObj) {
 	var arrDSBath = dObj.ticks.map(function(d){ return d.data.DSBath.OperativeTemperature; });
 	var arrLaundry = dObj.ticks.map(function(d){ return d.data.Laundry.OperativeTemperature; });
 	var arrUSBath = dObj.ticks.map(function(d){ return d.data.USBath.OperativeTemperature; }); 
+	var arrTotal = dObj.ticks.map(function(d){ return d.data.Total.OperativeTemperature; }); 
+	
+	var roomSize = dObj.ticks.map(function(d){ return d.zoneMeta.size;});
 	
 	// Color according to temperature. 
 	var colorScale = d3.scale.linear()
@@ -140,13 +153,13 @@ function onDataLoaded(dObj) {
         .endAngle(function(d,i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
-    ctrdGrp.append("g").selectAll("path")
+    ctrdGrp1.append("g").selectAll("path")
         .data(arrRecRoom)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
 		
-	ctrdGrp.append("text")
+	ctrdGrp1.append("text")
 			.text(function (d,i) { return labs[i].name; })
 			.attr("x", function(d, i) {
 				return (i-30);
@@ -156,7 +169,7 @@ function onDataLoaded(dObj) {
 			})
 			.attr("fill", "#f4a460"); 
 
-	ctrdGrp.append("text")
+	ctrdGrp1.append("text")
 			.text(function (d,i) { return labs[i+6].name; })
 			.attr("x", function(d, i) {
 				return (i+102);
@@ -166,7 +179,7 @@ function onDataLoaded(dObj) {
 			})
 			.attr("fill", "#f4a460"); 	
 
-	ctrdGrp.append("text")
+	ctrdGrp1.append("text")
 			.text(function (d,i) { return labs[i+12].name; })
 			.attr("x", function(d, i) {
 				return (i-20);
@@ -176,7 +189,7 @@ function onDataLoaded(dObj) {
 			})
 			.attr("fill", "#f4a460"); 
 			
-	ctrdGrp.append("text")
+	ctrdGrp1.append("text")
 			.text(function (d,i) { return labs[i+18].name; })
 			.attr("x", function(d, i) {
 				return (i-140);
@@ -194,7 +207,7 @@ function onDataLoaded(dObj) {
         .endAngle(function(d,i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
-    ctrdGrp.append("g").selectAll("path")
+    ctrdGrp1.append("g").selectAll("path")
         .data(arrLivingRoom)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
@@ -208,7 +221,7 @@ function onDataLoaded(dObj) {
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
-    ctrdGrp.append("g").selectAll("path")
+    ctrdGrp1.append("g").selectAll("path")
         .data(arrBR2)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
@@ -221,7 +234,7 @@ function onDataLoaded(dObj) {
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
-    ctrdGrp.append("g").selectAll("path")
+    ctrdGrp1.append("g").selectAll("path")
         .data(arrBR1)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
@@ -234,7 +247,7 @@ function onDataLoaded(dObj) {
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
-    ctrdGrp.append("g").selectAll("path")
+    ctrdGrp1.append("g").selectAll("path")
         .data(arrKitchen)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
@@ -248,8 +261,22 @@ function onDataLoaded(dObj) {
         .endAngle(function(d, i) {return (i+1)*(pi/12);})
         .cornerRadius(2);    
     
-    ctrdGrp.append("g").selectAll("path")
+    ctrdGrp1.append("g").selectAll("path")
         .data(arrDiningRoom)
+        .enter().append("path")
+            .attr("fill", function(d) {return colorScale(d);})
+            .attr("d", arc)
+			
+	//Total (Whole House)
+	var arc = d3.svg.arc()
+        .innerRadius(1)
+        .outerRadius(32)
+        .startAngle(function(d, i) {return i*(pi/12)+gap ;})
+        .endAngle(function(d, i) {return (i+1)*(pi/12);})
+        .cornerRadius(1);    
+    
+    ctrdGrp1.append("g").selectAll("path")
+        .data(arrTotal)
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
