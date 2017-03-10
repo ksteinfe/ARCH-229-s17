@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Janky JS Data Loader Template</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/arch229s17.css"><!-- the standard CSS file for our class -->
+    <link rel="stylesheet" type="text/css" href="style.css"> <!-- the CSS for your drawing  -->
+    
+    <!-- Here we load in the scripts we need.--> 
+    <!--Note that this setup is intended to work while testing locally, in the ARCH-229-s17 sandbox directory. Links will break elsewhere -->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js" integrity="sha256-h0cGsrExGgcZtSZ/fRz4AwV+Nn6Urh/3v3jFRQ0w9dQ=" crossorigin="anonymous"></script> <!-- a URL link to JQuery (will need Internet connection). We need JQuery to work the "Choose File" Button -->
+    <script src="../../../js/d3.v3.min.js"></script> <!-- a relative link to D3. We keep a copy in our local library -->
+    <script src="../../../../dy_working/dy.v0.min.js"></script> <!-- a relative link to DY. This should point to the dy_working repo -->
+           
+</head>
+
+<body>
+<script>
+var dropDownValue = undefined;
+var dropDownChanged = function(evt){ 
+    var selectedThing = evt.target.options[evt.target.options.selectedIndex];
+    var selectedValue = parseFloat(selectedThing.value);
+    dropDownValue = selectedValue;
+    
+    // TODO: select any SVG on canvas and delete
+    d3.select("svg").remove();
+    onDataLoaded(dObj);
+}
+
+</script>
+    
+<!-- The dy-head div contains UI for loading external local files --> 
+<div id="dy-head">
+    <p id="dy-head-title">Janky JS Data Loader Template</p>
+    <p id="dy-head-attribution">by YOUR NAME for ARCH 229 s17</p>
+    
+    <select id="drpdown">
+      <option value="1.0">One</option>
+      <option value="2.0">Two</option>
+      <option value="3.0">Three</option>
+      <option value="4.0">Four</option>
+    </select>
+    <script>$(document).ready(function(){ $("#drpdown").change(dropDownChanged); });</script>
+</div>
+
+<!-- The dy-canvas div is where you should create any SVGs using D3 -->
+<div id = "dy-canvas" style="top: 100px;"></div>
+
+<!-- Here we load your D3 script, which defines onDataLoaded --> 
+<script src="script.js"></script> 
+<!-- Here we load the data.js file, which defines a single variable dObj --> 
+<script src="data.js"></script> 
+<!-- Now we call the onDataLoaded function defined in script.js, passing in dObj --> 
+<script>
+//onDataLoaded(dObj);
+</script> 
+
+</body>
+</html>
