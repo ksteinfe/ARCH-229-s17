@@ -7,16 +7,27 @@ function onDataLoaded(dObj, map) {
     
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
-    board = dY.graph.addBoard("#dy-canvas",{inWidth:960, inHeight:960, margin:40});
+    board = dY.graph.addBoard("#dy-canvas",{inWidth:960, inHeight:600, margin:40});
     console.log(board);
     
     // define variables used later
     var w = board.dDims.width,
         h = board.dDims.height;
     
-    var map_scale = 4000;
+    var mini_w = 425,
+        mini_h = 250,
+        mini_w_origin = 500
+        mini_h_origin = 0;
+    
+    var mini_scatter_plot_w = 20;
+    
+    dot_sz = 2;
+    
+    var percentile = 100; // pecentile to get chilled water data and create color on cities
+    
+    var map_scale = 3000;
     map = topojson.simplify(topojson.presimplify(map));                 // simplify topojson
-    map = topojson.quantize(map, 1e5);                                  // reduce size of topology
+    map = topojson.quantize(map, 1e9);                                  // reduce size of topology
     var climates = topojson.feature(map, map.objects.climates);
     
     //zone numbers
@@ -45,7 +56,7 @@ function onDataLoaded(dObj, map) {
                        .center([0, 37.7750])
                        .rotate([120, 0])
                        .scale(map_scale)
-                       .translate([w/2, h/2]);
+                       .translate([200, h/2 - 75]);
     
     var path = d3.geo.path()
                  .projection(projection);
@@ -58,16 +69,29 @@ function onDataLoaded(dObj, map) {
     var chw_min = d3.min(chw_points);
     
     var color_chw = d3.scale.linear()
-                      .domain([13, 26])
-                      .range(["#99d8c9", "#2ca25f"]) //"#e5f5f9",
+                      .domain([26, 10])
+                      .range(["#31a354","#e5f5e0"]) //"#e5f5f9",
     
+    var select_chw_color = function(d) {
+             var climate_data = data_by_climate[(d.Zone) - 1];
+             var dat_chw = d3.values(climate_data.values).map(function(d) { return d["ChW Supply"]; });
+             var filter_chw = dat_chw.filter(function(d){return d > 0; })
+             var city_color = color_chw(d3.quantile(filter_chw.sort(function(a, b){ return a - b; }), percentile));
+
+             return city_color
+        };
+    
+    // scale for radius size
     var scale_pop = d3.scale.linear()
                       .domain([d3.min(population), d3.max(population)])
-                      .range([3, 20]);
-    
+                      .range([3, 10]);
+                      
+    var miniyScale = d3.scale.linear()
+                         .domain([23, 0])
+                         .range([-mini_scatter_plot_w/2, mini_scatter_plot_w/2])
                  
                  
-    // drawing map poly gons
+    // drawing map polygons
     board.g.append("g")
         .attr("class", "climate zones")
         .selectAll("path")
@@ -83,7 +107,7 @@ function onDataLoaded(dObj, map) {
     
     // draw climate boundaries lines
     board.g.append("path")
-        .datum(topojson.mesh(map, map.objects.climates, function(a,b){ return a === b; }))
+        .datum(topojson.mesh(map, map.objects.climates, function(a,b){ return a !== b; }))
         .attr("class", "climate-boundaries")
         .attr("d", path);
     
@@ -101,11 +125,7 @@ function onDataLoaded(dObj, map) {
     city.append("circle")
         .attr("r", function(d) { 
                     return scale_pop(d.population) } )
-        .style("fill", function(d) {
-             var filter_data = data_by_climate[(d.Zone) - 1];
-             var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; });
-             return color_chw(d3.median(filter_chw)) ;
-        })
+        .style("fill", select_chw_color)
         .style("opacity", 0.75)
         .on("mouseover", function(d) {
             var xPosition = d3.mouse(this)[0] + w/2;
@@ -114,345 +134,128 @@ function onDataLoaded(dObj, map) {
             var filter_data = data_by_climate[(d.Zone) - 1];
             var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; });
             
-            var values = filter_chw;
+            var values = filter_chw.filter(function(d){return d > 0; });
             var max = d3.max(values);
             var min = d3.min(values);
             
-            var x = d3.scale.linear()
-                  .domain([min, max])
-                  .range((board.dDims.xRange));
-
+            var xScale = d3.scale.linear()
+                                 .domain([0, 25])
+                                 .range([mini_w_origin, mini_w_origin+mini_w]);
+            
+            //Define X axis
+            var xAxis = d3.svg.axis()
+                          .scale(xScale)
+                          .orient("bottom")
+                          .ticks(7);
+            
+            
             // Generate a histogram using twenty uniformly-spaced bins.
-            var data = d3.layout.histogram()
-                         .bins(x.ticks(20))
-                         (values);
-           
+            var hist_data = d3.layout.histogram()
+                                     .bins(xScale.ticks(20))
+                                     (values);
             
+            var yMax = d3.max(hist_data, function(d){return d.length});
+            var yMin = d3.min(hist_data, function(d){return d.length});
             
-            var yMax = d3.max(data, function(d){return d.length});
-            var yMin = d3.min(data, function(d){return d.length});
-            
-             var color = "steelblue";
+            var color = color_chw(d3.quantile(values.sort(function(a, b){ return a - b; }), percentile));
             var colorScale = d3.scale.linear()
                                      .domain([yMin, yMax])
                                      .range([d3.rgb(color).brighter(), d3.rgb(color).darker()]);
 
-            var y = d3.scale.linear()
-                      .domain([yMax, 0])
-                      .range((board.dDims.yRange));
+            var yScale = d3.scale.linear()
+                                 .domain([0, yMax])
+                                 .range([mini_h+mini_h_origin, mini_h_origin]);
 
             var bar = board.g.selectAll("g.bar")
-                           .data(data)
+                           .data(hist_data)
                            .enter().append("g")
                            .attr("class", "bar")
                            .attr("id", "tooltip")
-                           .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+                           .attr("transform", function(d) { 
+                                                    return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; 
+                                                    });
                            
                            
-                bar.append("rect")
-                    .attr("x", w/4)
-                    .attr("y", -h/2)
-                    .attr("width", 50)
-                    .attr("height", 100)
-                    .attr("fill", "#ccc");
- 
-//            board.g.append("text")
-//                   .attr("id", "tooltip")
-//                   .attr("x", xPosition)
-//                   .attr("y", yPosition)
-//                   //.attr("text-anchor", "middle")
-//                   .attr("font-family", "sans-serif")
-//                   .attr("font-size", "11px")
-//                   .attr("font-weight", "bold")
-//                   .attr("fill", "black")
-//                   .text(d.name + " "+ xPosition + " " + yPosition);
+            bar.append("rect")
+                .attr("width", (xScale(hist_data[0].dx) - xScale(0)) - 1)
+                .attr("height", function(d) { 
+                                        return mini_h + mini_h_origin - yScale(d.y); 
+                                        })
+                .attr("fill", color);
+            
+            
+            //Create circles
+            board.g.selectAll("g.scatter")
+               .data(filter_data.values)
+               .enter()
+               .append("circle")
+               .attr("id", "tooltip")
+               .attr("cx", function(d) {
+                    return xScale(d["ChW Supply"]);
+               })
+               .attr("cy", function(d) {
+                    return yScale(0) + 50 + miniyScale(d["Start Time"]);
+               })
+               .attr("r", dot_sz)
+               .attr("fill", function(d) {
+                    if (d["Operation Hours"] >= 3 && d["Operation Hours"] < 10) {
+                        return "#fee8c8";
+                    } else if (d["Operation Hours"] >= 11 && d["Operation Hours"] < 17) {
+                        return "#fdbb84";
+                    } else {
+                        return "#e34a33";
+                    }
+               });
+            
+            //Create X axis
+            board.g.append("g")
+                    .attr("class", "axis")
+                    .attr("id", "tooltip")
+                    .attr("transform", "translate(0," + (mini_h+mini_h_origin) + ")")
+                    .call(xAxis);
+                    
+            
+            // Display city name by histogram
+            var txt_size = 30;
+            board.g.append("text")
+                   .attr("id", "tooltip")
+                   .attr("x", mini_w_origin)
+                   .attr("y", mini_h_origin)
+                   .attr("font-size", txt_size + "px")
+                   .attr("fill", "black")
+                   .text(d.city);
                    
+            board.g.append("text")
+                   .attr("id", "tooltip")
+                   .attr("x", mini_w_origin)
+                   .attr("y", mini_h_origin + txt_size)
+                   .attr("font-size", txt_size-5 + "px")
+                   .attr("fill", "black")
+                   .text("Climate zone " + d.Zone);
+
             d3.select(this)
               .attr("r", 50)
 
         })
         .on("mouseout", function(d) {
-            d3.selectAll("#tooltip").remove();
+            d3.selectAll("#tooltip")
+              .transition()
+              .duration(250)
+              .remove();
             
             d3.select(this)
               .transition()
               .duration(250)
-              .style("fill", function(d) {
-                     var filter_data = data_by_climate[(d.Zone) - 1];
-                     var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; })
-                     return color_chw(d3.median(filter_chw)); })
+              .style("fill", select_chw_color)
               .attr("r", function(d){
                     return scale_pop(d.population)
               });
         });
-        
+     
+    // draw city names by location
     city.append("text")
         .attr("x", 5)
-        .text(function(d){ return d.city; })
-       .on("mouseover", function(d) {
-            var xPosition = d3.mouse(this)[0] + w/2;
-            var yPosition = d3.mouse(this)[1] + h/2;
-            
-            board.g.append("text")
-                   .attr("id", "tooltip")
-                   .attr("x", xPosition)
-                   .attr("y", yPosition)
-                   .attr("text-anchor", "middle")
-                   .attr("font-family", "sans-serif")
-                   .attr("font-size", "11px")
-                   .attr("font-weight", "bold")
-                   .attr("fill", "black")
-                   .text(d.Zone);
-                   
-            d3.select(this)
-              .style("fill", "#509e2f")
-              
-
-        })
-        .on("mouseout", function(d) {
-            d3.select("#tooltip").remove();
-            
-            d3.select(this)
-              .transition()
-              .duration(250)
-              .style("fill", "black");
-        });
-    /*
-
-        
-        board.g.append("g")
-           .attr("class", "circles_x")
-           .selectAll("line")
-           .data(lines_x)
-           .enter().append("line")
-           .attr("x1", function(d) {
-               return d[0];
-           })
-           .attr("x2", function(d) {
-               return d[2];
-           })
-           .attr("y1", function(d) {
-               return d[1];
-           })
-           .attr("y2", function(d) {
-               return d[3];
-           })
-           .attr("stroke", "#ccc");
-           
-           
-    // split svg path elements in individual strings
-    var split_path_element = function(str) {
-            return str.split(/(?=[LMC])/)
-    };  
-    
-    // get each individual string of numbers and pair them up
-    var point_path_element_array = function(d) {
-            var points_array = d.slice(1, d.length).split(',');
-            var pairs_array = [];
-            
-            for(var i = 0; i < points_array.length; i += 2){
-                pairs_array.push([+points_array[i], +points_array[i+1]]);
-            };
-            return pairs_array;
-    };
-    
-    // combine each pair of number into a single array
-    var combine_array = function(points) {
-            var concat_points = [];
-            for(var i = 0; i < points.length; i += 1){
-                for(var j = 0; j < points[i].length; j += 1){
-                    concat_points.push(points[i][j]);
-                };
-            };
-            return concat_points;
-    };
-    
-    // combine above functions into one. Input is path element
-    var get_all_points = function(str) {
-            var str_array = split_path_element(str);
-            
-            var all_points = [];
-            for(var i = 0; i < str_array.length; i += 1){
-                all_points.push(point_path_element_array(str_array[i]))
-            }
-            return combine_array(all_points);
-    };
-    
-    // function to sort array by either x or y
-    var custom_sort = function(pos) {
-        var comp_func = function(a, b) {
-            return (a[pos] - b[pos]);
-            }
-        return comp_func;
-        }
-    
-    // function to sort without modifying original data
-    var sort_copy = function(arr, custom_sort){
-        return arr.slice(0).sort(custom_sort).sort(custom_sort);
-    };
-    
-    var subset_points = function(arr, min, max, pos) {
-            var len = arr.length;
-            var subset = [];
-            for(var i = 0; i < len; i += 1){
-                if (arr[i][pos] >= min && arr[i][pos] <= max) {
-                    subset.push(arr[i])
-                }
-            }
-            return subset;
-    };
-    
-    var customScale = function(scaleFactor) {
-        return d3.geoTransform({
-            point: function(x, y) {
-                this.stream.point((x * scaleFactor), y  * -scaleFactor);
-            }
-        });
-    };
-    
-    var get_filter_column = function(csv, key, value, column){
-            var nested_dday = d3.nest()
-                   .key(function(d) {return d[key];})
-                   .entries(csv);
-    
-            var dataFiltered = nested_dday.filter(function(d) {return d.key == value; });
-            if (dataFiltered.length  === 0){
-                return NaN;
-            } else {
-                var filter_values = d3.values(dataFiltered[0].values).map(function(d) { return d[column]; });
-                return filter_values;
-            };
-
-    };
-    
-    // define scales
-    var color_domain_chw = [10, 26]
-    var color_chw = d3.scale.quantile() //designate quantile scale generator
-                            .range(["#016eae","#7bb3d1", "#dddddd"])
-                            .domain(color_domain_chw);
-    
-    // map processsing
-    var path = d3.geo.albers()
-                 .parallels([34, 40.5])
-                 .rotate([120, 0]);
-                 //.fit([960, 960]);
-    
-    
-    
-    var points = get_all_points(path(climates));
-    
-    var min_map_x = d3.min(points, function(d) { return d[0]; });
-    var max_map_x = d3.max(points, function(d) { return d[0]; });
-    var min_map_y = d3.min(points, function(d) { return d[1]; });
-    var max_map_y = d3.max(points, function(d) { return d[1]; });
-    
-    var map_bounds = [min_map_x, max_map_x, min_map_y, max_map_y];
-    var map_mid_x = map_bounds[1] - map_bounds[0];
-    var map_mid_y = map_bounds[3] - map_bounds[2];
-    
-    var map_scale_y = board.dDims.height/(map_bounds[3] - map_bounds[2]);
-    var map_scale_x = board.dDims.width/(map_bounds[1] - map_bounds[0]);
-    
-    var mod_map_scale = map_scale_y < map_scale_x ? map_scale_y : map_scale_x; // scale to fit canvas
-    
-    // data processing
-    
-    // drawing map
-    board.g.append("g")
-        .attr("class", "climate zones")
-        .selectAll("path")
-        .data(climates.features)
-        .enter().append("path")
-        .attr("d", path)
-        .style("fill", function(d) {
-             var filter_values = get_filter_column(dObj, "Design Day", cz_rev[d.properties.Zone], "ChW Supply");
-             var percentile = d3.mean(filter_values);
-             return color_chw(percentile);
-        })
-        .attr("transform", "scale(" + (mod_map_scale) + ") " + "translate(" + (1*map_bounds[1]) + "," + (-1*map_bounds[2]) +")");
-        
-        
-    // draw county boundaries
-    board.g.append("path")
-        .datum(climate_boundary)
-        .attr("class", "climate-boundaries")
-        .attr("d", path);
-    */
-    /*
-    // draw polygon shapes
-    board.g.append("g")
-           .attr("class", "region")
-           .selectAll("path")
-           .data(features)
-           .enter().append("path")
-           .attr("d", path)
-           .style("fill", function(d) {
-               return color(d.properties.density);
-           });
-    
-    // draw lines
-    board.g.append("g")
-           .attr("class", "circles_x")
-           .selectAll("line")
-           .data(lines_x)
-           .enter().append("line")
-           .attr("x1", function(d) {
-               return d[0];
-           })
-           .attr("x2", function(d) {
-               return d[2];
-           })
-           .attr("y1", function(d) {
-               return d[1];
-           })
-           .attr("y2", function(d) {
-               return d[3];
-           })
-           .attr("stroke", "#ccc");
-    
-    // draw lines
-    board.g.append("g")
-           .attr("class", "circles_y")
-           .selectAll("line")
-           .data(lines_y)
-           .enter().append("line")
-           .attr("x1", function(d) {
-               return d[0];
-           })
-           .attr("x2", function(d) {
-               return d[2];
-           })
-           .attr("y1", function(d) {
-               return d[1];
-           })
-           .attr("y2", function(d) {
-               return d[3];
-           })
-           .attr("stroke", "#ccc");
-    
-    
-    // draw county boundaries
-    board.g.append("path")
-        .datum(counties)
-        .attr("class", "state selected-boundary")
-        .attr("d", path);
-        */
-    /*
-    
-    var get_csv_column = function(csv, column){
-        var arr = [];
-        for (i = 0; i < csv.length; i++){
-            if (csv[i][column] >= 0) {
-                arr.push(csv[i][column]);
-            }
-        }
-        return arr;
-    };
-    
-    d3.nest()
-      .key(function(d) {return d["Start Time"]; } )
-      .entries(dObj);
-    */
-           
+        .attr("font-size", "20px")
+        .text(function(d){ return d.city; })  
 }
 
