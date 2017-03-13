@@ -1,0 +1,33 @@
+
+.bar {
+    fill: tomato;
+}
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+
+}
+
+
+
+.y .tick text, .x .tick text{
+    font-size:8px;
+    fill: gray;
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+
+svg.board {
+    background: #EFEFEF;
+    /*transform: translate(250px, 20px);*/
+    margin: 10px;
+}
+
+#dy-canvas {
+     background: #e9ebee;
+     height: 425px;
+     /*overflow: visible;*/
+}
