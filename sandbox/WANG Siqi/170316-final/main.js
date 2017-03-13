@@ -1,5 +1,3 @@
-var width = 100;
-var height = 80;
 var monthDict = {
     1: "Jan",
     2: "Feb",
@@ -20,19 +18,6 @@ var nMonth = 12,
 var colorDay = "#ecfcff",
     colorNight = "black";
 
-var canvasWidth = width * (nMonth + 3),
-    canvasHeight = height * (nDay + 3);
-
-var outerRadius = height / 2.8;
-
-// basic element on drawing arcs
-var innerArc = d3.svg.arc()
-    .innerRadius(0)
-    .outerRadius(outerRadius / 3 * 2);
-var outerArc = d3.svg.arc()
-    .innerRadius(outerRadius / 3 * 2)
-    .outerRadius(outerRadius);
-
 // angles used to draw circular waves
 var angles = d3.range(0, 2 * Math.PI, Math.PI / 25);
 
@@ -40,24 +25,66 @@ var angles = d3.range(0, 2 * Math.PI, Math.PI / 25);
 var zoom = d3.behavior.zoom()
     .on("zoom", zoomed);
 
-var svg = d3.select("#dy-canvas")
-    .on("touchstart", nozoom)
-    .on("touchmove", nozoom)
-    .append("svg")
-    .attr("height", canvasHeight)
-    .attr("width", canvasWidth);
+var canvasWidth, canvasHeight;
+var width, height;
 
-var g = svg.append("g").call(zoom);
+var outerRadius;
+var innerArc, outerArc;
 
-g.append("rect")
-    .attr("width", canvasWidth)
-    .attr("height", canvasHeight)
-    .attr("fill", "grey");
+var svg, g, view;
 
-var view = g.append("g");
+// cache loaded data and re-load on resizing
+var cachedData;
+
+window.addEventListener("resize", function () {
+    canvasHeight = window.innerHeight;
+    canvasWidth = window.innerWidth;
+    onDataLoaded(cachedData);  // redraw
+});
+
+function initDynamicParameters() {
+    // fit canvas to device size
+    canvasWidth = window.innerWidth;
+    canvasHeight = window.innerHeight;
+
+    width = canvasWidth / (nMonth + 3);  // can use 100 as absolute
+    height = canvasHeight / (nDay + 3);  // can use 80 as absolute
+
+    outerRadius = height / 2.8;
+
+// basic element on drawing arcs
+    innerArc = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(outerRadius / 3 * 2);
+    outerArc = d3.svg.arc()
+        .innerRadius(outerRadius / 3 * 2)
+        .outerRadius(outerRadius);
+
+    svg = d3.select("#dy-canvas")
+        .on("touchstart", nozoom)
+        .on("touchmove", nozoom)
+        .append("svg")
+        .attr("height", canvasHeight)
+        .attr("width", canvasWidth);
+
+    g = svg.append("g").call(zoom);
+
+    g.append("rect")
+        .attr("width", canvasWidth)
+        .attr("height", canvasHeight)
+        .attr("fill", "grey");
+
+    view = g.append("g");
+}
 
 function onDataLoaded(data) {
+    if (data === undefined) {
+        return;
+    }
+    initDynamicParameters();
+
     // console.log(data);
+    cachedData = data;
     var pieGroups = [];
     for (var k = 0; k < data.length; k++) {
         var x = width * (Math.floor(k / nDay) + 1.5);
@@ -97,7 +124,7 @@ function onDataLoaded(data) {
                 .attr("class", "arc_inner")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
             innerArcs.append("path")
-                .attr("fill", function(d, i) {
+                .attr("fill", function (d, i) {
                     // console.log(d, i);
                     if (i === 0) {
                         return colorNight;
@@ -118,7 +145,7 @@ function onDataLoaded(data) {
                 .attr("class", "arc_outer")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
             outerArcs.append("path")
-                .attr("fill", function(d, i) {
+                .attr("fill", function (d, i) {
                     // console.log(d, i);
                     if (i === 0) {
                         return colorDay;
@@ -156,10 +183,10 @@ function onDataLoaded(data) {
     view.selectAll("text-top")
         .data(getNArray(12))
         .enter().append("text")
-        .attr("x", function(d, i) {
+        .attr("x", function (d, i) {
             return (i + 2.2) * width - fontSize * 2.2;
         })
-        .attr("y", function(d, i) {
+        .attr("y", function (d, i) {
             return 1.1 * height;
         })
         .attr("fill", fontFill)
@@ -173,10 +200,10 @@ function onDataLoaded(data) {
     view.selectAll("text-left")
         .data(getNArray(31))
         .enter().append("text")
-        .attr("x", function(d, i) {
+        .attr("x", function (d, i) {
             return 1.1 * width;
         })
-        .attr("y", function(d, i) {
+        .attr("y", function (d, i) {
             return (i + 2.5) * height - fontSize * 2.5;
         })
         .attr("fill", fontFill)
@@ -189,10 +216,10 @@ function onDataLoaded(data) {
     view.selectAll("text-right")
         .data(getNArray(31))
         .enter().append("text")
-        .attr("x", function(d, i) {
+        .attr("x", function (d, i) {
             return ( 1.8 + nMonth) * width;
         })
-        .attr("y", function(d, i) {
+        .attr("y", function (d, i) {
             return (i + 2.5) * height - fontSize * 2.5;
         })
         .attr("fill", fontFill)
@@ -238,7 +265,7 @@ function onMouseClick(d, i) {
         .transition()
         .delay(500)
         .attr("transform", "translate(" + x + "," + y + ")" + "scale(" + 1 + ")")
-        .each("end", function() {
+        .each("end", function () {
             d3.select(this).on("click", onMouseClick);  // re-enable click action after transition
         });
 }
@@ -255,8 +282,10 @@ function onMouseOver() {
     // draw circular wave here
     var startTime = new Date().getTime();
     var line = d3.svg.line.radial()
-        .angle(function(d) { return d; })
-        .radius(function(d, i) {
+        .angle(function (d) {
+            return d;
+        })
+        .radius(function (d, i) {
             var t = new Date().getTime() / 1000;
             return outerRadius + Math.cos(d * 8 - i * 2 * Math.PI / 3 + t) * Math.pow((1 + Math.cos(d - t)) / 2, 3) * 4;
         });
@@ -273,7 +302,7 @@ function onMouseOver() {
         .attr("stroke", "yellow");
 
     // run d3 timer to get time
-    var t = d3.timer(function(elapsed) {
+    var t = d3.timer(function (elapsed) {
         line.interpolate("basis-closed");
         path.attr("d", line);
         //if (elapsed > 60 * 1000) t.stop();
