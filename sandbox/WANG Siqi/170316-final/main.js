@@ -27,6 +27,7 @@ var zoom = d3.behavior.zoom()
 
 var canvasWidth, canvasHeight;
 var width, height;
+var displayStyle;
 
 var outerRadius;
 var innerArc, outerArc;
@@ -37,22 +38,36 @@ var svg, g, view;
 var cachedData;
 
 window.addEventListener("resize", function () {
-    canvasHeight = window.innerHeight;
-    canvasWidth = window.innerWidth;
     onDataLoaded(cachedData);  // redraw
 });
 
 function initDynamicParameters() {
     // fit canvas to device size
-    canvasWidth = window.innerWidth;
-    canvasHeight = window.innerHeight;
+    var edgeLength;
+    if (window.innerWidth / window.innerHeight < 1.5) {
+        // for narrow display set style to 31 * 12
+        displayStyle = "narrow";
+        width = window.innerWidth / (nMonth + 3);  // can use 100 as absolute
+        edgeLength = width;
 
-    width = canvasWidth / (nMonth + 3);  // can use 100 as absolute
-    height = canvasHeight / (nDay + 3);  // can use 80 as absolute
+        canvasWidth = window.innerWidth;
+        canvasHeight = Math.floor(edgeLength * (nDay + 3));
+    } else {
+        // for wide display set style to 12 * 31
+        displayStyle = "wide";
+        height = window.innerHeight / (nMonth + 3);  // can use 100 as absolute
+        edgeLength = height;
 
-    outerRadius = height / 2.8;
+        canvasHeight = window.innerHeight;
+        canvasWidth = Math.floor(edgeLength * (nDay + 3));
+    }
+    // use same value for both width and height
+    width = edgeLength;
+    height = edgeLength;
 
-// basic element on drawing arcs
+    outerRadius = edgeLength / 2.8;
+
+    // basic element on drawing arcs
     innerArc = d3.svg.arc()
         .innerRadius(0)
         .outerRadius(outerRadius / 3 * 2);
@@ -60,6 +75,10 @@ function initDynamicParameters() {
         .innerRadius(outerRadius / 3 * 2)
         .outerRadius(outerRadius);
 
+    // remove any existing svgs
+    d3.select("#dy-canvas")
+        .selectAll("svg")
+        .remove();
     svg = d3.select("#dy-canvas")
         .on("touchstart", nozoom)
         .on("touchmove", nozoom)
@@ -87,8 +106,9 @@ function onDataLoaded(data) {
     cachedData = data;
     var pieGroups = [];
     for (var k = 0; k < data.length; k++) {
-        var x = width * (Math.floor(k / nDay) + 1.5);
-        var y = height * (k % nDay + 1.5);
+        var coords = calculateCoordsForPieGraph(k);
+        var x = coords.x,
+            y = coords.y;
         var group = view.append("g")
             .attr("transform", "translate(" + x + "," + y + ")")
             .on("mouseover", onMouseOver)
@@ -177,56 +197,8 @@ function onDataLoaded(data) {
         }
     }
 
-    var fontFill = "#dcebee";
-    // write month on top of svg
-    var fontSize = 15;
-    view.selectAll("text-top")
-        .data(getNArray(12))
-        .enter().append("text")
-        .attr("x", function (d, i) {
-            return (i + 2.2) * width - fontSize * 2.2;
-        })
-        .attr("y", function (d, i) {
-            return 1.1 * height;
-        })
-        .attr("fill", fontFill)
-        .attr("font-family", "sans-serif")
-        .text(function (d) {
-            return monthDict["" + d];
-        });
-
-
-    // write day on left of svg
-    view.selectAll("text-left")
-        .data(getNArray(31))
-        .enter().append("text")
-        .attr("x", function (d, i) {
-            return 1.1 * width;
-        })
-        .attr("y", function (d, i) {
-            return (i + 2.5) * height - fontSize * 2.5;
-        })
-        .attr("fill", fontFill)
-        .attr("font-family", "sans-serif")
-        .text(function (d) {
-            return "" + d;
-        });
-
-    // write day on right of svg
-    view.selectAll("text-right")
-        .data(getNArray(31))
-        .enter().append("text")
-        .attr("x", function (d, i) {
-            return ( 1.8 + nMonth) * width;
-        })
-        .attr("y", function (d, i) {
-            return (i + 2.5) * height - fontSize * 2.5;
-        })
-        .attr("fill", fontFill)
-        .attr("font-family", "sans-serif")
-        .text(function (d) {
-            return "" + d;
-        });
+    // draw scales
+    drawScales();
 }
 
 function convertTimeStringToMinutes(inputStr) {
@@ -236,12 +208,130 @@ function convertTimeStringToMinutes(inputStr) {
     return hr * 60 + min;
 }
 
+function calculateCoordsForPieGraph(dataIndex) {
+    var x, y;
+    if (displayStyle === "narrow") {
+        x = width * (Math.floor(dataIndex / nDay) + 1.5);
+        y = height * (Math.floor(dataIndex % nDay) + 1.5);
+    } else {
+        // "wide" scenario
+        x = width * (Math.floor(dataIndex % nDay) + 1.5);
+        y = height * (Math.floor(dataIndex / nDay) + 1.5);
+    }
+    return {x: x, y: y};
+}
+
 function getNArray(num) {
     var array = [];
     for (var i = 0; i < num; i++) {
         array.push(i + 1);
     }
     return array;
+}
+
+function drawScales() {
+    var fontFill = "#dcebee";
+    var fontSize = 15;
+
+    if (displayStyle === "narrow") {
+        // write month on top of svg
+        view.selectAll("text-top")
+            .data(getNArray(nMonth))
+            .enter().append("text")
+            .attr("x", function (d, i) {
+                return (i + 2.2) * width - fontSize * 2.2;
+            })
+            .attr("y", function (d, i) {
+                return 1.1 * height;
+            })
+            .attr("fill", fontFill)
+            .attr("font-family", "sans-serif")
+            .text(function (d) {
+                return monthDict["" + d];
+            });
+
+        // write day on left of svg
+        view.selectAll("text-left")
+            .data(getNArray(nDay))
+            .enter().append("text")
+            .attr("x", function (d, i) {
+                return 1.1 * width;
+            })
+            .attr("y", function (d, i) {
+                return (i + 2.5) * height - fontSize * 2.5;
+            })
+            .attr("fill", fontFill)
+            .attr("font-family", "sans-serif")
+            .text(function (d) {
+                return "" + d;
+            });
+
+        // write day on right of svg
+        view.selectAll("text-right")
+            .data(getNArray(nDay))
+            .enter().append("text")
+            .attr("x", function (d, i) {
+                return (1.8 + nMonth) * width;
+            })
+            .attr("y", function (d, i) {
+                return (i + 2.5) * height - fontSize * 2.5;
+            })
+            .attr("fill", fontFill)
+            .attr("font-family", "sans-serif")
+            .text(function (d) {
+                return "" + d;
+            });
+    } else {
+        // "wide" scenario
+        // write day on top of svg
+        view.selectAll("text-top")
+            .data(getNArray(nDay))
+            .enter().append("text")
+            .attr("x", function (d, i) {
+                return (i + 2.2) * width - fontSize * 2.2;
+            })
+            .attr("y", function (d, i) {
+                return 1.1 * height;
+            })
+            .attr("fill", fontFill)
+            .attr("font-family", "sans-serif")
+            .text(function (d) {
+                return "" + d;
+            });
+
+
+        // write month on left of svg
+        view.selectAll("text-left")
+            .data(getNArray(nMonth))
+            .enter().append("text")
+            .attr("x", function (d, i) {
+                return 1.1 * width;
+            })
+            .attr("y", function (d, i) {
+                return (i + 2.5) * height - fontSize * 2.5;
+            })
+            .attr("fill", fontFill)
+            .attr("font-family", "sans-serif")
+            .text(function (d) {
+                return monthDict["" + d];
+            });
+
+        // write month on right of svg
+        view.selectAll("text-right")
+            .data(getNArray(nMonth))
+            .enter().append("text")
+            .attr("x", function (d, i) {
+                return (2 + nDay) * width;
+            })
+            .attr("y", function (d, i) {
+                return (i + 2.5) * height - fontSize * 2.5;
+            })
+            .attr("fill", fontFill)
+            .attr("font-family", "sans-serif")
+            .text(function (d) {
+                return monthDict["" + d];
+            });
+    }
 }
 
 // handle zoom actions
@@ -263,7 +353,7 @@ function onMouseClick(d, i) {
         .transition()
         .attr("transform", "translate(" + (x - 2 * width) + "," + (y - 2 * height) + ")" + "scale(" + 5 + ")")
         .transition()
-        .delay(500)
+        .delay(1000)
         .attr("transform", "translate(" + x + "," + y + ")" + "scale(" + 1 + ")")
         .each("end", function () {
             d3.select(this).on("click", onMouseClick);  // re-enable click action after transition
