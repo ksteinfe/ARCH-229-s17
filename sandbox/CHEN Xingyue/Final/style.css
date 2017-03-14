@@ -9,6 +9,13 @@ body {
 			color:white
 		}
 
+        
+.popup {
+    background-color: #f00;
+    width: 100px;
+    height: 100px;
+}        
+        
 .axis path, .axis line {
   fill: none;
   stroke: #ccc;

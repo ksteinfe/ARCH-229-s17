@@ -2,7 +2,7 @@
 
 
 function onDataLoaded(dObj) {
-    //console.log(dObj)
+    console.log(dObj)
     // I used this to manipulate the incoming data to test validity of graph
     for (var t in dObj.ticks) {
         tick = dObj.ticks[t];
@@ -36,7 +36,8 @@ function onDataLoaded(dObj) {
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
     
     //////ADD CITY NAME TO THE TOP/////
-    var cityName = document.getElementById("csv-file").value;
+    //var cityName = document.getElementById("csv-file").value;
+    var cityName = dObj.location.city;
     var dotPosition = cityName.indexOf(".");
     cityName = cityName.slice(0, dotPosition);
     var hyphonPosition = cityName.lastIndexOf("_");
@@ -409,9 +410,33 @@ var barWrapper = svg.append("g")
    
 
 
+// Define the svg for the tooltip
+var popGroup = board.g.append("g")	
+    .style("opacity", 0.0);
+
+popGroup.append("rect")
+    .attr("class", "popup")	 
+ 	.attr("width", 100)
+	.attr("height", 100)
+ 	.attr("x", 0)
+ 	.attr("y", 0)
+
+    
+var drawPop = function(d){
+    console.log(d);
+    var drawGroup = popGroup.append("g").attr("id","popgraph");
+    drawGroup.append("rect")
+        .attr("width", 10)
+        .attr("height", 10)
+        .attr("fill", "black")
+        .attr("x", 5)
+        .attr("y", 5)
+}
 
 
-
+var delPop = function(d){
+    popGroup.select("#popgraph").remove();
+}    
     // Draw bars 
 
     //Draw a bar per day were the height is the difference between the minimum and maximum temperature
@@ -428,17 +453,28 @@ barWrapper.selectAll(".rainBar")
  	.style("fill", function (d) { return colorScale(d.averageOf("RelHumid")); })
     .attr("stroke", "orange")
     .attr('stroke-width', 0)
-      .on('mouseover', function () {
+      .on('mouseover', function (d) {
           d3.select(this)
             .transition()
             .duration(1000)
             .attr('stroke-width', 5)
+            
+            drawPop(d);
+            popGroup.transition()		
+                .duration(250)		
+                .style("opacity", 1.0)
+            
       })
-      .on('mouseout', function () {
+      .on('mouseout', function (d) {
           d3.select(this)
             .transition()
             .duration(1000)
             .attr('stroke-width', 0)
+            
+            delPop(d);
+            popGroup.transition()		
+                .duration(250)		
+                .style("opacity", 0.0)            
       })
     .append("title")
     .text(function (d) {
@@ -485,6 +521,24 @@ var angScale = d3.scale.linear() // value -> display
     .range([0, 2 * Math.PI]);
 var angMap = function (d) { return angScale(angValue(d)); }; // data -> display
 
+
+var lunasFormat = function(ts){
+    var dt = new Date(ts.mid*1000*60);
+    var mth = dY.dt.monthTable[ dt.getUTCMonth() ].shortname;
+    var dat = dt.getUTCDate();
+    var hours = dt.getUTCHours();
+    var mins = dt.getUTCMinutes();
+    
+    var pad = function(n) { return (n < 10) ? ("0" + n) : n; }    
+    
+    return mth + " " +pad(dat)+" "+ pad(hours) + ":" +  pad(mins)
+}
+
+var niceFormat = function (ts) {return dY.dt.niceFormat( new Date(ts.mid*1000*60) )  }
+
+
+
+
     // draw dots
 ctrdGrp.append("g").selectAll(".dot")
     .data(dObj.ticks)
@@ -511,11 +565,9 @@ ctrdGrp.append("g").selectAll(".dot")
           })
         .append("title")
         .text(function (d) {
-            return "Wind Speed Daily Summary "
-                + "\n" + "Date: "
+            return "Wind Speed for " + lunasFormat(d.ts)
               //  + "\n" + "Max Windspeed: " + d.maxOf("WindSpd") + "mph"
-                + "\n" + "Min Windspeed: " + d.minOf("WindSpd") + "mph"
-                + "\n" + "Average Windspeed: " + d.averageOf("WindSpd").toFixed(2) + "mph"
+                + "\n" + "Windspeed: " + d.valueOf("WindSpd") + "mph"
         });
        
        
