@@ -8,7 +8,7 @@ function onDataLoaded(dObj, map, weather) {
     
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
-    board = dY.graph.addBoard("#dy-canvas",{inWidth:960, inHeight:600, margin:40});
+    board = dY.graph.addBoard("#dy-canvas",{inWidth:960, inHeight:550, margin:40});
     console.log(board);
     
     // define variables used later
@@ -24,8 +24,8 @@ function onDataLoaded(dObj, map, weather) {
     
     dot_sz = 2;
     
-    var percentile = 1.00;           // percentile to get chilled water data and create color on cities
-    var weather_percentile = .80    // percentile to get weather data
+    var percentile = 1.0;           // percentile to get chilled water data and create color on cities
+    var weather_percentile = .9    // percentile to get weather data
     
     var map_scale = 3000;
     map = topojson.simplify(topojson.presimplify(map));                 // simplify topojson
@@ -83,7 +83,14 @@ function onDataLoaded(dObj, map, weather) {
                        .range(['#f0f0f0','#bdbdbd','#636363'])
     
     var select_chw_color = function(d) {
-             var climate_data = data_by_climate[(d.Zone) - 1];
+            var dbcIndex = -1;
+            for (var dbc in data_by_climate){
+                if (d.name == data_by_climate[dbc].key) {
+                    dbcIndex = dbc;
+                    break;
+                }
+            }
+             var climate_data = data_by_climate[dbcIndex];
              var dat_chw = d3.values(climate_data.values).map(function(d) { return d["ChW Supply"]; });
              var filter_chw = dat_chw.filter(function(d){return d > 0; })
              var city_color = color_chw(d3.quantile(filter_chw.sort(function(a, b){ return a - b; }), percentile));
@@ -92,9 +99,9 @@ function onDataLoaded(dObj, map, weather) {
         };
     
     // Process weather data
-    weather_by_climate = d3.nest().key(function(d) {return d["name"]; })
-                                  .key(function(d) {return d["Months"]; })
-                                  .entries(weather)
+    var weather_by_climate = d3.nest().key(function(d) {return d["name"]; })
+                                      .key(function(d) {return d["Months"]; })
+                                      .entries(weather)
     
     
     // scale for radius size
@@ -121,9 +128,6 @@ function onDataLoaded(dObj, map, weather) {
                                   .sort(function(a,b) { return a-b; });
 
             var color = color_wea(d3.quantile(twb, weather_percentile));
-            console.log(sub_weather)
-            console.log(color)
-            console.log(d3.quantile(twb, weather_percentile))
             return color;
         });
         
@@ -183,30 +187,31 @@ function onDataLoaded(dObj, map, weather) {
                                  .domain([0, 25])
                                  .range([mini_w_origin, mini_w_origin+mini_w]);
             
-            //Define X axis
-            var xAxis = d3.svg.axis()
-                          .scale(xScale)
-                          .orient("bottom")
-                          .ticks(7);
-            
             
             // Generate a histogram using twenty uniformly-spaced bins.
             var hist_data = d3.layout.histogram()
                                      .bins(xScale.ticks(20))
                                      (values);
             
-            var yMax = d3.max(hist_data, function(d){return d.length});
-            var yMin = d3.min(hist_data, function(d){return d.length});
-            
             var color = color_chw(d3.quantile(values.sort(function(a, b){ return a - b; }), percentile));
-            var colorScale = d3.scale.linear()
-                                     .domain([yMin, yMax])
-                                     .range([d3.rgb(color).brighter(), d3.rgb(color).darker()]);
-
+            console.log(d3.quantile(values.sort(function(a, b){ return a - b; }), percentile))
+            
             var yScale = d3.scale.linear()
-                                 .domain([0, yMax])
+                                 .domain([0, 150])
                                  .range([mini_h+mini_h_origin, mini_h_origin]);
-
+            
+            //Define X axis
+            var xAxis = d3.svg.axis()
+                          .scale(xScale)
+                          .orient("bottom")
+                          .ticks(7);
+                          
+            //Define Y axis
+            var yAxis = d3.svg.axis()
+                          .scale(yScale)
+                          .orient("right")
+                          .ticks(4);
+            
             var bar = board.g.selectAll("g.bar")
                            .data(hist_data)
                            .enter().append("g")
@@ -250,6 +255,13 @@ function onDataLoaded(dObj, map, weather) {
                     .attr("transform", "translate(0," + (mini_h+mini_h_origin) + ")")
                     .call(xAxis);
                     
+            //Create Y axis
+            board.g.append("g")
+                    .attr("class", "axis")
+                    .attr("id", "tooltip")
+                    .attr("transform", "translate(" + (mini_w_origin + mini_w) + "," + (0) + ")")
+                    .call(yAxis);
+                    
             
             // Display city name by histogram
             var txt_size = 30;
@@ -277,55 +289,63 @@ function onDataLoaded(dObj, map, weather) {
                    .attr("fill", "black")
                    .attr("text-anchor", "start")
                    .text("ChW supply temperature frequency");
-            
-            
-            
-    // draw legends- operation hours
-    board.g.selectAll("g.oper-legend")
-           .data([9, 17, 23, 24])
-           .enter().append("rect")
-           .attr("id", "tooltip")
-           .attr('width', legend_bar_width)
-           .attr('height', 10)
-           .attr('y', mini_h_origin + mini_h)
-           .attr('x', function(d,i) {
-               return legend_bar_width*i; })
-           .attr('fill', function(d) {
-               return color_oper(d);
-           })
-           .attr("transform", "translate("+ (mini_w_origin) + "," + 90 + ")");
-           
-    board.g.selectAll("g.oper-legend")
-           .data([9, 17, 23, 24])
-           .enter().append("text")
-           .attr("id", "tooltip")
-           .attr("class", "legendClimates")
-           .attr('y', mini_h_origin + mini_h + 25)
-           .attr('x', function(d,i) {
-               return legend_bar_width*i + 10; })
-           .text(function(d){ return d; })
-           .attr("transform", "translate("+ (mini_w_origin) + "," + 90 + ")");
-        
-    board.g.append("text")
-           .attr("id", "tooltip")
-           .attr("class", "legendClimates")
-           .attr('y', mini_h_origin + mini_h - 5)
-           .text("Operation hours")
-           .attr("transform", "translate("+ (mini_w_origin) + "," + 90 + ")");
-            
-            d3.select(this)
-              .attr("r", 50)
 
-        })
+            board.g.append("text")
+                   .attr("id", "tooltip")
+                   .attr("font-size", txt_size-15 + "px")
+                   .attr("fill", "black")
+                   .attr("text-anchor", "start")
+                   .attr("transform", "translate(" + (mini_w_origin + mini_w + 60) + "," + (mini_w/2) + "), rotate(-90)")
+                   .text("Number of simulations");
+                   
+            
+            
+            // draw legends- operation hours
+            board.g.selectAll("g.oper-legend")
+                   .data([9, 17, 23, 24])
+                   .enter().append("rect")
+                   .attr("id", "tooltip")
+                   .attr('width', legend_bar_width)
+                   .attr('height', 10)
+                   .attr('y', mini_h_origin + mini_h)
+                   .attr('x', function(d,i) {
+                       return legend_bar_width*i; })
+                   .attr('fill', function(d) {
+                       return color_oper(d);
+                   })
+                   .attr("transform", "translate("+ (mini_w_origin) + "," + 90 + ")");
+           
+            board.g.selectAll("g.oper-legend")
+                   .data([9, 17, 23, 24])
+                   .enter().append("text")
+                   .attr("id", "tooltip")
+                   .attr("class", "legendClimates")
+                   .attr('y', mini_h_origin + mini_h + 25)
+                   .attr('x', function(d,i) {
+                       return legend_bar_width*i + 10; })
+                   .text(function(d){ return d; })
+                   .attr("transform", "translate("+ (mini_w_origin) + "," + 90 + ")");
+                
+            board.g.append("text")
+                   .attr("id", "tooltip")
+                   .attr("class", "legendClimates")
+                   .attr('y', mini_h_origin + mini_h - 5)
+                   .text("Operation hours")
+                   .attr("transform", "translate("+ (mini_w_origin) + "," + 90 + ")");
+                    
+                    d3.select(this)
+                      .attr("r", 50)
+
+                })
         .on("mouseout", function(d) {
             d3.selectAll("#tooltip")
               .transition()
-              .duration(100)
+              .duration(50)
               .remove();
             
             d3.select(this)
               .transition()
-              .duration(100)
+              .duration(50)
               .style("fill", select_chw_color)
               .attr("r", function(d){
                     return scale_pop(d.population)
@@ -337,6 +357,7 @@ function onDataLoaded(dObj, map, weather) {
         .attr("x", 5)
         .attr("font-size", "20px")
         .text(function(d){ return d.city; })
+    
     
     // draw legends- weather
     var legend_bar_width = 40;
@@ -393,44 +414,11 @@ function onDataLoaded(dObj, map, weather) {
            .attr('y', h - (legend_city_h - 25))
            .attr('x', function(d,i) {
                return legend_bar_width*i + 10; })
-           .text(function(d){ return d; })
+           .text(function(d){ return d; });
         
     board.g.append("text")
            .attr("class", "legendCaption")
            .attr('y', h - (legend_city_h + 5))
-           .text("Chilled water supply temperature")
-           
-           /*
-    // draw legends- city and bar color
-    var legend_spc_weather = 10000;
-    var legend_city_h = 20;
-    board.g.selectAll("g.city-legend")
-           .data([1000, 100000, 1000000])
-           .enter().append("circle")
-           .attr("class", "legendClimates")
-           .attr('width', legend_bar_width)
-           .attr('height', 10)
-           .attr('r', function(d){
-               return scale_pop(d);
-           })
-           .attr('cy', h - legend_city_h)
-           .attr('cx', function(d,i) {
-               return legend_bar_width*i; })
-           .attr('fill', '#ccc');
-           
-    board.g.selectAll("g.city-legend")
-           .data([1000, 100000, 1000000])
-           .enter().append("text")
-           .attr("class", "legendClimates")
-           .attr('y', h - (legend_city_h - 25))
-           .attr('x', function(d,i) {
-               return legend_bar_width*i; })
-           .text(function(d){ return d3.format("e")(d); })
-        
-    board.g.append("text")
-           .attr("class", "legendCaption")
-           .attr('y', h - (legend_city_h + 10))
-           .text("City population")
-           */
+           .text("Chilled water supply temperature");
 }
 
