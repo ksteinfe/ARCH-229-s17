@@ -5,7 +5,7 @@
   shape-rendering: crispEdges;
 }
 
-.y .tick text, .x .tick text{
+.y .tick, .x .tick{
     font-size:8px;
     fill: #666;    
     font-family: Tahoma, Geneva, sans-serif;
@@ -17,15 +17,18 @@
   stroke-width: 1px;
 }
 
-.city text{
+.city text {
     font-size:10px;
     fill: #666;    
     font-family: Tahoma, Geneva, sans-serif;
 }
 
-text[Attributes Style] {
+.legendClimates {
+    font-size:15px;    
     font-family: Tahoma, Geneva, sans-serif;
-    font-size: 30px;
-    font-weight: bold;
-    fill: black;
+}
+
+
+#tooltip {
+    font-family: Tahoma, Geneva, sans-serif;
 }

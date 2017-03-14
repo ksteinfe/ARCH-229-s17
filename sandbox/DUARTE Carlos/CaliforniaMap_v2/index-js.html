@@ -18,7 +18,8 @@
     <script src="https://d3js.org/d3-array.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v1.min.js"></script>
-   
+    
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.22.0/d3-legend.min.js"></script> -->
     <script src="https://d3js.org/d3-polygon.v1.min.js"></script>
     <script src="https://d3js.org/d3-color.v1.min.js"></script>
     <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
@@ -42,8 +43,9 @@
 
 <!-- Here we load your D3 script, which defines onDataLoaded --> 
 <script src="script.js"></script> 
-<!-- Here we load the data.js file, which defines a single variable dObj --> 
-<script src="data.js"></script> 
+<!-- Here we load the data.js, weather.js files, which define variables map and weather data --> 
+<script src="data.js"></script>
+<script src="weather.js"></script>  
 <!-- Now we call the onDataLoaded function defined in script.js, passing in dObj --> 
 <script>
 
@@ -58,7 +60,7 @@
                 if ((results.errors.length ==1)&&(results.errors[0].code=="TooFewFields")){
                     results.data.splice(results.data.length-1,1);
                 }
-                onDataLoaded(results.data, map);
+                onDataLoaded(results.data, map, weather);
             }
         });
     }
