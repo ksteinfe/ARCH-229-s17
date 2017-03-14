@@ -1,0 +1,70 @@
+
+
+
+body {
+			font-family: Tahoma, Geneva, sans-serif;
+			fill: white;
+			font-size: 12px;
+			background-color: #171f3e;
+			color:white
+		}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.y .tick text, .x .tick text{
+    font-size:8px;
+    fill: #666;    
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+.donutData.name text{
+font-size:8px;
+    fill: rgba(255,255,255,0.6);    
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+.donutArcSlices, .donutText{
+    fill: #5c6277;
+}
+
+.axisText{
+fill: #5c6277;
+}
+
+.dot {
+    fill-opacity: 0.1;
+    fill: blue;
+}
+
+.high-dew{
+    fill: red;
+}
+
+.low-dew{
+    fill: green;
+}
+
+svg.board {
+    background: #171f3e;
+}
+
+.city-label{
+    font: 15px sans-serif;
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 28px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
