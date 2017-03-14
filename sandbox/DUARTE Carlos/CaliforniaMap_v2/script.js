@@ -164,7 +164,15 @@ function onDataLoaded(dObj, map, weather) {
             var xPosition = d3.mouse(this)[0] + w/2;
             var yPosition = d3.mouse(this)[1] + h/2;
             
-            var filter_data = data_by_climate[(d.Zone) - 1];
+            var dbcIndex = -1;
+            for (var dbc in data_by_climate){
+                if (d.name == data_by_climate[dbc].key) {
+                    dbcIndex = dbc;
+                    break;
+                }
+            }
+            
+            var filter_data = data_by_climate[dbcIndex];
             var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; });
             
             var values = filter_chw.filter(function(d){return d > 0; });
@@ -312,12 +320,12 @@ function onDataLoaded(dObj, map, weather) {
         .on("mouseout", function(d) {
             d3.selectAll("#tooltip")
               .transition()
-              .duration(250)
+              .duration(100)
               .remove();
             
             d3.select(this)
               .transition()
-              .duration(250)
+              .duration(100)
               .style("fill", select_chw_color)
               .attr("r", function(d){
                     return scale_pop(d.population)
