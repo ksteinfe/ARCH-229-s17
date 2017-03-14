@@ -149,5 +149,7 @@ function onDataLoaded(dObj) {
                 .datum(function(d){ return d.monthlyTemperature; })
                 .attr( "d", lineFuncGroundTemp )
 
+
 }
+
 
