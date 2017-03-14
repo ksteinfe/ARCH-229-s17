@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EPW Weather File Template</title>
+    <title>City Climate Characters</title>
     <link rel="stylesheet" type="text/css" href="../../../css/arch229s17.css"><!-- the standard CSS file for our class -->
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- the CSS for your drawing  -->
     
@@ -15,12 +15,14 @@
 <body>
 <!-- The dy-head div contains UI for loading external local files --> 
 <div id="dy-head">
-    <p id="dy-head-title">Micro Macro Response</p>
+    <p id="dy-head-title">City Climate Characters</p>
     <p id="dy-head-attribution">by Xingyue Luna Chen for ARCH 229 s17</p>
         
     <p id="dy-head-upload-message">Please select an <b>EPW Weather</b> file. Your data is private. Nothing will be uploaded or stored on our servers, nor communicated to others in any way.</p>
     <input type="file" id="csv-file" name="files"/>
-    <script>$(document).ready(function(){ $("#csv-file").change(dY.parser.handleSingleEPWFileUpload); });</script>
+    <script>$(document).ready(function () { $("#csv-file").change(dY.parser.handleSingleEPWFileUpload); });
+        $("#csv-file")
+    </script>
     
 </div>
 
