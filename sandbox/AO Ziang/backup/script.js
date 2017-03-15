@@ -7,7 +7,7 @@ function onDataLoaded(dObj) {
     for (var t in dObj.ticks) {
         tick = dObj.ticks[t];
         //tick.data.EPW.WindDir = 180;
-        //tick.data.EPW.WindSpd = 30;
+       // tick.data.EPW.WindSpd = 30;
     }
     console.log(dObj);
 
@@ -57,7 +57,7 @@ function onDataLoaded(dObj) {
             var radValue = function (d) { return d.valueOf("WindSpd"); }; // data -> value
             var radScale = d3.scale.linear()  // value -> display
                 //.domain(dObj.metaOf("WindSpd").domain)
-                .domain([0,40])
+                .domain([0,20])
                 .range([ctrOffset, radius]);
             var radMap = function (d) { return radScale(radValue(d)); }; // data -> display
 
@@ -76,7 +76,6 @@ function onDataLoaded(dObj) {
                     .attr({
                         class: "dot",
                         r: 0.4,
-                        fill:"grey",
                         cx: function (d) { return (radMap(d) * Math.cos(angMap(d))); },
                         cy: function (d) { return (radMap(d) * Math.sin(angMap(d))); }
                     })
@@ -87,10 +86,8 @@ function onDataLoaded(dObj) {
                 .enter().append("circle")
                     .attr({
                         class: "reddot",
-                        r: 0.2,
+                        r: 0.4,
                         fill: "red",
-                        stroke: "grey",
-                        strokewidth: ".2",
                         cx: function (d) { return (radMap(d.values) * Math.cos(angMap(d.key))); },
                         cy: function (d) { return (radMap(d.values) * Math.sin(angMap(d.key))); }
                     })
@@ -116,6 +113,8 @@ function onDataLoaded(dObj) {
                                .x(function (d) { return (radMap(d.values) * Math.cos(angMap(d.key))); })
                                .y(function (d) { return (radMap(d.values) * Math.sin(angMap(d.key))); })
                                .interpolate("linear");
+
+            
                          
 //radial gradient for the path
             var defs = svg.append("defs");
@@ -146,25 +145,6 @@ function onDataLoaded(dObj) {
              
             ;
 
-
-
-
-
-            //try to draw the convex hull
-            //https://bl.ocks.org/mbostock/4341699 
-
-
-            var xposition = function (d) { return (radMap(d.values) * Math.cos(angMap(d.key))); };
-            var yposition = function (d) { return (radMap(d.values) * Math.sin(angMap(d.key))); };
-            var vertices = function () { return [x(), y()]; };
-
-            var hull = ctrdGrp.append("path")
-           .attr("class", "hull")
-            .attr("fill", "red")
-            ;
-
-
-
             
 
 
@@ -190,25 +170,6 @@ function onDataLoaded(dObj) {
                 .text(function (d) { return d; })
                 .attr("transform", "rotate(90) translate(0, " + (board.bDims.margin.bottom / 2 + board.dDims.height / 2) + ")") // rotate to horizontal, translate to bottom of board
                 .style("text-anchor", "middle");
-
-
-
-            //draw date
-
-            for (var dayOfYear=0; dayOfYear<365; dayOfYear+=1)
-                // calculate solar geometry for this day
-                var geomAtDay = dY.solarGeom.hourlyAtGivenDay(dObj.location, dayOfYear);
-                // enrich data with hourOfDay
-                geomAtDay.data.forEach(function(d,i){d.hourOfDay = i});
-
-                var dateStr = (dY.dt.hourOfYearToDate(geomAtDay.dayOfYear*24).getUTCMonth()+1) + " / " + dY.dt.hourOfYearToDate(geomAtDay.dayOfYear*24).getUTCDate();
-                ctrdGrp.append("text")
-                    .text( dateStr )
-                    .style("text-anchor", "middle")
-                    .attr("transform", "rotate(90) translate(0, " + (board.bDims.margin.bottom / 3 + board.dDims.height / 3) + ")") // rotate to horizontal, translate to bottom of board 
-                    .attr("class", "daylabel")
-                ;
-
         }
     }
          
