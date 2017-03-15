@@ -72,7 +72,7 @@ function onDataLoaded(dObj) {
       
     // Setup Y
     var yScale = d3.scale.linear() // value -> display
-        .domain([40,0])
+        .domain([30,0])
         .range((board.dDims.yRange)); 
 
     var yAxis = d3.svg.axis()

@@ -2,7 +2,7 @@
 
 .axis path, .axis line {
   fill: none;
-  stroke: #333;
+  stroke: #000;
   stroke-width: 0.5px;
 }
 
@@ -10,7 +10,7 @@
 
 .y .tick text, .x .tick text{
     font-size:8px;
-    fill: #666;    
+    fill: #000;    
     font-family: Tahoma, Geneva, sans-serif;
 }
 
@@ -32,12 +32,21 @@
 }
 
 .temp-area {
-    fill: #ccc;
+    fill: #f30;
 }
 
 .temp-average {
     fill: none;
-    stroke: #000;
+    stroke: #fff;
 }
 
 
+.first {
+    fill: #3e6d70;
+    opacity: 0.5;
+}
+
+.second {
+    fill: #1a3335;
+    opacity: 0.5;
+}
