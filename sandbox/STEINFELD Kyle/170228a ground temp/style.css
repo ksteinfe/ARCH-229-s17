@@ -22,7 +22,6 @@
 
 .groundline path{
     fill: none;
-    stroke: #f00;
     stroke-width: 1px;
 }
 
@@ -33,4 +32,16 @@
 .temp-average {
     fill: none;
     stroke: #000;
+}
+
+
+
+.first {
+    fill: red;
+    opacity: 0.5;
+}
+
+.second {
+    fill: black;
+    opacity: 0.5;
 }
