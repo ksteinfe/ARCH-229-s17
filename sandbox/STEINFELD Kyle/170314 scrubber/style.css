@@ -1,0 +1,28 @@
+
+
+.bar {
+    fill: pink;
+}
+
+.big {
+  font-size: 2em;
+   border-bottom:1px dashed black; 
+   cursor: col-resize;
+}
+
+.center{
+  margin:0 auto;
+  text-align:center;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #ccc;
+  shape-rendering: crispEdges;
+}
+
+.y .tick text, .x .tick text{
+    font-size:8px;
+    fill: #666;    
+    font-family: Tahoma, Geneva, sans-serif;
+}
