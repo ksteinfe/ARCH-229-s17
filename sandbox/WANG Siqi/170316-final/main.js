@@ -37,6 +37,7 @@ var svg, g, view;
 // cache loaded data and re-load on resizing
 var cachedData;
 
+// dynamic resizing (responsive)
 window.addEventListener("resize", function () {
     onDataLoaded(cachedData);  // redraw
 });
@@ -44,8 +45,8 @@ window.addEventListener("resize", function () {
 function initDynamicParameters() {
     // fit canvas to device size
     var edgeLength;
-    if (window.innerWidth / window.innerHeight < 1.5) {
-        // for narrow display set style to 31 * 12
+    if (window.innerWidth / window.innerHeight < 4 / 3) {
+        // for narrow display set style to 31(day) * 12(month)
         displayStyle = "narrow";
         width = window.innerWidth / (nMonth + 3);  // can use 100 as absolute
         edgeLength = width;
@@ -112,7 +113,7 @@ function onDataLoaded(data) {
         var group = view.append("g")
             .attr("transform", "translate(" + x + "," + y + ")")
             .on("mouseover", onMouseOver)
-            .on("mousemove", onMouseMove())
+            .on("mousemove", onMouseMove)
             .on("mouseout", onMouseOut)
             .on("click", onMouseClick);
         pieGroups.push(group);
@@ -175,18 +176,19 @@ function onDataLoaded(data) {
                 .attr("d", outerArc);
 
 
-            // // add text at bottom of svg
-            // pieGroups[index].selectAll("text")
-            //     .data([dataByDay])
-            //     .enter().append("text")
-            //     .attr("x", function(d, i) {return (width - 12 * 6) / 3 * 2;})
-            //     .attr("y", function(d, i) {return height * 0.95;})
-            //     .attr("font-size", "12px")
-            //     .attr("fill", "grey")
-            //     .attr("font-family", "sans-serif")
-            //     .text(function(d) {
-            //         return monthDict["" + d.Month] + " " + d.Day;
-            //     });
+            // add text of sunrise sunset time
+            pieGroups[index].selectAll("text")
+                .data([dataByDay])
+                .enter().append("text")
+                .attr("x", function(d, i) {return width / 3.5;})
+                .attr("y", function(d, i) {return height / 2;})
+                .attr("font-size", "" + width / 30)
+                .attr("fill", "none")
+                .attr("font-family", "sans-serif")
+                .text(function(d) {
+                    return "" + d.Rise.substring(0, 2) + ":" + d.Rise.substring(2, 4) +
+                        "-" + d.Set.substring(0, 2) + ":" + d.Set.substring(2, 4);
+                });
 
             // apply pattern
             // var pattern = pieGroups[index].append("defs")
@@ -352,11 +354,22 @@ function onMouseClick(d, i) {
         .on("click", null) // disable click event when in transition
         .transition()
         .attr("transform", "translate(" + (x - 2 * width) + "," + (y - 2 * height) + ")" + "scale(" + 5 + ")")
+        .each(function() {
+            d3.select(this)
+                .selectAll("text")
+                .attr("fill", "black");
+        });
+
+    d3.select(this)
         .transition()
         .delay(1000)
         .attr("transform", "translate(" + x + "," + y + ")" + "scale(" + 1 + ")")
         .each("end", function () {
             d3.select(this).on("click", onMouseClick);  // re-enable click action after transition
+            // set text to be visible
+            d3.select(this)
+                .selectAll("text")
+                .attr("fill", "none");
         });
 }
 
