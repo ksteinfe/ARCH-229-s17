@@ -33,3 +33,65 @@ onDataLoaded(dObj);
 
 </body>
 </html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>mouseover demo</title>
+  <style>
+  div.out {
+    width: 40%;
+    height: 120px;
+    margin: 0 15px;
+    background-color: #d6edfc;
+    float: left;
+  }
+  div.in {
+    width: 60%;
+    height: 60%;
+    background-color: #fc0;
+    margin: 10px auto;
+  }
+  p {
+    line-height: 1em;
+    margin: 0;
+    padding: 0;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+<body>
+ 
+<div class="out overout">
+  <span>move your mouse</span>
+  <div class="in">
+  </div>
+</div>
+ 
+<div class="out enterleave">
+  <span>move your mouse</span>
+  <div class="in">
+  </div>
+</div>
+ 
+<script>
+var i = 0;
+$( "div.overout" )
+  .mouseover(function() {
+    i += 1;
+    $( this ).find( "span" ).text( "mouse over x " + i );
+  })
+  .mouseout(function() {
+    $( this ).find( "span" ).text( "mouse out " );
+  });
+ 
+var n = 0;
+$( "div.enterleave" )
+  .mouseenter(function() {
+    n += 1;
+    $( this ).find( "span" ).text( "mouse enter x " + n );
+  })
+  .mouseleave(function() {
+    $( this ).find( "span" ).text( "mouse leave" );
+  });
+</script>

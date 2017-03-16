@@ -28,7 +28,7 @@ function onDataLoaded(dObj) {
 
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
-    var board = dY.graph.addBoard("#dy-canvas",{inWidth: 400, inHeight:400, margin:50});
+    var board = dY.graph.addBoard("#dy-canvas",{inWidth: 400, inHeight:500, margin:50});
     var width = board.dDims.width;
     var height = board.dDims.height;
     
@@ -36,12 +36,53 @@ function onDataLoaded(dObj) {
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
     
     //////ADD CITY NAME TO THE TOP/////
-    //var cityName = document.getElementById("csv-file").value;
-    var cityName = dObj.location.city;
+    var cityName = document.getElementById("csv-file").value;
+    //var cityName = dObj.location.city;
     var dotPosition = cityName.indexOf(".");
-    cityName = cityName.slice(0, dotPosition);
+   cityName = cityName.slice(0, dotPosition);
     var hyphonPosition = cityName.lastIndexOf("_");
-    cityName = cityName.slice(hyphonPosition+1, cityName.length);
+    cityName = cityName.slice(hyphonPosition + 1, cityName.length);
+
+    //////tooltip
+    var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+    var divTemp= d3.select("body").append("div")
+   .attr("class", "tooltipTemp")
+   .style("opacity", 0);
+
+    var divWind = d3.select("body").append("div")
+   .attr("class", "tooltipWind")
+   .style("opacity", 0);
+
+
+    ////Date format
+    var lunasFormat = function (ts) {
+        var dt = new Date(ts.mid * 1000 * 60);
+        var mth = dY.dt.monthTable[dt.getUTCMonth()].shortname;
+        var dat = dt.getUTCDate();
+        var hours = dt.getUTCHours();
+        var mins = dt.getUTCMinutes();
+
+        var pad = function (n) { return (n < 10) ? ("0" + n) : n; }
+
+        return mth + " " + pad(dat) + " " + pad(hours) + ":" + pad(mins)
+    }
+
+    var lunasFormatDate = function (ts) {
+        var dt = new Date(ts.mid * 1000 * 60);
+        var mth = dY.dt.monthTable[dt.getUTCMonth()].shortname;
+        var dat = dt.getUTCDate();
+        var hours = dt.getUTCHours();
+        var mins = dt.getUTCMinutes();
+
+        var pad = function (n) { return (n < 10) ? ("0" + n) : n; }
+
+        return mth + " " + pad(dat) 
+    }
+
+    var niceFormat = function (ts) { return dY.dt.niceFormat(new Date(ts.mid * 1000 * 60)) }
 
     board.g.append("text")
             .text(cityName)
@@ -51,7 +92,14 @@ function onDataLoaded(dObj) {
                 x: 200,
                 y: 0
             });
+
+
     
+
+
+
+
+
    // Data and color
     
     var monthsData = [
@@ -82,7 +130,7 @@ function onDataLoaded(dObj) {
     //arc function   
     //for text
     var arc = d3.svg.arc()
-        .innerRadius(rZeroCircle+20)
+        .innerRadius(rZeroCircle+25)
         .outerRadius(rZeroCircle + 38);
 
     //var table = svg.append("circle").attr({
@@ -204,7 +252,7 @@ var outerRadius = rZeroCircle*1.6,
 	innerRadius = outerRadius * 0.4;
 
 // Color according to mean temperature. 
-var colorScale = d3.scale.linear()
+var colorScaleTemp = d3.scale.linear()
 	.domain([-15, 7.5, 30])
 	.range(["#2c7bb6", "#ffff8c", "#d7191c"])
 	.interpolate(d3.interpolateHcl);
@@ -250,14 +298,7 @@ axes.append("text")
     //And the color is based on the mean temperature
 
 // Var
-var barColor = function (d) { return colorScale(d.averageOf("DryBulbTemp")); };
-
-    
-    
-
-
-//Parse date
-
+var barColor = function (d) { return colorScaleTemp(d.averageOf("DryBulbTemp")); };
 
 
 //
@@ -269,115 +310,54 @@ barWrapper.selectAll(".tempBar")
  	.attr("width", 1.5)
 	.attr("height", function (d, i) { return barScale(d.maxOf("DryBulbTemp")) - barScale(d.minOf("DryBulbTemp")); })
  	.attr("x", -0.75)
-    .attr("stroke", "white")
+    .attr("stroke", "DeepPink")
     .attr('stroke-width', 0)
-      .on('mouseover', function () {
+      .on('mouseover', function (d) {
           d3.select(this)
             .transition()
-            .duration(1000)
+            .duration(800)
             .attr('stroke-width', 5)
-          //var xPositionMouseOver = d3.mouse(this)[0] + w / 2;
-          //var yPositionMouseOver = d3.mouse(this)[1] + h / 2;
 
-          //board.g.selectAll("g.circle")
-          //          //.data(dSum)
-          //          //.enter()
-          //          .append("circle")
-          //          .attr("id", "tooltipgraph")
-          //          .attr("cx",xPositionMouseOver )
-          //          .attr("cy", yPositionMouseOver)
-          //          .attr("r", 5)
-          //          .attr("fill", "red");
+          divTemp.transition()
+             .duration(200)
+             .style("opacity", .9);
+
+
+          divTemp.html("<strong>DRY BULB TEMPERATURE DAILY SUMMARY </strong>" + "<br/>" + lunasFormatDate(d.ts) + "<br/>"+"Max Temperature: " + d.maxOf("DryBulbTemp") + "°C" + "<br/>" + "Min Temperature: " + d.minOf("DryBulbTemp") + "°C" + "<br/>" + "Average Temperature: " + d.averageOf("DryBulbTemp").toFixed(2) + "°C" + "<br/>" + "Comfort Temperature: 18-24°C")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
       })
-      .on('mouseout', function () {
+
+
+      .on('mouseout', function (d) {
           d3.select(this)
             .transition()
-            .duration(1000)
+            .duration(800)
             .attr('stroke-width', 0)
+
+          divTemp.transition()
+              .duration(500)
+              .style("opacity", 0);
+
       })
  	.attr("y", function (d, i) { return barScale(d.minOf("DryBulbTemp")); })
- 	.style("fill", barColor)
-    .append("title")
-    .text(function (d) {
-        return "Dry Bulb Temperature Daily Summary "
-            + "\n" + "Date: " 
-            + "\n" + "Max Temperature: " + d.maxOf("DryBulbTemp") + "°C"
-            + "\n" + "Min Temperature: " + d.minOf("DryBulbTemp") + "°C"
-            + "\n" + "Average Temperature: " + d.averageOf("DryBulbTemp").toFixed(2) + "°C"
-    });
+ 	.style("fill", barColor);
+    //.append("title")
+    //.text(function (d) {
+    //    return "Dry Bulb Temperature Daily Summary "
+    //        + "\n" + lunasFormatDate(d.ts)
+    //        + "\n" + "Max Temperature: " + d.maxOf("DryBulbTemp") + "°C"
+    //        + "\n" + "Min Temperature: " + d.minOf("DryBulbTemp") + "°C"
+    //        + "\n" + "Average Temperature: " + d.averageOf("DryBulbTemp").toFixed(2) + "°C"
+    //});
     
 
-///////////////////////////////////LEGEND///////////////////////////////////////////////
-    ////extra scale since the color scale is interpolated
-//var tempscale = d3.scale.linear()
-//	.domain([-15, 30])
-//	.range([0, width]);
 
-//    //calculate the variables for the temp gradient
-//var numstops = 10;
-//temprange = tempscale.domain();
-//temprange[2] = temprange[1] - temprange[0];
-//temppoint = [];
-//for (var i = 0; i < numstops; i++) {
-//    temppoint.push(i * temprange[2] / (numstops - 1) + temprange[0]);
-//}//for i
+    
 
-//    //create the gradient
-//svg.append("defs")
-//	.append("lineargradient")
-//	.attr("id", "legend-weather")
-//	.attr("x1", "0%").attr("y1", "0%")
-//	.attr("x2", "100%").attr("y2", "0%")
-//	.selectall("stop")
-//	.data(dSum)
-//	.enter().append("stop")
-//	.attr("offset", function (d, i) { return tempscale(temppoint[i]) / width; })
-//	.attr("stop-color", function (d, i) { return colorscale(temppoint[i]); });
 
-//    // draw the legend //
 
-//var legendwidth = math.min(rOuterCircle * 2, 400);
 
-//    //color legend container
-//var legendsvg = svg.append("g")
-//	.attr("class", "legendwrapper")
-//	.attr("transform", "translate(" + 0 + "," + (rOuterCircle + 70) + ")");
-
-//    //draw the rectangle
-//legendsvg.append("rect")
-//	.attr("class", "legendrect")
-//	.attr("x", -legendwidth / 2)
-//	.attr("y", 0)
-//	.attr("rx", 8 / 2)
-//	.attr("width", legendwidth)
-//	.attr("height", 8)
-//	.style("fill", "url(#legend-weather)");
-
-//    //append title
-//legendsvg.append("text")
-//	.attr("class", "legendtitle")
-//	.attr("x", 0)
-//	.attr("y", -10)
-//	.style("text-anchor", "middle")
-//	.text("average daily temperature");
-
-//    //set scale for x-axis
-//var xscale = d3.scale.linear()
-//	 .range([-legendwidth / 2, legendwidth / 2])
-//	 .domain([-15, 30]);
-
-//    //define x-axis
-//var xaxis = d3.svg.axis()
-//	  .orient("bottom")
-//	  .ticks(5)
-//	  .tickformat(function (d) { return d + "°c"; })
-//	  .scale(xscale);
-
-//    //set up x axis
-//legendsvg.append("g")
-//	.attr("class", "axis")
-//	.attr("transform", "translate(0," + (10) + ")")
-//	.call(xaxis);
 
 
     //HUMIDITY
@@ -386,10 +366,17 @@ var outerRadiusRain = rZeroCircle * 2.5,
 	innerRadiusRain = outerRadiusRain * 0.75;
 
     // Color according to mean temperature. 
-var colorScale = d3.scale.linear()
+var colorScaleHum = d3.scale.linear()
 	.domain([30,60])
 	.range(["#89fffb", "#007fff"])
 	.interpolate(d3.interpolateHcl);
+
+var colorScaleHumExtreme = d3.scale.linear()
+.domain([30, 60, 70])
+.range(["#89fffb", "#007fff", "#C71585"])
+.interpolate(d3.interpolateHcl);
+
+
 
     //bar height
 var barScale = d3.scale.pow().exponent(2)
@@ -410,33 +397,7 @@ var barWrapper = svg.append("g")
    
 
 
-// Define the svg for the tooltip
-var popGroup = board.g.append("g")	
-    .style("opacity", 0.0);
 
-popGroup.append("rect")
-    .attr("class", "popup")	 
- 	.attr("width", 100)
-	.attr("height", 100)
- 	.attr("x", 0)
- 	.attr("y", 0)
-
-    
-var drawPop = function(d){
-    console.log(d);
-    var drawGroup = popGroup.append("g").attr("id","popgraph");
-    drawGroup.append("rect")
-        .attr("width", 10)
-        .attr("height", 10)
-        .attr("fill", "black")
-        .attr("x", 5)
-        .attr("y", 5)
-}
-
-
-var delPop = function(d){
-    popGroup.select("#popgraph").remove();
-}    
     // Draw bars 
 
     //Draw a bar per day were the height is the difference between the minimum and maximum temperature
@@ -450,40 +411,51 @@ barWrapper.selectAll(".rainBar")
 	.attr("height", function (d, i) { return barScale(d.averageOf("RelHumid")) - barScale(0); })
  	.attr("x", -0.75)
  	.attr("y", function (d, i) { return barScale(0); })
- 	.style("fill", function (d) { return colorScale(d.averageOf("RelHumid")); })
-    .attr("stroke", "orange")
+ 	.style("fill", function (d) { return colorScaleHum(d.averageOf("RelHumid")); })
+    .attr("stroke", "teal")
     .attr('stroke-width', 0)
       .on('mouseover', function (d) {
           d3.select(this)
             .transition()
-            .duration(1000)
+            .duration(800)
             .attr('stroke-width', 5)
-            
-            drawPop(d);
-            popGroup.transition()		
-                .duration(250)		
-                .style("opacity", 1.0)
-            
+
+          div.transition()
+                .duration(200)
+                .style("opacity", .9);
+
+          //drawPopHumidity(d);
+          //popGroup.transition()		
+          //    .duration(250)		
+          //    .style("opacity", 1.0)
+          div.html("<strong>RELATIVE HUMIDITY DAILY SUMMARY </strong>" + "<br/>" + lunasFormatDate(d.ts) + "<br/>"+"Max Humidity: " + d.maxOf("RelHumid") + "%" + "<br/>" + "Min Humidity: " + d.minOf("RelHumid") + "%" + "<br/>" + "Average Humidity: " + d.averageOf("RelHumid").toFixed(2) + "%" + "<br/>" + "Comfort Humidity: 25% - 60%")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
       })
+
       .on('mouseout', function (d) {
           d3.select(this)
             .transition()
-            .duration(1000)
+            .duration(800)
             .attr('stroke-width', 0)
-            
-            delPop(d);
-            popGroup.transition()		
-                .duration(250)		
-                .style("opacity", 0.0)            
-      })
-    .append("title")
-    .text(function (d) {
-        return "Relative Humidity Daily Summary "
-            + "\n" + "Date: "
-            + "\n" + "Max Humidity: " + d.maxOf("RelHumid") + "%"
-            + "\n" + "Min Humidity: " + d.minOf("RelHumid") + "%"
-            + "\n" + "Average Humidity: " + d.averageOf("RelHumid").toFixed(2) + "%"
-    });
+
+          div.transition()
+               .duration(500)
+               .style("opacity", 0);
+
+          //delPop(d);
+          //popGroup.transition()		
+          //    .duration(250)		
+          //    .style("opacity", 0.0)            
+      });
+    //.append("title")
+    //.text(function (d) {
+    //    return "Relative Humidity Daily Summary "
+    //        + "\n" + lunasFormatDate(d.ts)
+    //        + "\n" + "Max Humidity: " + d.maxOf("RelHumid") + "%"
+    //        + "\n" + "Min Humidity: " + d.minOf("RelHumid") + "%"
+    //        + "\n" + "Average Humidity: " + d.averageOf("RelHumid").toFixed(2) + "%"
+    //});
 
 
 
@@ -500,6 +472,7 @@ for (var t in dObj.ticks) {
 }
 
 
+
 var ctrdGrp = board.g.append("g")
     .attr("transform", "translate(" + board.dDims.width / 2 + "," + board.dDims.height / 2 + ") rotate(-90)");
 
@@ -511,32 +484,87 @@ var radScale = d3.scale.linear()  // value -> display
     //.domain(dObj.metaOf("WindSpd").domain)
     .domain([0, 5])
     .range([ctrOffset, radius]);
+
 var radMap = function (d) { return radScale(radValue(d)); }; // data -> display
+
+//for chart
+var radiusChart = 20;
+var radScaleChart = d3.scale.linear()  // value -> display
+    //.domain(dObj.metaOf("WindSpd").domain)
+    .domain([0, 5])
+    .range([ctrOffset, radiusChart])
+var radMapChart = function (d) { return radScaleChart(radValue(d)); };
+
 
     // setup angle
     // Wind direction is recorded in degrees east of north, with zero degrees indicating wind from the north, and 90 degrees indicating wind from the east.
-var angValue = function (d) { return d.dayOfYear(); }; // data -> value
+var angValue = function (d) { return d.dayOfYear(); };
 var angScale = d3.scale.linear() // value -> display
     .domain([0, 364])
     .range([0, 2 * Math.PI]);
 var angMap = function (d) { return angScale(angValue(d)); }; // data -> display
 
+    //for chart
+var angValueDir = function (d) { return d.valueOf("WindDir"); };
+var angScaleChart= d3.scale.linear() // value -> display
+    .domain([0, 364])
+    .range([0, 2 * Math.PI]);
+var angMapDir = function (d) { return angScaleChart(angValueDir(d)); };
 
-var lunasFormat = function(ts){
-    var dt = new Date(ts.mid*1000*60);
-    var mth = dY.dt.monthTable[ dt.getUTCMonth() ].shortname;
-    var dat = dt.getUTCDate();
-    var hours = dt.getUTCHours();
-    var mins = dt.getUTCMinutes();
+
+    // Define the svg for the tooltip
+var popGroup = board.g.append("g")
+    .style("opacity", 0.0);
+
+popGroup.append("rect")
+    .attr("class", "popup")
+ 	.attr("width", 100)
+	.attr("height", 100)
+ 	.attr("x", 0)
+ 	.attr("y", 0);
+
+
+
+
+
+
+var delPop = function (d) {
+    popGroup.select("#popgraph").remove()
     
-    var pad = function(n) { return (n < 10) ? ("0" + n) : n; }    
-    
-    return mth + " " +pad(dat)+" "+ pad(hours) + ":" +  pad(mins)
 }
+//var delPopText = function (d) {
+//    popGroup.select("#textWind").remove()
 
-var niceFormat = function (ts) {return dY.dt.niceFormat( new Date(ts.mid*1000*60) )  }
+//}
+
+var drawPopWindRose = function (d) {
+    console.log(d);
+    var drawGroup = popGroup.append("g").attr("id", "popgraph");
+
+    //board.g.append("text")
+    //        .text("Windrose:Speed and Direction")
+    //        .style("text-anchor", "left")
+    //        .attr("id", "textWind")
+    //        .attr({
+    //            class: "Windrose",
+    //            x: 200,
+    //            y: 0
+    //    });
+
+ 
 
 
+    drawGroup.append("g").selectAll(".dot")
+    .data(dObj.ticks)
+    .enter().append("circle")
+        .attr({
+            class: "dot",
+            r: 1.0,
+            cx: function (d) { return (radMapChart(d) * Math.cos(angMapDir(d))); },
+            cy: function (d) { return (radMapChart(d) * Math.sin(angMapDir(d))); }
+        })
+        .attr("transform", "translate(" + 50 + "," + 50 + ")");
+}
 
 
     // draw dots
@@ -551,89 +579,204 @@ ctrdGrp.append("g").selectAll(".dot")
         })
         .attr("stroke", "orange")
         .attr('stroke-width', 0)
-          .on('mouseover', function () {
+          .on('mouseover', function (d) {
               d3.select(this)
                 .transition()
-                .duration(1000)
+                .duration(800)
                 .attr('stroke-width', 5)
+
+              drawPopWindRose(d);
+              popGroup.transition()
+                  .duration(250)
+                  .style("opacity", 1.0)
+
+              divWind.transition()
+             .duration(200)
+             .style("opacity", .9);
+
+
+              divWind.html("<strong>HOURLY WIND SPEED  </strong>" +  "<br/>"+lunasFormat(d.ts) + "<br/>" + "Windspeed: " + d.valueOf("WindSpd") + "mph" + "<br/>"+"<br/>"+"<strong>Graph:</strong>" +"<br/>"+"Windrose: Annual Speed and Direction")
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
           })
-          .on('mouseout', function () {
+          .on('mouseout', function (d) {
               d3.select(this)
                 .transition()
-                .duration(1000)
+                .duration(800)
                 .attr('stroke-width', 0)
-          })
-        .append("title")
-        .text(function (d) {
-            return "Wind Speed for " + lunasFormat(d.ts)
-              //  + "\n" + "Max Windspeed: " + d.maxOf("WindSpd") + "mph"
-                + "\n" + "Windspeed: " + d.valueOf("WindSpd") + "mph"
-        });
+
+              delPop(d);
+
+              popGroup.transition()
+                  .duration(250)
+                  .style("opacity", 0.0)
+
+              divWind.transition()
+             .duration(500)
+             .style("opacity", 0);
+          });
+        //.append("title")
+        //.text(function (d) {
+        //    return "Wind Speed for " + lunasFormat(d.ts)
+        //      //  + "\n" + "Max Windspeed: " + d.maxOf("WindSpd") + "mph"
+        //        + "\n" + "Windspeed: " + d.valueOf("WindSpd") + "mph"
+        //});
        
        
+    ///////////////////////////////////////////////////////////////////////////
+    //////////////// Create the gradient for the legend Temperature///////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-/*
-//var radAxisGroups = ctrdGrp.append("g") // radAxisGroups is a reference to a collection of subgroups within this group. each subgroup has data bound to it related to a value along the radial axis
-//   .attr("class", "radius axis")
-//  .selectAll("g")
-//  .data(radScale.ticks(4))
-//    // bind a rough number of values of the radScale to this group, slicing the first one off to avoid having a value at the center
-//  .enter().append("g");
+    //Extra scale since the color scale is interpolated
+var tempScale = d3.scale.linear()
+    .domain([-15, 30])
+    .range([0, width]);
 
-radAxisGroups.append("circle") // append a circle to each
-    .attr("r", radScale)
-    .attr("fill", "white");
+    //Calculate the variables for the temp gradient
+var numStops = 10;
+tempRange = tempScale.domain();
+tempRange[2] = tempRange[1] - tempRange[0];
+tempPoint = [];
+for (var i = 0; i < numStops; i++) {
+    tempPoint.push(i * tempRange[2] / (numStops - 1) + tempRange[0]);
+}//for i
 
-//radAxisGroups.append("line") // append a line to each 
-//    .attr("x2", -(board.bDims.margin.bottom / 2 + board.dDims.height / 2))
-//    .attr("y1", radScale)
-//    .attr("y2", radScale);
+    //Create the gradient
+svg.append("defs")
+    .append("linearGradient")
+    .attr("id", "legend-weather")
+    .attr("x1", "0%").attr("y1", "0%")
+    .attr("x2", "100%").attr("y2", "0%")
+    .selectAll("stop")
+    .data(d3.range(numStops))
+    .enter().append("stop")
+    .attr("offset", function (d, i) { return tempScale(tempPoint[i]) / width; })
+    .attr("stop-color", function (d, i) { return colorScaleTemp(tempPoint[i]); });
 
-//radAxisGroups.append("text") // append some text to each
-//    .attr("x", function (d) { return radScale(d); }) // d in this case is a tick value along the radScale axis
-//    .text(function (d) { return d; })
-//    .attr("transform", "rotate(90) translate(0, " + (board.bDims.margin.bottom / 2 + board.dDims.height / 2) + ")") // rotate to horizontal, translate to bottom of board
-//    .style("text-anchor", "middle");
-*/
+    // Draw the legend //
 
-    /*
-    should have done this instead
-    http://stackoverflow.com/questions/11254806/interpolate-line-to-make-a-half-circle-arc-in-d3    
-    var arc = d3.svg.arc() // arcs are drawn by a different starting and ending degrees than we've plotted here
-        .innerRadius(radius)
-        .outerRadius(radius)
-        .startAngle(-90 * (Math.PI/180)) //converting from degs to radians
-        .endAngle(180 * (Math.PI/180)) //just radians
+var legendWidth = Math.min(outerRadius * 2, 400);
 
-    ctrdGrp.append("path")
-        .attr("class", "outer-radius axis")
-        .attr("d", arc)
-     */
+    //Color Legend container
+var legendsvg = svg.append("g")
+    .attr("class", "legendWrapper")
+    .attr("transform", "translate(" + 0 + "," + (outerRadius + 80) + ")");
+
+    //Draw the Rectangle
+legendsvg.append("rect")
+    .attr("class", "legendRect")
+    .attr("x", -legendWidth / 2)
+    .attr("y", 0)
+    .attr("rx", 8 / 2)
+    .attr("width", legendWidth)
+    .attr("height", 2)
+    .style("fill", "url(#legend-weather)");
+
+    //Append title
+legendsvg.append("text")
+    .attr("class", "legendTitle")
+    .attr("x", 0)
+    .attr("y", -10)
+    .style("text-anchor", "middle")
+    .text("Average Daily Temperature");
+
+    //Set scale for x-axis
+var xScale = d3.scale.linear()
+     .range([-legendWidth / 2, legendWidth / 2])
+     .domain([-15, 30]);
+
+    //Define x-axis
+var xAxis = d3.svg.axis()
+      .orient("bottom")
+      .ticks(5)
+      .tickFormat(function (d) { return d + "°C"; })
+      .scale(xScale);
+
+    //Set up X axis
+legendsvg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + (10) + ")")
+    .call(xAxis);
+    
 
 
-//var angAxisGroups = ctrdGrp.append("g") // angAxisGroups is a reference to a collection of subgroups within this group. each subgroup has data bound to it related to one of 12 values: angles between 0 and 360
-//    .attr("class", "angle axis")
-//  .selectAll("g")
-//    .data(d3.range(0, 360, 30)) // bind 12 data objects (0-360 in steps of x)
-//  .enter().append("g")
-//    .attr("transform", function (d) { return "rotate(" + d + ")"; }); // rotate each subgroup about the origin by the proper angle
-
-//angAxisGroups.append("line") // append a line to each 
-//    .attr("x1", ctrOffset) // we only need to define x1 and x2, allowing y0 and y1 to default to 0
-//    .attr("x2", radius);
-
-//angAxisGroups.append("text") // append some text to each
-//    .attr("x", radius + textPadding * 2)
-//    .attr("dy", textPadding / 2) // nudge text down a bit
-//    .style("text-anchor", function (d) { return d > 180 ? "end" : null; })
-//    .attr("transform", function (d) { return d > 180 ? "rotate(180 " + (radius + textPadding * 2) + ",0)" : null; })
-//    .text(function (d) { return d > 90 && d < 180 ? null : d; });
 
 
+    ///////////////////////////////////////////////////////////////////////////
+    //////////////// Create the gradient for the legend Humidity///////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////
-//////////////// Create the gradient for the legend ///////////////////////
-///////////////////////////////////////////////////////////////////////////
+    //Extra scale since the color scale is interpolated
+var tempScale = d3.scale.linear()
+    .domain([0, 100])
+    .range([0, width]);
+
+    //Calculate the variables for the temp gradient
+var numStops = 10;
+tempRange = tempScale.domain();
+tempRange[2] = tempRange[1] - tempRange[0];
+tempPoint = [];
+for (var i = 0; i < numStops; i++) {
+    tempPoint.push(i * tempRange[2] / (numStops - 1) + tempRange[0]);
+}//for i
+
+    //Create the gradient
+svg.append("defs")
+    .append("linearGradient")
+    .attr("id", "legend-weather")
+    .attr("x1", "0%").attr("y1", "0%")
+    .attr("x2", "100%").attr("y2", "0%")
+    .selectAll("stop")
+    .data(d3.range(numStops))
+    .enter().append("stop")
+    .attr("offset", function (d, i) { return tempScale(tempPoint[i]) / width; })
+    .attr("stop-color", function (d, i) { return colorScaleHum(tempPoint[i]); });
+
+    // Draw the legend //
+
+var legendWidth = Math.min(outerRadius * 2, 400);
+
+    //Color Legend container
+var legendsvg = svg.append("g")
+    .attr("class", "legendWrapper")
+    .attr("transform", "translate(" + 0 + "," + (outerRadius + 130) + ")");
+
+    //Draw the Rectangle
+legendsvg.append("rect")
+    .attr("class", "legendRect")
+    .attr("x", -legendWidth / 2)
+    .attr("y", 0)
+    .attr("rx", 8 / 2)
+    .attr("width", legendWidth)
+    .attr("height", 2)
+    .style("fill", "url(#legend-weather)");
+
+    //Append title
+legendsvg.append("text")
+    .attr("class", "legendTitle")
+    .attr("x", 0)
+    .attr("y", -10)
+    .style("text-anchor", "middle")
+    .text("Average Daily Humidity");
+
+    //Set scale for x-axis
+var xScale = d3.scale.linear()
+     .range([-legendWidth / 2, legendWidth / 2])
+     .domain([0, 100]);
+
+    //Define x-axis
+var xAxis = d3.svg.axis()
+      .orient("bottom")
+      .ticks(5)
+      .tickFormat(function (d) { return d + "%"; })
+      .scale(xScale);
+
+    //Set up X axis
+legendsvg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + (10) + ")")
+    .call(xAxis);
+
 
 
 }

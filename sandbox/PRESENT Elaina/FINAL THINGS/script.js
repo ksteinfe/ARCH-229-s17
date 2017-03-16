@@ -23,8 +23,8 @@ function onDataLoaded(dObj) {
         .attr("transform", "translate(" + 4*board2.dDims.width / 5 + "," + board2.dDims.height / 2 + ")");
     
 	//comfort range definition
-	var maxComfortF = 76
-	var minComfortF = 66
+	var maxComfortF = 77
+	var minComfortF = 67
 	
 	//layout parameters
 	var gap = 0.02
@@ -92,7 +92,7 @@ function onDataLoaded(dObj) {
 	
 	// Color according to temperature. 
 	var colorScale = d3.scale.linear()
-		.domain([55, minComfortF, maxComfortF, 85])
+		.domain([58, minComfortF, maxComfortF, 85])
 		.range(["#2c7bb6", "#f5f5dc", "#f5f5dc", "#d7191c"])
 		.interpolate(d3.interpolateHcl);
 	
@@ -129,6 +129,66 @@ function onDataLoaded(dObj) {
 	
 	
 	//labels
+	ctrdGrp1.append("text")
+			.text("Typical Summer Day")
+			.attr("x", function(d, i) {
+				return (i+80);
+			})
+			.attr("y", function(d, i) {
+				return (i-120);
+			})
+			.attr("fill", "white");
+			
+	ctrdGrp3.append("text")
+			.text("Typical Winter Day")
+			.attr("x", function(d, i) {
+				return (i+85);
+			})
+			.attr("y", function(d, i) {
+				return (i-120);
+			})
+			.attr("fill", "white");
+			
+	ctrdGrp1.append("text")
+			.text("Current")
+			.attr("x", function(d, i) {
+				return (i-130);
+			})
+			.attr("y", function(d, i) {
+				return (i+130);
+			})
+			.attr("fill", "white");
+			
+	ctrdGrp3.append("text")
+			.text("Current")
+			.attr("x", function(d, i) {
+				return (i-130);
+			})
+			.attr("y", function(d, i) {
+				return (i+130);
+			})
+			.attr("fill", "white");
+			
+	ctrdGrp2.append("text")
+			.text("Proposed")
+			.attr("x", function(d, i) {
+				return (i+75);
+			})
+			.attr("y", function(d, i) {
+				return (i+130);
+			})
+			.attr("fill", "white");
+			
+	ctrdGrp4.append("text")
+			.text("Proposed")
+			.attr("x", function(d, i) {
+				return (i+75);
+			})
+			.attr("y", function(d, i) {
+				return (i+130);
+			})
+			.attr("fill", "white");
+			
 	ctrdGrp1.append("text")
 			.text(function (d,i) { return labs[i].name; })
 			.attr("x", function(d, i) {
