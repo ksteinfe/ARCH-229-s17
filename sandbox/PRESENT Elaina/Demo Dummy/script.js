@@ -50,7 +50,7 @@ function onDataLoaded(dObj) {
 	var arrLaundry = dObj.ticks.map(function(d){ return d.data.Laundry.OperativeTemperature; });
 	var arrUSBath = dObj.ticks.map(function(d){ return d.data.USBath.OperativeTemperature; }); 
 	var arrTotal = dObj.ticks.map(function(d){ return d.data.Total.OperativeTemperature; }); 
-
+/*
 	//Final House, Summer
 	var arrRecRoom_SF = dObj.ticks.map(function(d){ return d.data.RecRoom_SF.OperativeTemperature; });
     var arrLivingRoom_SF = dObj.ticks.map(function(d){ return d.data.LivingRoom_SF.OperativeTemperature; });
@@ -86,7 +86,7 @@ function onDataLoaded(dObj) {
 	var arrLaundry_WF = dObj.ticks.map(function(d){ return d.data.Laundry_WF.OperativeTemperature; });
 	var arrUSBath_WF = dObj.ticks.map(function(d){ return d.data.USBath_WF.OperativeTemperature; });
 	var arrTotal_WF = dObj.ticks.map(function(d){ return d.data.Total_WF.OperativeTemperature; }); 
-	
+*/	
 	
 //	var roomSize = dObj.ticks.map(function(d){ return d.zoneMeta.size;}); sadface
 	
@@ -127,69 +127,9 @@ function onDataLoaded(dObj) {
         { name: "11 PM", value: 10 },
     ];
 	
-	
+/*	
 	//labels
 	ctrdGrp1.append("text")
-			.text("Typical Summer Day")
-			.attr("x", function(d, i) {
-				return (i+80);
-			})
-			.attr("y", function(d, i) {
-				return (i-120);
-			})
-			.attr("fill", "white");
-			
-	ctrdGrp3.append("text")
-			.text("Typical Winter Day")
-			.attr("x", function(d, i) {
-				return (i+85);
-			})
-			.attr("y", function(d, i) {
-				return (i-120);
-			})
-			.attr("fill", "white");
-			
-	ctrdGrp1.append("text")
-			.text("Current")
-			.attr("x", function(d, i) {
-				return (i-130);
-			})
-			.attr("y", function(d, i) {
-				return (i+130);
-			})
-			.attr("fill", "white");
-			
-	ctrdGrp3.append("text")
-			.text("Current")
-			.attr("x", function(d, i) {
-				return (i-130);
-			})
-			.attr("y", function(d, i) {
-				return (i+130);
-			})
-			.attr("fill", "white");
-			
-	ctrdGrp2.append("text")
-			.text("Proposed")
-			.attr("x", function(d, i) {
-				return (i+75);
-			})
-			.attr("y", function(d, i) {
-				return (i+130);
-			})
-			.attr("fill", "white");
-			
-	ctrdGrp4.append("text")
-			.text("Proposed")
-			.attr("x", function(d, i) {
-				return (i+75);
-			})
-			.attr("y", function(d, i) {
-				return (i+130);
-			})
-			.attr("fill", "white");
-			
-	ctrdGrp1.append("text")
 			.text(function (d,i) { return labs[i].name; })
 			.attr("x", function(d, i) {
 				return (i-30);
@@ -348,7 +288,7 @@ function onDataLoaded(dObj) {
 				return (i+5);
 			})
 			.attr("fill", "grey"); 
-
+*/
 	//simpleArcs
 	
 	//RecRoom
@@ -364,7 +304,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+/*			
 	ctrdGrp2.append("g").selectAll("path")
         .data(arrRecRoom_SF)
         .enter().append("path")
@@ -382,7 +322,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-		
+*/		
 		
 			
 	//LivingRoom		
@@ -398,7 +338,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc);
-
+/*
     ctrdGrp2.append("g").selectAll("path")
         .data(arrLivingRoom_SF)
         .enter().append("path")
@@ -416,7 +356,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc);
-			
+*/			
 	//BR2		
 	var arc = d3.svg.arc()
         .innerRadius(63.21958)
@@ -430,7 +370,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+/*			
 	ctrdGrp2.append("g").selectAll("path")
         .data(arrBR2_SF)
         .enter().append("path")
@@ -448,7 +388,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+*/			
 	//BR1		
 	var arc = d3.svg.arc()
         .innerRadius(56.12269)
@@ -462,7 +402,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+/*			
 	ctrdGrp2.append("g").selectAll("path")
         .data(arrBR1_SF)
         .enter().append("path")
@@ -479,7 +419,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+*/			
 	//kitchen
 	var arc = d3.svg.arc()
         .innerRadius(48.59865)
@@ -493,7 +433,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+/*			
 	ctrdGrp2.append("g").selectAll("path")
         .data(arrKitchen_SF)
         .enter().append("path")
@@ -511,7 +451,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-
+*/
 	//DiningRoom
 	var arc = d3.svg.arc()
         .innerRadius(40)
@@ -525,7 +465,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-	
+/*	
 	ctrdGrp2.append("g").selectAll("path")
         .data(arrDiningRoom_SF)
         .enter().append("path")
@@ -543,7 +483,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)	
-	
+*/	
 	//Total (Whole House)
 	var arc = d3.svg.arc()
         .innerRadius(0)
@@ -557,7 +497,7 @@ function onDataLoaded(dObj) {
         .enter().append("path")
             .attr("fill", function(d) {return colorScale(d);})
             .attr("d", arc)
-			
+/*			
 	ctrdGrp2.append("g").selectAll("path")
         .data(arrTotal_SF)
         .enter().append("path")

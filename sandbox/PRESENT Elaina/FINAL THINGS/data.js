@@ -158,7 +158,7 @@ var dObj = {
 				RecRoom_WF : { OperativeTemperature: 67.274726 },
 				Kitchen_WF : { OperativeTemperature: 63.3794 },
 				Total_WF : { OperativeTemperature: 64.837922}
-			},
+			}
         },
                 {
             datetime: "9/16/2002 3:00",
