@@ -1,0 +1,58 @@
+
+
+.axis text {
+  font: 4px sans-serif;
+}
+
+.axis line,
+.axis circle {
+  fill: none;
+  stroke: #aaa;
+  stroke-dasharray: .5,2;
+  stroke-width: .5px
+}
+
+.axis :last-of-type circle {
+  stroke: #aaa;
+  stroke-dasharray: none;
+  stroke-width: .5px
+}
+
+.axis :first-of-type circle {
+  stroke: #333;
+  stroke-dasharray: none;
+}
+
+
+.daylabel{
+    font: 8px sans-serif;
+	fill: grey;
+}
+
+
+.shape{
+   
+    position: relative;
+    -webkit-transition: all 200ms ease-in;
+    -webkit-transform: scale(1); 
+    -ms-transition: all 200ms ease-in;
+    -ms-transform: scale(1); 
+    -moz-transition: all 200ms ease-in;
+    -moz-transform: scale(1);
+    transition: all 200ms ease-in;
+    transform: scale(1);   
+
+}
+
+.shape:hover
+{
+ 
+    -webkit-transition: all 200ms ease-in;
+    -webkit-transform: scale(3);
+    -ms-transition: all 200ms ease-in;
+    -ms-transform: scale(3);   
+    -moz-transition: all 200ms ease-in;
+    -moz-transform: scale(3);
+    transition: all 2000ms ease-in;
+    transform: scale(4);
+}
