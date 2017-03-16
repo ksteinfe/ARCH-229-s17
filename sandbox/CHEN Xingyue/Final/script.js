@@ -130,7 +130,7 @@ function onDataLoaded(dObj) {
     //arc function   
     //for text
     var arc = d3.svg.arc()
-        .innerRadius(rZeroCircle+20)
+        .innerRadius(rZeroCircle+25)
         .outerRadius(rZeroCircle + 38);
 
     //var table = svg.append("circle").attr({
@@ -323,7 +323,7 @@ barWrapper.selectAll(".tempBar")
              .style("opacity", .9);
 
 
-          divTemp.html("<strong>Dry Bulb Temperature Daily Summary </strong>" + "<br/>" + "Max Temperature: " + d.maxOf("DryBulbTemp") + "°C" + "<br/>" + "Min Temperature: " + d.minOf("DryBulbTemp") + "°C" + "<br/>" + "Average Temperature: " + d.averageOf("DryBulbTemp").toFixed(2) + "°C")
+          divTemp.html("<strong>DRY BULB TEMPERATURE DAILY SUMMARY </strong>" + "<br/>" + lunasFormatDate(d.ts) + "<br/>"+"Max Temperature: " + d.maxOf("DryBulbTemp") + "°C" + "<br/>" + "Min Temperature: " + d.minOf("DryBulbTemp") + "°C" + "<br/>" + "Average Temperature: " + d.averageOf("DryBulbTemp").toFixed(2) + "°C" + "<br/>" + "Comfort Temperature: 18-24°C")
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
       })
@@ -428,7 +428,7 @@ barWrapper.selectAll(".rainBar")
           //popGroup.transition()		
           //    .duration(250)		
           //    .style("opacity", 1.0)
-          div.html("<strong>Relative Humidity Daily Summary </strong>" + "<br/>" + "Max Humidity: " + d.maxOf("RelHumid") + "%" + "<br/>" + "Min Humidity: " + d.minOf("RelHumid") + "%" + "<br/>" + "Average Humidity: " + d.averageOf("RelHumid").toFixed(2) + "%")
+          div.html("<strong>RELATIVE HUMIDITY DAILY SUMMARY </strong>" + "<br/>" + lunasFormatDate(d.ts) + "<br/>"+"Max Humidity: " + d.maxOf("RelHumid") + "%" + "<br/>" + "Min Humidity: " + d.minOf("RelHumid") + "%" + "<br/>" + "Average Humidity: " + d.averageOf("RelHumid").toFixed(2) + "%" + "<br/>" + "Comfort Humidity: 25% - 60%")
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
       })
@@ -595,7 +595,7 @@ ctrdGrp.append("g").selectAll(".dot")
              .style("opacity", .9);
 
 
-              divWind.html("<strong>Hourly Wind Speed for </strong>" + lunasFormat(d.ts) + "<br/>" + "Windspeed: " + d.valueOf("WindSpd") + "mph" + "<br/>"+"<br/>"+"<strong>Graph:</strong>" +"<br/>"+"Windrose: Annual Speed and Direction")
+              divWind.html("<strong>HOURLY WIND SPEED  </strong>" +  "<br/>"+lunasFormat(d.ts) + "<br/>" + "Windspeed: " + d.valueOf("WindSpd") + "mph" + "<br/>"+"<br/>"+"<strong>Graph:</strong>" +"<br/>"+"Windrose: Annual Speed and Direction")
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
           })

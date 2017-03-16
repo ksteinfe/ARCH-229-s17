@@ -57,7 +57,7 @@ fill: #5c6277;
 }
 
 svg.board {
-    background: #171f3e;
+    background: #141b37;
 }
 
 .city-label{
@@ -74,8 +74,8 @@ div.tooltip {
     position: absolute;			
 	margin: 2px;
     text-align: Left;			
-    width: 200px;					
-    height:60px;					
+    width: 230px;					
+    height:82px;					
     padding: 2px;				
     font: 12px sans-serif;		
     background: teal;	
@@ -88,8 +88,8 @@ div.tooltipTemp {
     position: absolute;			
 	margin: 2px;
     text-align: Left;			
-    width: 225px;					
-    height:60px;					
+    width: 260px;					
+    height:82px;					
     padding: 2px;				
     font: 12px sans-serif;		
     background: DeepPink   ;	
@@ -104,7 +104,7 @@ div.tooltipWind {
 	margin: 2px;
     text-align: Left;			
     width: 220px;					
-    height:68px;					
+    height:82px;					
     padding: 2px;				
     font: 12px sans-serif;		
     background: orange  ;	
