@@ -34,10 +34,9 @@ function onDataLoaded(dObj) {
     }
     console.log(areaData);
 
-    
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     // the board SVG contains a "group" to handle the margin effectively. This inner group works as a sort of inner SVG that contains an origin translated by the x and y offsets. Think of the new 0,0 point of your working SVG as the inner drawing origin of this group. Dimensions are accessible via board.dDims (drawing dimensions) and board.bDims (board dimensions).   
-    board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:200, margin:40});
+    board = dY.graph.addBoard("#dy-canvas",{inWidth: 1000, inHeight:200, margin:35});
     //console.log(board);
       
 
@@ -84,7 +83,7 @@ function onDataLoaded(dObj) {
     var yMapLow = function(d) { return yScale(d.q1Of("DryBulbTemp")) }; // data -> display
         
     
-    // Setup Color Scalse
+    // Setup Color Scales
     var cScale = d3.scale.linear()
     .domain([0,6])
     .interpolate(d3.interpolate)
@@ -138,7 +137,7 @@ function onDataLoaded(dObj) {
     // draw area for fog potential 
     board.g.append("path")
         .attr("d", areaFunctionFogFirst(areaData))
-        .attr("class", "fog-area first")     
+        .attr("class", "fog-area first")  
         
     board.g.append("path")
         .attr("d", areaFunctionFogSecond(areaData))
@@ -148,10 +147,11 @@ function onDataLoaded(dObj) {
     // draw average dry-bulb temperature 
     board.g.append("path")
         .attr("d", lineFunctionDryBulbAvg(dSum))
-        .attr("class", "temp-average")   
+        .attr("class", "temp-average") 
+
         
     // draw some number of ground temperature step lines
-    /*
+    
     board.g.append("g")
         .attr("class", "groundline")
         .selectAll("path")
@@ -160,6 +160,8 @@ function onDataLoaded(dObj) {
                 .attr("stroke", function(d){ return cScale(d.depth) ; })
                 .datum(function(d){ return d.monthlyTemperature; })
                 .attr( "d", lineFuncGroundTemp )     
-                */
+                
 }
 
+
+  
