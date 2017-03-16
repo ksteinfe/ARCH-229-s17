@@ -9,9 +9,10 @@ body {
 			color:white
 		}
 
-        
+
+       
 .popup {
-    background-color: #f00;
+    background-color: black ;
     width: 100px;
     height: 100px;
 }        
@@ -60,18 +61,62 @@ svg.board {
 }
 
 .city-label{
+    font: 25px sans-serif;
+	fill: Aquamarine ;
+}
+
+.Windrose{
     font: 15px sans-serif;
+	fill: black;
 }
 
 div.tooltip {	
     position: absolute;			
-    text-align: center;			
-    width: 60px;					
-    height: 28px;					
+	margin: 2px;
+    text-align: Left;			
+    width: 200px;					
+    height:60px;					
     padding: 2px;				
     font: 12px sans-serif;		
-    background: lightsteelblue;	
+    background: teal;	
     border: 0px;		
     border-radius: 8px;			
     pointer-events: none;			
+}
+
+div.tooltipTemp {	
+    position: absolute;			
+	margin: 2px;
+    text-align: Left;			
+    width: 225px;					
+    height:60px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: DeepPink   ;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+
+div.tooltipWind {	
+    position: absolute;			
+	margin: 2px;
+    text-align: Left;			
+    width: 220px;					
+    height:68px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: orange  ;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+.legendTitle{
+	font: 8px sans-serif;
+}
+
+.axis{
+	font: 8px sans-serif;
 }
