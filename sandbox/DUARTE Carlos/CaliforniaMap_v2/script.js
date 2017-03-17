@@ -15,17 +15,23 @@ function onDataLoaded(dObj, map, weather) {
     var w = board.dDims.width,
         h = board.dDims.height;
     
+    // parameters for side plot
     var mini_w = 425,
         mini_h = 250,
         mini_w_origin = 500
         mini_h_origin = 0;
     
     var mini_scatter_plot_w = 20;
+    var dot_sz = 2;
     
-    dot_sz = 2;
+    // start and end of occupied period
+    var str_occ = 8,
+        end_occ = 18;
+    
+    var ct_approach = 0;
     
     var percentile = 1.0;           // percentile to get chilled water data and create color on cities
-    var weather_percentile = .9    // percentile to get weather data
+    var weather_percentile = .99    // percentile to get weather data
     
     var map_scale = 3000;
     map = topojson.simplify(topojson.presimplify(map));                 // simplify topojson
@@ -66,16 +72,13 @@ function onDataLoaded(dObj, map, weather) {
     var chw_points = d3.values(dObj).map(function(d) { return d["ChW Supply"]; });
     var population = d3.values(cz_rev).map(function(d) { return d["population"]; });
     
-    var chw_max = d3.max(chw_points);
-    var chw_min = d3.min(chw_points);
-    
     // orange color scale, the redder the higher the temp
     var color_chw = d3.scale.linear()
                       .domain([12, 24])
                       .range(["#3182bd", "#9ecae1"]) //"#e5f5f9",
     
     var color_wea = d3.scale.linear()
-                      .domain([15, 26])
+                      .domain([15, 29])
                       .range(["#e3b594", "#cb7537"])
     
     var color_oper = d3.scale.threshold()
@@ -123,12 +126,21 @@ function onDataLoaded(dObj, map, weather) {
         .attr("d", path)
         .style("fill", function(d) {
             var sub_weather = cz[+d.properties.Zone];
-            var w = weather.filter(function(d) {return d.name == sub_weather && (d.Months >= 5 && d.Months <= 10); });
+            var w = weather.filter(function(d) {return d.name == sub_weather && 
+                                                (d.Months >= 5 && d.Months <= 10) &&
+                                                (d.Hours <= str_occ || d.Hours >= end_occ); });
             var twb = d3.values(w).map(function(d) { return d["WetBulbT"]; })
                                   .sort(function(a,b) { return a-b; });
 
             var color = color_wea(d3.quantile(twb, weather_percentile));
+            console.log(sub_weather + " Twb= " + d3.quantile(twb, weather_percentile))
             return color;
+        })
+        .on("click", function(d) {
+            d3.selectAll("g.city").selectAll("circle")
+              .transition()
+              .duration(100)
+              .attr("r", 50)
         });
         
     
@@ -176,12 +188,41 @@ function onDataLoaded(dObj, map, weather) {
                 }
             }
             
+            // filter chilled water data
             var filter_data = data_by_climate[dbcIndex];
-            var filter_chw = d3.values(filter_data.values).map(function(d) { return d["ChW Supply"]; });
+            var filter_chw = d3.values(filter_data.values)
+                               .map(function(d) { return [d["ChW Supply"], d["Operation Hours"]]; })
+                               .filter(function(d){return d[0] > 0; });
             
-            var values = filter_chw.filter(function(d){return d > 0; });
-            var max = d3.max(values);
-            var min = d3.min(values);
+            var chw_values = filter_chw.map(function(d) {return d[0]; });
+            
+            // filter weather data
+            sub_weather = d.name;
+            var w = weather.filter(function(g) {return g.name == sub_weather && 
+                                    (g.Months >= 5 && g.Months <= 10) &&
+                                    (g.Hours <= str_occ || g.Hours >= end_occ); });
+            
+            var wea_max = d3.max(d3.values(w).map(function(d) { return d["WetBulbT"]; }));
+            var wea_min = d3.min(d3.values(w).map(function(d) { return d["WetBulbT"]; }));
+            
+            // subset simulations by matching weather to chw temperature
+            var chw_2_wea = filter_chw.filter(function(d) {return d[0] > (wea_min + ct_approach) && d[0] < (wea_max + ct_approach); });
+            var oper_metric = d3.median(chw_2_wea.map(function(d) {return d[1]; }));
+            
+            if (oper_metric > str_occ) {
+                var str_wea_frame = str_occ;
+                var end_wea_frame = 24 - (oper_metric - str_occ);
+            } else {
+                var str_wea_frame = oper_metric;
+                var end_wea_frame = str_occ;
+            };
+            
+            var w_best = weather.filter(function(g) {return g.name == sub_weather && 
+                                    (g.Months >= 5 && g.Months <= 10) &&
+                                    (g.Hours <= str_wea_frame || g.Hours > end_wea_frame); });
+            
+            w_best_twb = w_best.map(function(d){return d["WetBulbT"]; })
+                               .sort(function(a, b){ return a - b; });
             
             var xScale = d3.scale.linear()
                                  .domain([0, 25])
@@ -191,13 +232,49 @@ function onDataLoaded(dObj, map, weather) {
             // Generate a histogram using twenty uniformly-spaced bins.
             var hist_data = d3.layout.histogram()
                                      .bins(xScale.ticks(20))
-                                     (values);
+                                     (chw_values);
             
-            var color = color_chw(d3.quantile(values.sort(function(a, b){ return a - b; }), percentile));
-            console.log(d3.quantile(values.sort(function(a, b){ return a - b; }), percentile))
+            
+            // decide potential to get rid of chiller
+            var twb_percentiles = [.75, .50, .25, .10];
+            var i = 0;
+            var potential = -1;
+            while (potential <= .75 && i < twb_percentiles.length) {
+                var twbp = twb_percentiles[i];
+                var twb_at_percentile = d3.quantile(w_best_twb, twbp);
+                var potential_sims = d3.sum(hist_data.filter(function(d) {return d.x > twb_at_percentile; })
+                                                     .map(function(d){ return d.y; }));
+                                                     
+                var tlt_sims = filter_chw.length
+                var potential = potential_sims/tlt_sims;
+                i ++;
+            }
+            
+            var text_potential = d3.scale.threshold()
+                                   .domain([.10, .5, .75, 1.01])
+                                   .range([ 'None', 'Low','Medium','High']);
+                                   
+            var color_potential = d3.scale.linear()
+                                    .domain([.75, 1.00]);
+            
+            if (text_potential(twbp) == 'High') {
+                color_potential.range(['#e5f5e0', '#31a354']);
+                
+            } else if (text_potential(twbp) == 'Medium') {
+                color_potential.range(['#fdb95b', '#bc6f02']);
+                
+            } else if (text_potential(twbp) == 'Low') {
+                color_potential.range(['#fc9272', '#fa5827']);
+                
+            } else {
+                color_potential.range(['#de2d26', '#9f1d18']);
+            }
+            
+            var color = color_chw(d3.quantile(chw_values.sort(function(a, b){ return a - b; }), percentile));
+            console.log("Chw= " + d3.quantile(chw_values.sort(function(a, b){ return a - b; }), percentile))
             
             var yScale = d3.scale.linear()
-                                 .domain([0, 150])
+                                 .domain([0, .5])
                                  .range([mini_h+mini_h_origin, mini_h_origin]);
             
             //Define X axis
@@ -218,14 +295,14 @@ function onDataLoaded(dObj, map, weather) {
                            .attr("class", "bar")
                            .attr("id", "tooltip")
                            .attr("transform", function(d) { 
-                                                    return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; 
+                                                    return "translate(" + xScale(d.x) + "," + yScale(d.y/tlt_sims) + ")"; 
                                                     });
                            
                            
             bar.append("rect")
                 .attr("width", (xScale(hist_data[0].dx) - xScale(0)) - 1)
                 .attr("height", function(d) { 
-                                        return mini_h + mini_h_origin - yScale(d.y); 
+                                        return mini_h + mini_h_origin - yScale(d.y/tlt_sims); 
                                         })
                 .attr("fill", color);
             
@@ -284,7 +361,7 @@ function onDataLoaded(dObj, map, weather) {
             board.g.append("text")
                    .attr("id", "tooltip")
                    .attr("x", mini_w_origin)
-                   .attr("y", mini_h_origin + txt_size*2)
+                   .attr("y", mini_h_origin + txt_size*1.75)
                    .attr("font-size", txt_size-15 + "px")
                    .attr("fill", "black")
                    .attr("text-anchor", "start")
@@ -292,11 +369,21 @@ function onDataLoaded(dObj, map, weather) {
 
             board.g.append("text")
                    .attr("id", "tooltip")
+                   .attr("x", mini_w_origin)
+                   .attr("y", mini_h_origin + mini_h + 150)
+                   .attr("font-size", txt_size-10 + "px")
+                   .attr("fill", color_potential(potential))
+                   .attr("text-anchor", "start")
+                   .text("Eliminating chiller potential is " + text_potential(twbp));
+                   
+
+            board.g.append("text")
+                   .attr("id", "tooltip")
                    .attr("font-size", txt_size-15 + "px")
                    .attr("fill", "black")
                    .attr("text-anchor", "start")
                    .attr("transform", "translate(" + (mini_w_origin + mini_w + 60) + "," + (mini_w/2) + "), rotate(-90)")
-                   .text("Number of simulations");
+                   .text("Percentage of simulations");
                    
             
             
@@ -335,7 +422,9 @@ function onDataLoaded(dObj, map, weather) {
                     
                     d3.select(this)
                       .attr("r", 50)
-
+                      .style("fill", color_potential(potential))
+            
+            console.log("The percentile is " + twbp + " The potential is " + potential)
                 })
         .on("mouseout", function(d) {
             d3.selectAll("#tooltip")
@@ -346,7 +435,15 @@ function onDataLoaded(dObj, map, weather) {
             d3.select(this)
               .transition()
               .duration(50)
-              .style("fill", select_chw_color)
+              //.style("fill", select_chw_color)
+              .attr("r", function(d){
+                    return scale_pop(d.population)
+              });
+        })
+        .on("click", function(d) {
+            d3.selectAll("g.city").selectAll("circle")
+              .transition()
+              .duration(100)
               .attr("r", function(d){
                     return scale_pop(d.population)
               });
