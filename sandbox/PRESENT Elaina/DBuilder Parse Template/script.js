@@ -10,8 +10,15 @@ function onDataLoaded(dObj) {
 
 
 
-handleMultDBuilderFileUpload = function (evt) {
-    console.log( evt.target.files );
+handleMultDBuilderFileUpload = function (filedata) {
+    console.log(filedata);
+    for (var filename in filedata){
+        console.log( filename );
+        var content = filedata[filename] ;
+    }
+    
+
+    
     /*
     var file = evt.target.files[0];
 
@@ -25,6 +32,38 @@ handleMultDBuilderFileUpload = function (evt) {
     });
     */
 }
+
+
+// global variable
+var readFileData = new Object;
+
+handleMultFileUpload = function (evt) {
+    multiRead(evt.target.files);
+}
+
+multiRead = function(files){
+    
+    var j = 0, k = files.length;
+     for (var i = 0; i < k; i++) {
+         var reader = new FileReader();
+         reader.name = files[i].name;
+         reader.onloadend = function (evt) {
+             //console.log(evt);
+             if (evt.target.readyState == FileReader.DONE) {
+                 readFileData[this.name] = evt.target.result;
+                 j++;
+                 if (j == k){
+                     //alert('All files read');
+                     handleMultDBuilderFileUpload(readFileData);
+                 }
+             }
+         };
+         reader.readAsText(files[i]);
+     }
+    
+}
+
+
 
 
 ALTERNATE_handleMultDBuilderFileUpload = function (evt) {
@@ -52,74 +91,3 @@ ALTERNATE_handleMultDBuilderFileUpload = function (evt) {
 }
 
 
-
-handleParseDBuilderResults = function (results, callback) {
-    dY.report("dy: Parsing DBuilinder Results File");
-    /*
-    
-    // Handle Parse Errors
-    if (!dY.parser.handleParseErrors(results)){
-        dY.report("Parser failed. Quitting.");
-        return false;
-    }
-    
-    
-    // Handle Parsed Fields
-    //
-    schema = {};
-    if (results.meta.fields.length > 0){
-        dY.report("dy: Parser found "+results.meta.fields.length+" columns (not including Date/Time)")
-        
-        // find zone strings
-        zoneStrings = new Set();
-        results.meta.fields.forEach(function(field,n) {
-            if (!dY.parser.stringToZoneKey(field)) return;
-            zoneStrings.add(dY.parser.stringToZoneKey(field)[0]);
-        });
-        zoneStrings = Array.from(zoneStrings);
-        
-        // construct zoneKeys
-        zoneStrings.forEach(function(zoneStr,n) {
-            schema[zoneStr] = {};
-            results.meta.fields.forEach(function(field,n) {
-                key = dY.parser.stringToZoneKey(field);
-                //if (key && key[0] == zoneStr) schema[zoneStr].push(key[1]);
-                if (key && key[0] == zoneStr) schema[zoneStr][key[1]] = {};
-            });
-        });
-        
-    }
-    
-    // Handle Hourly Data
-    //
-    dY.report("dy: Parser found "+results.data.length+" rows. Parser doesn't care about the number of rows nor their order.")
-    
-    // create hourly ticks
-    ticks = [];
-    results.data.forEach(function(row,n) {
-        hourOfYear = dY.dt.dateToHourOfYear( dY.dt.dateStringToDate(row["Date/Time"]) );
-        timespan = dY.timeSpan.hourOfYear(hourOfYear);
-        data = {};
-        for (var zon in schema) {
-            data[zon] = {};
-            for (var key in schema[zon]) {
-                value = row[dY.parser.zoneKeyToString(zon,key)];
-                data[zon][key] = value;
-            }
-        }
-        ticks.push( new dY.Tick(timespan, data)  );
-        
-    });
-    
-    
-    // fill out schema information
-    schema = dY.util.summarizeTicks(schema, ticks);    
-    
-    yr = new dY.Year(schema,ticks)
-    if (typeof(callback)==='undefined') {
-        return yr;
-    } else {
-        callback(yr);
-    }    
-   */
-}

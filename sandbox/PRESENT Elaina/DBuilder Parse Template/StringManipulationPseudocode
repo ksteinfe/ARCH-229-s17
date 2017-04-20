@@ -1,11 +1,52 @@
 How to make a DB file parse like a EPlus file.
 Note: string manipulation methods here https://www.w3schools.com/js/js_string_methods.asp
 
+
+
+
+headSplits = [] //a 2d array, first dimension is a file, second is a row
+bodySplits = [] //a 2d array, first dimension is a file, second is a row
+
+for each file:
+    split = file.split("/n") // an array of strings, one string per row of file
+    headSplits.push( split[0:2] ) 
+    bodySplits.push( split[2:] ) 
+    
+// handle heads
+epHead = "Date/Time," // the formatted head of the fake ep file
+
+for each file:
+    fileName = fn;
+    row1 = headSplits[0].split(",")
+    row2 = headSplits[1].split(",")
+    
+    for each column c except the first:
+        epHead += fileName+":"+row1[c]+" [" + row2[c] + "]," 
+
+
+
+
+// handle bodies
+epBody = [] // an array of each row of the fake ep file
+
+
+// combine and parse
+
+combinedResults = epHead + "/n"
+
+for each row in epBody:
+    combinedResults += row + "/n"
+
+
+    
+    
+
 HEADERS
 
 EPlus headers look like this: "ZONE1:Zone Mean Air Temperature [C](Hourly)"
 For DB, this means FileName + ":" + Row1 + "[" + Row2 + "]"
 approx code:
+
 	var fileName = fn;
 	var row1name = r1;
 	var row2name = r2;
@@ -16,6 +57,8 @@ approx code:
 		newfields.add.(getEPname(fn, r1, r2))		//not sure this is the right way to loop
 		}
 	
+    
+    
 DATES
 
 EPlus dates look like this: " 01/01  08:00:00"
