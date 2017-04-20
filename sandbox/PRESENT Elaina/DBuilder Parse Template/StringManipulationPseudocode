@@ -1,0 +1,43 @@
+How to make a DB file parse like a EPlus file.
+Note: string manipulation methods here https://www.w3schools.com/js/js_string_methods.asp
+
+HEADERS
+
+EPlus headers look like this: "ZONE1:Zone Mean Air Temperature [C](Hourly)"
+For DB, this means FileName + ":" + Row1 + "[" + Row2 + "]"
+approx code:
+	var fileName = fn;
+	var row1name = r1;
+	var row2name = r2;
+	function getEPname(fileName, row1name, row2name){
+		return [fileName+":"+"row1name"+"[" + row2name + "]"]
+		}
+	fields.foreach{
+		newfields.add.(getEPname(fn, r1, r2))		//not sure this is the right way to loop
+		}
+	
+DATES
+
+EPlus dates look like this: " 01/01  08:00:00"
+DB dates look like this: "1/1/2002  1:00:00 AM"
+This will be slightly tricky. Doable, but tricky.
+Conceptually, need everything before the first slash, add a zero in front if it's one digit. 
+Then everything in front of the second slash, add a zero in front if it's one digit.
+Then whatever is between the space and the first colon. 
+approx code:
+	var datestamp = date
+	doubleDigit = function(numstring){
+		if (numstring.length) return numstring;
+		return ("0"+numstring);
+		}
+	getEPdate = function(datestamp){
+		var month = doubleDigit(datestamp.slice(0,datestamp.indexOf("/")))
+		var day =  doubleDigit(datestamp.slice(datestamp.indexOf("/"), datestamp.lastIndexOf("/")))
+		var hour = doubleDigit(datestamp.slice(datestamp.indexOf(" "), datestamp.indexOf(":")))
+		var minute = doubleDigit(datestamp.slice(datestamp.indexOf(":"), datestamp.lastIndexOf(":")))
+		return [month + '/' + day + ' ' + hour +":" + minute + ":00"]
+	
+	
+OTHER
+
+Should be fine as is, provided 2 header rows removed.
