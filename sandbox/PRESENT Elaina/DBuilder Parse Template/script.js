@@ -12,26 +12,47 @@ function onDataLoaded(dObj) {
 handleMultDBuilderFileUpload = function (filedata) {
     console.log(filedata);
 	console.log("5");
-	arLen = (3*(filedata.length-2)); //error is currently here
-	var dataDBasEPlus = new Array(arLen);
+	var dataDBasEPlus = [];
 	var headers = [];//new array(filedata.length()-2)
     for (var filename in filedata){
         console.log( filename );
-		console.log("3");
+		console.log("3");//keeping track of where I am
         var content = filedata[filename] ;
-		var j = 0, k = content[0].length;
+		var newArray = new Array(content[0].length)
+		dataDBasEPlus.push(newArray) //initializing space for the new data
+		//this next chunk converts the date/time string. Does not yet deal with weird DesignBuilder edge cases (!)
+		var j = 0, n = content.length;
+		for (var j = 0; j<n; j++){
+			var datestamp = content[j][0];
+			var month = doubleDigit(datestamp.slice(0,datestamp.indexOf("/")));
+			var day =  doubleDigit(datestamp.slice(datestamp.indexOf("/"), datestamp.lastIndexOf("/")));
+			var hour = doubleDigit(datestamp.slice(datestamp.indexOf(" "), datestamp.indexOf(":")));
+			var minute = doubleDigit(datestamp.slice(datestamp.indexOf(":"), datestamp.lastIndexOf(":")));
+			content[j][0] = (month + '/' + day + ' ' + hour +":" + minute + ":00");
+		}
+		//this next chunk combines processes the header and combines things into one file
+		var k = content[0].length;//content.length should be the number of rows (i.e. 8762), content[0].length should be the number of columns (different data types)
 		//i loops throgh columns of each file (in an Excel sense)
 		for (var i = 0; i<k; i++){ 
 			console.log("12");
 			var headerNew = (filename+":"+ content[i][0]+"[" + content[i][1] + "]"); //creates EPlus style header from DB headers
 			console.log(headerNew);
 			headers.push(headerNew);//adds EPlus style header to the list of headers
-			var timeEP = 0;//to do: write procedure to convert date format
-			dataDBasEPlus[i].push(content[i].slice(2)); //adds all non-header rows to the data thing
+			dataDBasEPlus[i].push(content[i].slice(2)); //adds all non-header rows to the data
 		}
 	}
+	console.log("20");
+	console.log(dataDBasEPlus)
 }	
 	
+doubleDigit = function(numstring){
+	if (numstring.length<2){
+		return numstring;
+	}
+	else{
+	return ("0"+numstring);
+	}
+	}
     
     /*
     var file = evt.target.files[0];
