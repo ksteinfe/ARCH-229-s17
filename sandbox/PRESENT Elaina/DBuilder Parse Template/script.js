@@ -12,24 +12,25 @@ function onDataLoaded(dObj) {
 handleMultDBuilderFileUpload = function (filedata) {
     console.log(filedata);
 	console.log("5");
-	var dataDBasEPlus = [];
-	var headers = []
+	arLen = (3*(filedata.length-2)); //error is currently here
+	var dataDBasEPlus = new Array(arLen);
+	var headers = [];//new array(filedata.length()-2)
     for (var filename in filedata){
         console.log( filename );
 		console.log("3");
         var content = filedata[filename] ;
 		var j = 0, k = content[0].length;
 		//i loops throgh columns of each file (in an Excel sense)
-		for (var i = 0; i<k, i++){ 
+		for (var i = 0; i<k; i++){ 
 			console.log("12");
-			var headerNew = (fileName+":"+ content[i][0]+"[" + content[i][1] + "]"); //creates EPlus style header from DB headers
+			var headerNew = (filename+":"+ content[i][0]+"[" + content[i][1] + "]"); //creates EPlus style header from DB headers
 			console.log(headerNew);
 			headers.push(headerNew);//adds EPlus style header to the list of headers
 			var timeEP = 0;//to do: write procedure to convert date format
-			var dataDBasEPlus[i].push(content[i].slice(2)); //adds all non-header rows to the data thing
-			}
+			dataDBasEPlus[i].push(content[i].slice(2)); //adds all non-header rows to the data thing
 		}
-    }	
+	}
+}	
 	
     
     /*
@@ -44,7 +45,6 @@ handleMultDBuilderFileUpload = function (filedata) {
         }
     });
     */
-}
 
 
 // global variable
