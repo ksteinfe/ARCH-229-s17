@@ -18,27 +18,30 @@ handleMultDBuilderFileUpload = function (filedata) {
         console.log( filename );
 		console.log("3");//keeping track of where I am
         var content = filedata[filename] ;
-		var newArray = new Array(content[0].length)
-		dataDBasEPlus.push(newArray) //initializing space for the new data
+		var sContent = content.split("\n");
+		console.log("sContentrows" + sContent.length);//content.length should be the number of rows (i.e. 8762), content[0].length should be the number of columns (different data types). Checking if this is true. OK not true. need to do the split at newline thing.
+		console.log("sContentcols" + sContent[0].length);
+		var newArray = new Array(sContent[0].length);
+		dataDBasEPlus.push(newArray); //initializing space for the new data
 		//this next chunk converts the date/time string. Does not yet deal with weird DesignBuilder edge cases (!)
-		var j = 0, n = content.length;
+		var j = 0, n = sContent.length;
 		for (var j = 0; j<n; j++){
-			var datestamp = content[j][0];
+			var datestamp = sContent[j][0];
 			var month = doubleDigit(datestamp.slice(0,datestamp.indexOf("/")));
 			var day =  doubleDigit(datestamp.slice(datestamp.indexOf("/"), datestamp.lastIndexOf("/")));
 			var hour = doubleDigit(datestamp.slice(datestamp.indexOf(" "), datestamp.indexOf(":")));
 			var minute = doubleDigit(datestamp.slice(datestamp.indexOf(":"), datestamp.lastIndexOf(":")));
-			content[j][0] = (month + '/' + day + ' ' + hour +":" + minute + ":00");
+			sContent[j][0] = (month + '/' + day + ' ' + hour +":" + minute + ":00");
 		}
 		//this next chunk combines processes the header and combines things into one file
-		var k = content[0].length;//content.length should be the number of rows (i.e. 8762), content[0].length should be the number of columns (different data types)
+		var k = sContent[0].length;
 		//i loops throgh columns of each file (in an Excel sense)
 		for (var i = 0; i<k; i++){ 
 			console.log("12");
-			var headerNew = (filename+":"+ content[i][0]+"[" + content[i][1] + "]"); //creates EPlus style header from DB headers
+			var headerNew = (filename+":"+ sContent[i][0]+"[" + sContent[i][1] + "]"); //creates EPlus style header from DB headers
 			console.log(headerNew);
 			headers.push(headerNew);//adds EPlus style header to the list of headers
-			dataDBasEPlus[i].push(content[i].slice(2)); //adds all non-header rows to the data
+			dataDBasEPlus[i].push(sContent[i].slice(2)); //adds all non-header rows to the data
 		}
 	}
 	console.log("20");
