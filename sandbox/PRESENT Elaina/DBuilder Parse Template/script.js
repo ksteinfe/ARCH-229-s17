@@ -11,6 +11,52 @@ function onDataLoaded(dObj) {
 
 handleMultDBuilderFileUpload = function (filedata) {
     console.log(filedata);
+    var headCount = 2; // the number of header rows that we expect
+	var combinedContentRows = [];
+	var combinedHeaderRows = "Date/Time";
+    
+    for (var filename in filedata){
+        console.log( filename );
+        var fileContent = filedata[filename] ;
+		var splitContent = fileContent.split("\n");
+		console.log("rowcount: " + splitContent.length);//content.length should be the number of rows (i.e. 8762)
+        
+        headRows = splitContent.slice(0,2);
+        contentRows = splitContent.slice(2);
+        
+        
+        // adding to combinedHeaderRows
+        //
+        var firstSplitHeadRow = headRows[0].split(",");
+        var secondSplitHeadRow = headRows[1].split(",");
+        if (firstSplitHeadRow[firstSplitHeadRow.length-1].trim() == "") firstSplitHeadRow.pop();
+        if (secondSplitHeadRow[secondSplitHeadRow.length-1].trim() == "") secondSplitHeadRow.pop();
+                
+        //console.log(firstSplitHeadRow);
+        //console.log(secondSplitHeadRow);
+        var fname = filename.slice(0,-4);
+        for (var col=1; col<firstSplitHeadRow.length-1; col++){
+            var str = fname+":"+ firstSplitHeadRow[col].slice(1,-1)+"[" + secondSplitHeadRow[col].slice(1,-1) + "]"; //creates EPlus style header from DB headers
+            combinedHeaderRows = combinedHeaderRows + "," + str;
+        }
+        
+        
+        // add to combinedContentRows
+        //
+        
+        
+        
+    }
+    
+    console.log(combinedHeaderRows);
+}	
+
+
+
+
+
+_____handleMultDBuilderFileUpload = function (filedata) {
+    console.log(filedata);
 	console.log("5");
 	var dataDBasEPlus = [];
 	var headers = [];//new array(filedata.length()-2)
@@ -20,8 +66,10 @@ handleMultDBuilderFileUpload = function (filedata) {
         var content = filedata[filename] ;
 		var sContent = content.split("\n");
 		console.log("sContentrows" + sContent.length);//content.length should be the number of rows (i.e. 8762), content[0].length should be the number of columns (different data types). Checking if this is true. OK not true. need to do the split at newline thing.
-		console.log("sContentcols" + sContent[0].length);
-		var newArray = new Array(sContent[0].length);
+        
+        
+        
+		var newArray = new Array();
 		dataDBasEPlus.push(newArray); //initializing space for the new data
 		//this next chunk converts the date/time string. Does not yet deal with weird DesignBuilder edge cases (!)
 		var j = 0, n = sContent.length;
@@ -43,6 +91,7 @@ handleMultDBuilderFileUpload = function (filedata) {
 			headers.push(headerNew);//adds EPlus style header to the list of headers
 			dataDBasEPlus[i].push(sContent[i].slice(2)); //adds all non-header rows to the data
 		}
+        
 	}
 	console.log("20");
 	console.log(dataDBasEPlus)
@@ -75,7 +124,7 @@ doubleDigit = function(numstring){
 var readFileData = new Object;
 
 handleMultFileUpload = function (evt) {
-	console.log("1");
+	//console.log("1");
     multiRead(evt.target.files);
 }
 
@@ -84,7 +133,7 @@ multiRead = function(files){
     var j = 0, k = files.length;
      for (var i = 0; i < k; i++) {
          var reader = new FileReader();
-		 console.log("2");
+		 //console.log("2");
          reader.name = files[i].name;
          reader.onloadend = function (evt) {
              //console.log(evt);
@@ -99,7 +148,7 @@ multiRead = function(files){
              }
          };
          reader.readAsText(files[i]);
-		 console.log("10");
+		 //console.log("10");
      }
     
 }
@@ -109,7 +158,7 @@ multiRead = function(files){
 // goal: make it into one giant string to feed in as though it were from E-Plus
 
 
-ALTERNATE_handleMultDBuilderFileUpload = function (evt) {
+DONOTUSE_handleMultDBuilderFileUpload = function (evt) {
 	console.log("4");
     var file = evt.target.files[0];
     var reader = new FileReader();
