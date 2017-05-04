@@ -12,20 +12,20 @@ function onDataLoaded(dObj) {
 handleMultDBuilderFileUpload = function (filedata) {
     console.log(filedata);
     var headCount = 2; // the number of header rows that we expect
-	var combinedContentRows = [];
+	var combinedContentRows = new Array(8760);//currently only works with 8760 data -- but upside is it gets rid of any extra rows
 	var combinedHeaderRows = "Date/Time";
-    
+    console.log(combinedContentRows.length);
     for (var filename in filedata){
         console.log( filename );
         var fileContent = filedata[filename] ;
 		var splitContent = fileContent.split("\n");
-		console.log("rowcount: " + splitContent.length);//content.length should be the number of rows (i.e. 8762)
+		console.log("rowcount: " + splitContent.length);//content.length should be the number of rows (i.e. 8762). It is currently 8764.
         
         headRows = splitContent.slice(0,2);
         contentRows = splitContent.slice(2);
         
         
-        // adding to combinedHeaderRows
+        // Step 1: adding to combinedHeaderRows
         //
         var firstSplitHeadRow = headRows[0].split(",");
         var secondSplitHeadRow = headRows[1].split(",");
@@ -36,19 +36,30 @@ handleMultDBuilderFileUpload = function (filedata) {
         //console.log(secondSplitHeadRow);
         var fname = filename.slice(0,-4);
         for (var col=1; col<firstSplitHeadRow.length-1; col++){
-            var str = fname+":"+ firstSplitHeadRow[col].slice(1,-1)+"[" + secondSplitHeadRow[col].slice(1,-1) + "]"; //creates EPlus style header from DB headers
+            var str = fname+":"+ firstSplitHeadRow[col].slice(1)+"[" + secondSplitHeadRow[col].slice(1) + "]"; //creates EPlus style header from DB headers. NOTE: cutting to -1 takes the last character off! I fixed it to just not take a 2nd param.
             combinedHeaderRows = combinedHeaderRows + "," + str;
         }
-        
-        
-        // add to combinedContentRows
-        //
-        
-        
-        
+		//Step 2: dealing with date
+		//loop
+		for (var row = 0; row<(contentRows.length-1); row++){
+			combinedContentRows[row]=  'timestamp'
+        }
+        // Step 3: adding to combinedContentRows
+        //instructions: content string needs an array of strings, one for each row. Initialize a string for each row (or, for every row in file, initialize a string), ...after split, check how many items, if 0 or 1, omit row
+		console.log(contentRows.length)//this is # rows. It is 8762 (should be 2 shorter)
+		for(var row = 0; row<(contentRows.length-1); row++){//iterate over rows
+	//		for (var col = 1; col<(contentRows[0].length-1); col++){
+			var str = contentRows[row].slice(contentRows[row].indexOf(",")+1)
+			res = str.replace(/"/g,'')
+			console.log(res.length)
+			console.log(str.length)
+			combinedContentRows[row] = combinedContentRows[row]+ "," +res;//works! has a trailing comma I don't like though
+	//			}
+        }
+	console.log(combinedContentRows[0].length);
     }
-    
-    console.log(combinedHeaderRows);
+    console.log(combinedContentRows[0]);
+    //console.log(combinedHeaderRows);
 }	
 
 
