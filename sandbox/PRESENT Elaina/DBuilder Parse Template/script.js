@@ -133,12 +133,14 @@ _____handleMultDBuilderFileUpload = function (filedata) {
 }	
 	
 doubleDigit = function(numstring){
-	//console.log('doublingdigit');
+	//console.log(numstring);
 	//console.log(numstring.length);
-	if (numstring.length>=2){
-		return numstring;
+	simplestring = numstring.replace(/"/g,'')
+	if (simplestring.length>=2){
+		return simplestring;
 	} else{
-		return ("0"+numstring);
+		//console.log('adding0');
+		return ("0"+simplestring);
 	}
 }
     
