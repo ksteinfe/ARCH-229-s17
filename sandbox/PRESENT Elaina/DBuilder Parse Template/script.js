@@ -19,7 +19,7 @@ handleMultDBuilderFileUpload = function (filedata) {
         console.log( filename );
         var fileContent = filedata[filename] ;
 		var splitContent = fileContent.split("\n");
-		console.log("rowcount: " + splitContent.length);//content.length should be the number of rows (i.e. 8762). It is currently 8764.
+		//console.log("rowcount: " + splitContent.length);//content.length should be the number of rows (i.e. 8762). It is currently 8764.
         
         headRows = splitContent.slice(0,2);
         contentRows = splitContent.slice(2);
@@ -40,26 +40,50 @@ handleMultDBuilderFileUpload = function (filedata) {
             combinedHeaderRows = combinedHeaderRows + "," + str;
         }
 		//Step 2: dealing with date
+		//EPlus dates look like this: " 01/01  08:00:00"
+		//DB dates look like this: "1/1/2002  1:00:00 AM"
 		//loop
 		for (var row = 0; row<(contentRows.length-1); row++){
-			combinedContentRows[row]=  'timestamp'
+			var month = doubleDigit(contentRows[row].slice(0,contentRows[row].indexOf("/")));
+			var day = doubleDigit(contentRows[row].slice(contentRows[row].indexOf("/")+1, contentRows[row].lastIndexOf("/")));
+			if (contentRows[row].indexOf(" ")== -1){
+				var loc = contentRows[row].length;
+			} else{
+				var loc = contentRows[row].indexOf(" ");
+			}
+			//LOL all that and I didn't actually need the year
+//			var year = contentRows[row].slice(loc-2, loc);
+			if (contentRows[row].indexOf(" ")== -1){
+				var hour = 24;
+			} else {
+				var hour = contentRows[row].slice(contentRows[row].indexOf(" "),contentRows[row].indexOf(" ") +2);
+					if((contentRows[row].slice(contentRows[row].lastIndexOf(" "), contentRows[row].lastIndexOf(" ") +2) =="PM")&& hour != '12' ){
+						hour = hour + 12;
+					}
+			}
+			combinedContentRows[row]=  month + '/' + day +  ' ' + hour + ":00:00"
         }
         // Step 3: adding to combinedContentRows
         //instructions: content string needs an array of strings, one for each row. Initialize a string for each row (or, for every row in file, initialize a string), ...after split, check how many items, if 0 or 1, omit row
-		console.log(contentRows.length)//this is # rows. It is 8762 (should be 2 shorter)
+		//console.log(contentRows.length)//this is # rows. It is 8762 (should be 2 shorter)
 		for(var row = 0; row<(contentRows.length-1); row++){//iterate over rows
 	//		for (var col = 1; col<(contentRows[0].length-1); col++){
 			var str = contentRows[row].slice(contentRows[row].indexOf(",")+1)
-			res = str.replace(/"/g,'')
-			console.log(res.length)
-			console.log(str.length)
+			res = str.replace(/"/g,'')//they were all in quotes for some reason. now they're not. Did we want them to be?
 			combinedContentRows[row] = combinedContentRows[row]+ "," +res;//works! has a trailing comma I don't like though
 	//			}
         }
-	console.log(combinedContentRows[0].length);
+	//console.log(combinedContentRows[0].length);
     }
     console.log(combinedContentRows[0]);
-    //console.log(combinedHeaderRows);
+	//trying to get rid of that stupid last comma. Not yet successful.
+	for (var row = 0; row <combinedContentRows.length-1; row++){
+		if(combinedContentRows[row][combinedContentRows[row].length-1]==","){
+			console.log('final comma');
+			combinedContentRows[row] = combinedContentRows[row].slice(0,-1);
+		}
+	}
+    console.log(combinedContentRows[5]);
 }	
 
 
@@ -109,13 +133,14 @@ _____handleMultDBuilderFileUpload = function (filedata) {
 }	
 	
 doubleDigit = function(numstring){
-	if (numstring.length<2){
+	//console.log('doublingdigit');
+	//console.log(numstring.length);
+	if (numstring.length>=2){
 		return numstring;
+	} else{
+		return ("0"+numstring);
 	}
-	else{
-	return ("0"+numstring);
-	}
-	}
+}
     
     /*
     var file = evt.target.files[0];
