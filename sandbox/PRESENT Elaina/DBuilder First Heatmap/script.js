@@ -1,5 +1,6 @@
 
 
+
 function onDataLoaded(dObj) {
     //dObj.ticks = dObj.ticks.slice(0,744);
     console.log("dy: data is loaded, i'm ready to go!");
@@ -44,9 +45,7 @@ function onDataLoaded(dObj) {
     
     // Setup Color
     //
-    zonekey = "DryBulbTemp";
-    //zonekey = ["ZONE1","Zone People Number Of Occupants [](Hourly)"];
-    //zonekey = ["ZONE1","Zone Mean Air Temperature [C](Hourly)"];
+    zonekey = ["SimpleHouse_Downstairs","Operative Temperature[C]"];
     var cValue = function(d) { return d.valueOf(zonekey)};
     var cScale = d3.scale.linear()
         .domain(dObj.metaOf(zonekey).domain)

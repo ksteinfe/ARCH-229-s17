@@ -20,7 +20,7 @@
     <p id="dy-head-attribution">by Kyle Steinfeld for ARCH 229 s17</p>
         
     <p id="dy-head-upload-message">Please select a single <b>DesignBuilder CSV results</b> file. Your data is private. Nothing will be uploaded or stored on our servers, nor communicated to others in any way.</p>
-    <input type="file" id="csv-file" name="files"/>
+    <input type="file" id="csv-file" name="files" multiple="multiple"/>
     <script>$(document).ready(function(){ $("#csv-file").change(dY.parser.handleMultDBuilderFileUpload); });//we don't have a handle single DB, but handleMult passed 1 should work fine
     </script>
 </div>
