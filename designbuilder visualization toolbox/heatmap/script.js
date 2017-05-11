@@ -1,16 +1,34 @@
 
 // Parameters
 //
+
+//Change the following line to something like this: var zonekey = ["FileName","Column Name[Units]"];
 var zonekey = ["SimpleHouse_Downstairs","Operative Temperature[C]"];
 
 
 //
 
+
+
+
+
+
+
+
+
+
+
+
+
 function onDataLoaded(dObj) {
     //dObj.ticks = dObj.ticks.slice(0,744);
     console.log("dy: data is loaded, i'm ready to go!");
-    console.log(dObj);
-    
+    //console.log(dObj);
+    drawHeatmap(dObj);
+}
+
+
+function drawHeatmap(dObj){
     // add a board (an SVG) to the canvas. Uses a DY Utility function to easily add an svg and calculate inner and outer dimensions. Returns an object of {g (an SVG), bDims (the board dimensions), dDims (the draw dimensions)} Each dimensions have width, height, xRange, and yRange members.
     board = dY.graph.addBoard("#dy-canvas",{inWidth: 730, inHeight:120, margin:50});
     
@@ -91,5 +109,7 @@ function onDataLoaded(dObj) {
                 fill: function(d) { return cMap(d);}
             });
       
+    
+    
 }
 

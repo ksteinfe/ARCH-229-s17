@@ -1,0 +1,71 @@
+ 
+body {
+    margin: 0px;
+    
+    background: #888; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(to bottom right,#444, #ccc); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(to bottom right,#444, #ccc); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(to bottom right,#444, #ccc); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right,#444, #ccc) ; /* Standard syntax */    
+    background-attachment: fixed;
+}
+
+#dy-canvas, #dy-console, #dy-head {
+    position:	absolute;
+    width: 90%;
+    margin: 0px 0 0 -45%;
+    left: 50%;    
+    padding: 0px 2px;
+}
+
+#dy-head {
+    top: 0px;
+    height: 120px;
+    padding: 10px 2px;
+    width: 50%;
+    min-width: 400px;
+}
+
+#dy-canvas {
+    top: 180px;
+    bottom: 40px;
+    overflow: scroll;
+    
+    background: #666; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(to bottom right,#444, #888); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(to bottom right,#444, #888); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(to bottom right,#444, #888); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to top left,#444, #888) ; /* Standard syntax */    
+    background-attachment: fixed;    
+}
+
+
+a { color: white;  text-decoration: none;}
+a:hover { text-decoration: underline; }
+
+svg.board {
+    background: white;
+    margin: 20px;
+}
+
+p#dy-head-upload-message{
+    font-family: sans-serif;
+    color: #aaa;
+    font-size: 0.8em;
+}
+
+p#dy-head-title{
+    font-size: 1.2em;
+    font-family: sans-serif;
+    color: #fff;
+    margin-bottom: 5px;
+    margin-top: 10px;
+}
+
+p#dy-head-attribution{
+    font-size: 0.8em;
+    font-family: sans-serif;
+    color: #aaa;
+    font-style: italic;
+    margin: 0px;
+}
